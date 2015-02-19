@@ -1,0 +1,71 @@
+# Where things are
+source:      .
+destination: ./_site
+plugins:     ./_plugins
+layouts:     ./_layouts
+includes:    ./_includes
+# data_source: ./_data
+# collections: null
+
+# Handling Reading
+safe:         true
+include:      [".htaccess"]
+exclude:      []
+keep_files:   [".git", ".svn"]
+encoding:     "utf-8"
+markdown_ext: "markdown,mkdown,mkdn,mkd,md"
+
+# # Filtering Content
+# show_drafts: null
+# limit_posts: 0
+# future:      true
+# unpublished: false
+
+# # Plugins
+# whitelist: []
+# gems:      []
+
+# Conversion
+# markdown:    kramdown
+# highlighter: rouge
+# lsi:         false
+# excerpt_separator: "\n\n"
+
+
+# Markdown
+# highlighter: rouge
+highlighter: pygments
+
+
+markdown: redcarpet
+pygments: true
+
+redcarpet:
+  extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "strikethrough", "superscript"]
+
+# markdown: kramdown
+# kramdown:
+#   input: GFM
+#   hard_wrap: false
+#   parse_block_html: true
+#   use_coderay: true
+#
+#   coderay:
+#     coderay_line_numbers: nil
+#     coderay_line_numbers_start: 1
+#     coderay_tab_width: 4
+#     coderay_bold_every: 10
+#     coderay_css: class
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+
+
+sass:
+  #
+  style: :compressed
+#     #
+#     # sass_dir: ./_sass
