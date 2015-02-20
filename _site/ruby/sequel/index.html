@@ -32,7 +32,43 @@
       
       
       <section>
-        <h2><a href="/ruby">Ruby</a> / Sequel ORM</h2>
+        <h1><a href="/ruby">Ruby</a> / Sequel ORM</h1>
+
+<hr>
+
+<h2>Overview</h2>
+
+<p>This page should contain an overview of Sequel&#39;s key features as well as links to all other parts.</p>
+
+<h3>CRUD</h3>
+
+<hr>
+
+<h2>DB Creations</h2>
+
+<hr>
+
+<h2>DB Migrations</h2>
+
+<hr>
+
+<h2>Model</h2>
+
+<hr>
+
+<h2>Plugins</h2>
+
+<h3>List</h3>
+
+<h3>Tree</h3>
+
+<h3>Timestamp</h3>
+
+<h3>Paranoid</h3>
+
+<h3>JSON</h3>
+
+<h3>XML</h3>
 
 <h3>Open a database</h3>
 
@@ -135,7 +171,7 @@
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">filter</span><span class="p">{(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">y</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">)}</span><span class="o">.</span><span class="n">sql</span> 
   <span class="c1"># SELECT * FROM items WHERE ((x &gt; 5) AND (y &gt; 10))</span>
 
-  <span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">filter</span><span class="p">({</span><span class="ss">:x</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="ss">:y</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">}</span><span class="o">.</span><span class="n">sql_or</span> <span class="o">&amp;</span> <span class="o">~</span><span class="p">{</span><span class="ss">:z</span> <span class="o">=&gt;</span> <span class="mi">3</span><span class="p">})</span><span class="o">.</span><span class="n">sql</span> 
+<span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">filter</span><span class="p">({</span><span class="ss">:x</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="ss">:y</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">}</span><span class="o">.</span><span class="n">sql_or</span> <span class="o">&amp;</span> <span class="o">~</span><span class="p">{</span><span class="ss">:z</span> <span class="o">=&gt;</span> <span class="mi">3</span><span class="p">})</span><span class="o">.</span><span class="n">sql</span> 
   <span class="c1"># SELECT * FROM items WHERE (((x = 1) OR (y = 2)) AND (z != 3))</span></code></pre></div>
 
 <h4>Mathematical operators</h4>
@@ -143,7 +179,7 @@
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">filter</span><span class="p">((</span><span class="ss">:x</span> <span class="o">+</span> <span class="ss">:y</span><span class="p">)</span> <span class="o">&gt;</span> <span class="ss">:z</span><span class="p">)</span><span class="o">.</span><span class="n">sql</span> 
   <span class="c1"># SELECT * FROM items WHERE ((x + y) &gt; z)</span>
 
-  <span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">filter</span><span class="p">{</span><span class="n">price</span> <span class="o">-</span> <span class="mi">100</span> <span class="o">&lt;</span> <span class="n">avg</span><span class="p">(</span><span class="n">price</span><span class="p">)}</span><span class="o">.</span><span class="n">sql</span> 
+<span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">filter</span><span class="p">{</span><span class="n">price</span> <span class="o">-</span> <span class="mi">100</span> <span class="o">&lt;</span> <span class="n">avg</span><span class="p">(</span><span class="n">price</span><span class="p">)}</span><span class="o">.</span><span class="n">sql</span> 
   <span class="c1"># SELECT * FROM items WHERE ((price - 100) &lt; avg(price))</span></code></pre></div>
 
 <h3>Ordering</h3>
@@ -162,7 +198,7 @@
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">left_outer_join</span><span class="p">(</span><span class="ss">:categories</span><span class="p">,</span> <span class="ss">:id</span> <span class="o">=&gt;</span> <span class="ss">:category_id</span><span class="p">)</span><span class="o">.</span><span class="n">sql</span> 
   <span class="c1"># SELECT * FROM items LEFT OUTER JOIN categories ON categories.id = items.category_id</span>
 
-  <span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">join</span><span class="p">(</span><span class="ss">:categories</span><span class="p">,</span> <span class="ss">:id</span> <span class="o">=&gt;</span> <span class="ss">:category_id</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="ss">:groups</span><span class="p">,</span> <span class="ss">:id</span> <span class="o">=&gt;</span> <span class="ss">:items__group_id</span><span class="p">)</span> 
+<span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">join</span><span class="p">(</span><span class="ss">:categories</span><span class="p">,</span> <span class="ss">:id</span> <span class="o">=&gt;</span> <span class="ss">:category_id</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="ss">:groups</span><span class="p">,</span> <span class="ss">:id</span> <span class="o">=&gt;</span> <span class="ss">:items__group_id</span><span class="p">)</span> 
   <span class="c1"># SELECT * FROM items INNER JOIN categories ON categories.id = items.category_id INNER JOIN groups ON groups.id = items.group_id</span></code></pre></div>
 
 <h3>Aggregate functions methods</h3>
@@ -206,11 +242,11 @@
 <h3>Aliasing</h3>
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">select</span><span class="p">(</span><span class="ss">:name</span><span class="o">.</span><span class="n">as</span><span class="p">(</span><span class="ss">:item_name</span><span class="p">))</span>
-  <span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">select</span><span class="p">(</span><span class="ss">:name___item_name</span><span class="p">)</span>
-  <span class="no">DB</span><span class="o">[</span><span class="ss">:items___items_table</span><span class="o">].</span><span class="n">select</span><span class="p">(</span><span class="ss">:items_table__name___item_name</span><span class="p">)</span>
-  <span class="c1"># SELECT items_table.name AS item_name FROM items AS items_table</span></code></pre></div>
+<span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">select</span><span class="p">(</span><span class="ss">:name___item_name</span><span class="p">)</span>
+<span class="no">DB</span><span class="o">[</span><span class="ss">:items___items_table</span><span class="o">].</span><span class="n">select</span><span class="p">(</span><span class="ss">:items_table__name___item_name</span><span class="p">)</span>
+  <span class="p">\</span><span class="c1"># SELECT items_table.name AS item_name FROM items AS items_table</span></code></pre></div>
 
-<h3>Transactions</h3>
+<h2>Transactions</h2>
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">.</span><span class="n">transaction</span> <span class="k">do</span>
   <span class="n">dataset</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="ss">:first_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Inigo&#39;</span><span class="p">,</span> <span class="ss">:last_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Montoya&#39;</span><span class="p">)</span>
@@ -331,12 +367,12 @@
     <span class="n">validates_integer</span> <span class="ss">:rating</span>
     <span class="n">validates_numeric</span> <span class="ss">:number</span>
     <span class="n">validates_type</span> <span class="nb">String</span><span class="p">,</span> <span class="o">[</span><span class="ss">:title</span><span class="p">,</span> <span class="ss">:description</span><span class="o">]</span>
-
+    
     <span class="n">validates_integer</span> <span class="ss">:rating</span>  <span class="k">if</span> <span class="kp">new</span><span class="p">?</span>
-
+    
     <span class="c1"># options: :message =&gt;, :allow_nil =&gt;, :allow_blank =&gt;,</span>
     <span class="c1">#          :allow_missing =&gt;,</span>
-
+    
     <span class="n">validates_exact_length</span> <span class="mi">17</span><span class="p">,</span> <span class="ss">:isbn</span>
     <span class="n">validates_min_length</span> <span class="mi">3</span><span class="p">,</span> <span class="ss">:name</span>
     <span class="n">validates_max_length</span> <span class="mi">100</span><span class="p">,</span> <span class="ss">:name</span>
@@ -354,15 +390,22 @@
 <h3>Model stuff</h3>
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">deal</span> <span class="o">=</span> <span class="no">Deal</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>
+
 <span class="n">deal</span><span class="o">.</span><span class="n">changed_columns</span>
-<span class="n">deal</span><span class="o">.</span><span class="n">destory</span>  <span class="c1"># Calls hooks</span>
+
+<span class="n">deal</span><span class="o">.</span><span class="n">destroy</span>  <span class="c1"># Calls hooks</span>
 <span class="n">deal</span><span class="o">.</span><span class="n">delete</span>   <span class="c1"># No hooks</span>
+
 <span class="n">deal</span><span class="o">.</span><span class="n">exists?</span>
-<span class="n">deal</span><span class="o">.</span><span class="n">new?</span>
+
+<span class="n">deal</span><span class="o">.</span><span class="n">new?</span>  <span class="c1"># returns true if new</span>
+
 <span class="n">deal</span><span class="o">.</span><span class="n">hash</span>  <span class="c1"># Only uniques</span>
+
 <span class="n">deal</span><span class="o">.</span><span class="n">keys</span>  <span class="c1">#=&gt; [:id, :name]</span>
-<span class="n">deal</span><span class="o">.</span><span class="n">modified!</span>
-<span class="n">deal</span><span class="o">.</span><span class="n">modified?</span>
+
+<span class="n">deal</span><span class="o">.</span><span class="n">modified!</span>  <span class="c1"># set modified? to true, even if no changes</span>
+<span class="n">deal</span><span class="o">.</span><span class="n">modified?</span>  <span class="c1"># true if modified</span>
 
 <span class="n">deal</span><span class="o">.</span><span class="n">lock!</span></code></pre></div>
 
@@ -373,14 +416,15 @@
 
 <span class="n">before_validation</span>
 <span class="n">after_validation</span>
+
 <span class="n">before_save</span>
 <span class="n">before_update</span>
-<span class="no">UPDATE</span> <span class="no">QUERY</span>
+  <span class="no">UPDATE</span> <span class="no">QUERY</span>
 <span class="n">after_update</span>
 <span class="n">after_save</span>
 
 <span class="n">before_destroy</span>
-<span class="no">DELETE</span> <span class="no">QUERY</span>
+  <span class="no">DELETE</span> <span class="no">QUERY</span>
 <span class="n">after_destroy</span></code></pre></div>
 
 <h3>Schema</h3>
@@ -388,7 +432,7 @@
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Deal</span> <span class="o">&lt;</span> <span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span>
   <span class="n">set_schema</span> <span class="k">do</span>
     <span class="n">primary_key</span> <span class="ss">:id</span>
-    <span class="n">primary_key</span> <span class="o">[</span><span class="ss">:id</span><span class="p">,</span> <span class="ss">:title</span><span class="o">]</span>
+    <span class="n">primary_key</span> <span class="o">[</span><span class="ss">:id</span><span class="p">,</span> <span class="ss">:title</span><span class="o">]</span>  <span class="c1"># composite primary key</span>
     <span class="nb">String</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">primary_key</span><span class="p">:</span> <span class="kp">true</span>
     
     <span class="nb">String</span>  <span class="ss">:title</span>
@@ -412,9 +456,9 @@
 
 <h3>Unrestrict primary key</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Category</span><span class="o">.</span><span class="n">create</span> <span class="nb">id</span><span class="p">:</span> <span class="s1">&#39;travel&#39;</span>   <span class="c1"># error</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Category</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="s1">&#39;travel&#39;</span><span class="p">)</span>   <span class="c1"># error</span>
 <span class="no">Category</span><span class="o">.</span><span class="n">unrestrict_primary_key</span>
-<span class="no">Category</span><span class="o">.</span><span class="n">create</span> <span class="nb">id</span><span class="p">:</span> <span class="s1">&#39;travel&#39;</span>   <span class="c1"># ok</span></code></pre></div>
+<span class="no">Category</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="s1">&#39;travel&#39;</span><span class="p">)</span>   <span class="c1"># ok</span></code></pre></div>
 
       </section>
       

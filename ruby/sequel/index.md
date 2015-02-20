@@ -4,8 +4,43 @@ layout: default
 
 ---
 
-## [Ruby](/ruby) / Sequel ORM
+# [Ruby](/ruby) / Sequel ORM
 
+
+----
+
+## Overview
+
+This page should contain an overview of Sequel's key features as well as links to all other parts.
+
+
+### CRUD
+
+
+---
+## DB Creations
+
+---
+## DB Migrations
+
+---
+## Model
+
+---
+
+## Plugins
+
+### List
+
+### Tree
+
+### Timestamp
+
+### Paranoid
+
+### JSON
+
+### XML
 
 ### Open a database
 
@@ -136,20 +171,20 @@ DB[:items].filter(:name => /^AL/)
 #### AND/OR/NOT
 
 {% highlight ruby %}  
-  DB[:items].filter{(x > 5) & (y > 10)}.sql 
+DB[:items].filter{(x > 5) & (y > 10)}.sql 
   # SELECT * FROM items WHERE ((x > 5) AND (y > 10))
 
-  DB[:items].filter({:x => 1, :y => 2}.sql_or & ~{:z => 3}).sql 
+DB[:items].filter({:x => 1, :y => 2}.sql_or & ~{:z => 3}).sql 
   # SELECT * FROM items WHERE (((x = 1) OR (y = 2)) AND (z != 3))
 {% endhighlight %}
 
 #### Mathematical operators
 
 {% highlight ruby %}  
-  DB[:items].filter((:x + :y) > :z).sql 
+DB[:items].filter((:x + :y) > :z).sql 
   # SELECT * FROM items WHERE ((x + y) > z)
 
-  DB[:items].filter{price - 100 < avg(price)}.sql 
+DB[:items].filter{price - 100 < avg(price)}.sql 
   # SELECT * FROM items WHERE ((price - 100) < avg(price))
 {% endhighlight %}
 
@@ -171,10 +206,10 @@ dataset.limit(30, 10) # LIMIT 30 OFFSET 10
 ### Joins
 
 {% highlight ruby %}  
-  DB[:items].left_outer_join(:categories, :id => :category_id).sql 
+DB[:items].left_outer_join(:categories, :id => :category_id).sql 
   # SELECT * FROM items LEFT OUTER JOIN categories ON categories.id = items.category_id
 
-  DB[:items].join(:categories, :id => :category_id).join(:groups, :id => :items__group_id) 
+DB[:items].join(:categories, :id => :category_id).join(:groups, :id => :items__group_id) 
   # SELECT * FROM items INNER JOIN categories ON categories.id = items.category_id INNER JOIN groups ON groups.id = items.group_id
 {% endhighlight %}
 
@@ -222,17 +257,18 @@ DB.create_table :test do
 end
 {% endhighlight %}
 
-### Aliasing
+### Aliasing 
 
 {% highlight ruby %}  
-  DB[:items].select(:name.as(:item_name))
-  DB[:items].select(:name___item_name)
-  DB[:items___items_table].select(:items_table__name___item_name)
-  # SELECT items_table.name AS item_name FROM items AS items_table
+DB[:items].select(:name.as(:item_name))
+DB[:items].select(:name___item_name)
+DB[:items___items_table].select(:items_table__name___item_name)
+  \# SELECT items_table.name AS item_name FROM items AS items_table
+  
 {% endhighlight %}
 
 
-### Transactions
+## Transactions
 
 {% highlight ruby %}  
 DB.transaction do
@@ -295,7 +331,7 @@ dataset.columns #=> array of columns in the result set, does a SELECT
 DB.schema(:items) => [[:id, {:type=>:integer, ...}], [:name, {:type=>:string, ...}], ...]
 {% endhighlight %}
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------
 
 ### Documents
 
@@ -307,7 +343,6 @@ http://sequel.rubyforge.org/rdoc/classes/Sequel/Model.html
 {% endhighlight %}
 
 ### Alter table
-
 
 {% highlight ruby %}  
 database.alter_table :deals do
@@ -381,12 +416,12 @@ Deal[1].remove_all_images
     validates_integer :rating
     validates_numeric :number
     validates_type String, [:title, :description]
-
+    
     validates_integer :rating  if new?
-
+    
     # options: :message =>, :allow_nil =>, :allow_blank =>,
     #          :allow_missing =>,
-
+    
     validates_exact_length 17, :isbn
     validates_min_length 3, :name
     validates_max_length 100, :name
@@ -406,15 +441,22 @@ deal.errors
 
 {% highlight ruby %}  
 deal = Deal[1]
+
 deal.changed_columns
-deal.destory  # Calls hooks
+
+deal.destroy  # Calls hooks
 deal.delete   # No hooks
+
 deal.exists?
-deal.new?
+
+deal.new?  # returns true if new
+
 deal.hash  # Only uniques
+
 deal.keys  #=> [:id, :name]
-deal.modified!
-deal.modified?
+
+deal.modified!  # set modified? to true, even if no changes
+deal.modified?  # true if modified
 
 deal.lock!
 {% endhighlight %}
@@ -427,14 +469,15 @@ after_create
 
 before_validation
 after_validation
+
 before_save
 before_update
-UPDATE QUERY
+  UPDATE QUERY
 after_update
 after_save
 
 before_destroy
-DELETE QUERY
+  DELETE QUERY
 after_destroy
 {% endhighlight %}
 
@@ -444,7 +487,7 @@ after_destroy
 class Deal < Sequel::Model
   set_schema do
     primary_key :id
-    primary_key [:id, :title]
+    primary_key [:id, :title]  # composite primary key
     String :name, primary_key: true
     
     String  :title
@@ -470,7 +513,7 @@ end
 ### Unrestrict primary key
 
 {% highlight ruby %}  
-Category.create id: 'travel'   # error
+Category.create(id: 'travel')   # error
 Category.unrestrict_primary_key
-Category.create id: 'travel'   # ok
+Category.create(id: 'travel')   # ok
 {% endhighlight %}
