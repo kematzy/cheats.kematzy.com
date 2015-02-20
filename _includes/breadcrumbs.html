@@ -1,0 +1,14 @@
+{% capture url_cleaned %} {{ page.url | replace:'/',"~" }}{% endcapture %}
+{% assign urlParts = url_cleaned | split: "~" %}
+{% assign previous_url = "" %}
+<div class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      {% for part in urlParts offset: 1 %}
+        {% capture previous_url %}{{ previous_url }}/{{ part }}{% endcapture %}
+        <li><a href="{{ previous_url | append: '/' | replace: ".html/", ".html" }}">{{ part | remove: ".html" | capitalize }}</a></li>
+      {% endfor %}
+    </ol>
+  </div>
+</div>
