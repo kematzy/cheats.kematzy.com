@@ -1,11 +1,11 @@
 ---
-title: Sequel ORM info here....
+title: Sequel ORM
 layout: default
-siteurl: ../..
+asset_path: ../..
 
 ---
 
-# [Ruby](/ruby) / Sequel ORM
+# Ruby / Sequel ORM
 
 
 ----
@@ -13,6 +13,45 @@ siteurl: ../..
 ## Overview
 
 This page should contain an overview of Sequel's key features as well as links to all other parts.
+
+
+{% highlight ruby %}
+  # 1. Load Sequel
+require "sequel"
+
+ # 2. Add global extensions
+Sequel.extension(:blank)
+
+ # 3. Connnect to DB
+configure :development do
+  DB = Sequel.connect(:adapter=>'mysql2', :host=>'localhost', :database=>'rubymodularapp-dev-development', :user=>'root', :password=>'root')
+end
+
+configure :production do
+   # DB = Sequel.connect(:adapter=>'mysql', :host=>'localhost', :database=>'ppt-db-app', :user=>'root', :password=>'root')
+   DB = Sequel.sqlite('db/production.db')
+ end
+
+configure :test do
+  DB = Sequel.sqlite # :memory:
+  # DB = Sequel.sqlite('db/test.db')
+end
+
+ # 4. Add Global Sequel plugins, each loaded separately
+Sequel::Model.plugin(:schema)
+Sequel::Model.plugin(:validation_helpers)
+Sequel::Model.plugin(:timestamps)
+ # Add JSON output capability to all model instances
+Sequel::Model.plugin(:json_serializer)
+ # Add XML output capability to all model instances
+Sequel::Model.plugin(:xml_serializer)
+Sequel::Model.plugin(:paranoid)
+
+ # 5. Load Model Classes
+require_relative 'app/models'
+{% endhighlight %}
+
+
 
 
 ### CRUD
@@ -29,19 +68,8 @@ This page should contain an overview of Sequel's key features as well as links t
 
 ---
 
-## Plugins
+## [Plugins](/ruby/sequel/plugins.html)
 
-### List
-
-### Tree
-
-### Timestamp
-
-### Paranoid
-
-### JSON
-
-### XML
 
 ### Open a database
 
@@ -68,7 +96,7 @@ DB = Sequel.sqlite
 {% highlight ruby %}  
 require 'logger'
 DB = Sequel.sqlite '', :loggers => [Logger.new($stdout)]
-# or
+ # or
 DB.loggers << Logger.new(...)
 {% endhighlight %}
 
@@ -263,9 +291,8 @@ end
 {% highlight ruby %}  
 DB[:items].select(:name.as(:item_name))
 DB[:items].select(:name___item_name)
-DB[:items___items_table].select(:items_table__name___item_name)
-  \# SELECT items_table.name AS item_name FROM items AS items_table
-  
+DB[:items__items_table].select(:items_table__name___item_name)
+  # SELECT items_table.name AS item_name FROM items AS items_table
 {% endhighlight %}
 
 
@@ -332,7 +359,7 @@ dataset.columns #=> array of columns in the result set, does a SELECT
 DB.schema(:items) => [[:id, {:type=>:integer, ...}], [:name, {:type=>:string, ...}], ...]
 {% endhighlight %}
 
---------------------------------------------------------------------------------------------------------------------------
+---
 
 ### Documents
 
@@ -439,6 +466,16 @@ deal.errors
 {% endhighlight %}
 
 ### Model stuff
+
+
+#### instance.delete
+
+Deletes and returns `self`. **Does not run destroy hooks**. Look into using destroy instead.
+
+{% highlight ruby %}  
+Artist[1].delete # DELETE FROM artists WHERE (id = 1)
+ # => #<Artist {:id=>1, ...}>
+{% endhighlight %}  
 
 {% highlight ruby %}  
 deal = Deal[1]
