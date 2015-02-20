@@ -1,6 +1,7 @@
 ---
 title: Sequel ORM info here....
 layout: default
+siteurl: ../..
 
 ---
 

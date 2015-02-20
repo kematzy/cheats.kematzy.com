@@ -35,11 +35,7 @@ markdown_ext: "markdown,mkdown,mkdn,mkd,md"
 # Markdown
 # highlighter: rouge
 highlighter: pygments
-
-
 markdown: redcarpet
-pygments: true
-
 redcarpet:
   extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "strikethrough", "superscript"]
 
