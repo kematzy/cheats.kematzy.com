@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Sequel ORM info here.... | Cheats by Kematzy</title>
+    <title>Sequel ORM | Cheats by Kematzy</title>
 
     <link rel="stylesheet" href="../../assets/css/styles.css">
     <link rel="stylesheet" href="../../assets/css/pygment_trac.css">
@@ -17,28 +17,100 @@
 
   
   <body>
-    <div class="wrapper">
+    <div class="container">
+            
+      <nav class="navbar navbar-default">
+  <div class="container-fluid row">
+    
+    <div class="navbar-header col-md-6">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <h1><a href="/">Cheats by Kematzy</a></h1>
+        <p>A personal collection of Cheatsheets</p>
+      </div>
+    </div>
+    
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse col-md-6" id="header-nav">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/">HOME <span class="sr-only">(current)</span></a></li>
+        <li><a href="/toc.html">Table of Contents</a></li>
+        <li><a href="/about.html">About</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
       
-      <header>
-        <h1>cheats.kematzy.com</h1>
-        <p>My personal collection of Cheatsheets</p>
-        <p class="view"><a href="https://github.com/kematzy/cheats.kematzy.com">View the Project on GitHub <small>kematzy/cheats.kematzy.com</small></a></p>
-        <!-- <ul>
-          <li><a href="https://github.com/kematzy/cheats.kematzy.com/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/kematzy/cheats.kematzy.com">View On <strong>GitHub</strong></a></li>
-        </ul> -->
-      </header>
       
+
+
+<div class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
       
+        
+        <li><a href="/ruby/">Ruby</a></li>
+      
+        
+        <li><a href="/ruby/sequel/">Sequel</a></li>
+      
+        
+        <li><a href="/ruby/sequel/index.html">Index</a></li>
+      
+    </ol>
+  </div>
+</div>
+
       
       <section>
-        <h1><a href="/ruby">Ruby</a> / Sequel ORM</h1>
+        <h1>Ruby / Sequel ORM</h1>
 
 <hr>
 
 <h2>Overview</h2>
 
 <p>This page should contain an overview of Sequel&#39;s key features as well as links to all other parts.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># 1. Load Sequel</span>
+<span class="nb">require</span> <span class="s2">&quot;sequel&quot;</span>
+
+ <span class="c1"># 2. Add global extensions</span>
+<span class="no">Sequel</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="ss">:blank</span><span class="p">)</span>
+
+ <span class="c1"># 3. Connnect to DB</span>
+<span class="n">configure</span> <span class="ss">:development</span> <span class="k">do</span>
+  <span class="no">DB</span> <span class="o">=</span> <span class="no">Sequel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="ss">:adapter</span><span class="o">=&gt;</span><span class="s1">&#39;mysql2&#39;</span><span class="p">,</span> <span class="ss">:host</span><span class="o">=&gt;</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="ss">:database</span><span class="o">=&gt;</span><span class="s1">&#39;rubymodularapp-dev-development&#39;</span><span class="p">,</span> <span class="ss">:user</span><span class="o">=&gt;</span><span class="s1">&#39;root&#39;</span><span class="p">,</span> <span class="ss">:password</span><span class="o">=&gt;</span><span class="s1">&#39;root&#39;</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">configure</span> <span class="ss">:production</span> <span class="k">do</span>
+   <span class="c1"># DB = Sequel.connect(:adapter=&gt;&#39;mysql&#39;, :host=&gt;&#39;localhost&#39;, :database=&gt;&#39;ppt-db-app&#39;, :user=&gt;&#39;root&#39;, :password=&gt;&#39;root&#39;)</span>
+   <span class="no">DB</span> <span class="o">=</span> <span class="no">Sequel</span><span class="o">.</span><span class="n">sqlite</span><span class="p">(</span><span class="s1">&#39;db/production.db&#39;</span><span class="p">)</span>
+ <span class="k">end</span>
+
+<span class="n">configure</span> <span class="ss">:test</span> <span class="k">do</span>
+  <span class="no">DB</span> <span class="o">=</span> <span class="no">Sequel</span><span class="o">.</span><span class="n">sqlite</span> <span class="c1"># :memory:</span>
+  <span class="c1"># DB = Sequel.sqlite(&#39;db/test.db&#39;)</span>
+<span class="k">end</span>
+
+ <span class="c1"># 4. Add Global Sequel plugins, each loaded separately</span>
+<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:schema</span><span class="p">)</span>
+<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:validation_helpers</span><span class="p">)</span>
+<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:timestamps</span><span class="p">)</span>
+ <span class="c1"># Add JSON output capability to all model instances</span>
+<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:json_serializer</span><span class="p">)</span>
+ <span class="c1"># Add XML output capability to all model instances</span>
+<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:xml_serializer</span><span class="p">)</span>
+<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:paranoid</span><span class="p">)</span>
+
+ <span class="c1"># 5. Load Model Classes</span>
+<span class="n">require_relative</span> <span class="s1">&#39;app/models&#39;</span></code></pre></div>
 
 <h3>CRUD</h3>
 
@@ -56,19 +128,7 @@
 
 <hr>
 
-<h2>Plugins</h2>
-
-<h3>List</h3>
-
-<h3>Tree</h3>
-
-<h3>Timestamp</h3>
-
-<h3>Paranoid</h3>
-
-<h3>JSON</h3>
-
-<h3>XML</h3>
+<h2><a href="/ruby/sequel/plugins.html">Plugins</a></h2>
 
 <h3>Open a database</h3>
 
@@ -90,7 +150,7 @@
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;logger&#39;</span>
 <span class="no">DB</span> <span class="o">=</span> <span class="no">Sequel</span><span class="o">.</span><span class="n">sqlite</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="ss">:loggers</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="no">Logger</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vg">$stdout</span><span class="p">)</span><span class="o">]</span>
-<span class="c1"># or</span>
+ <span class="c1"># or</span>
 <span class="no">DB</span><span class="o">.</span><span class="n">loggers</span> <span class="o">&lt;&lt;</span> <span class="no">Logger</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="p">)</span></code></pre></div>
 
 <h3>Using raw SQL</h3>
@@ -243,8 +303,8 @@
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">select</span><span class="p">(</span><span class="ss">:name</span><span class="o">.</span><span class="n">as</span><span class="p">(</span><span class="ss">:item_name</span><span class="p">))</span>
 <span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">select</span><span class="p">(</span><span class="ss">:name___item_name</span><span class="p">)</span>
-<span class="no">DB</span><span class="o">[</span><span class="ss">:items___items_table</span><span class="o">].</span><span class="n">select</span><span class="p">(</span><span class="ss">:items_table__name___item_name</span><span class="p">)</span>
-  <span class="p">\</span><span class="c1"># SELECT items_table.name AS item_name FROM items AS items_table</span></code></pre></div>
+<span class="no">DB</span><span class="o">[</span><span class="ss">:items__items_table</span><span class="o">].</span><span class="n">select</span><span class="p">(</span><span class="ss">:items_table__name___item_name</span><span class="p">)</span>
+  <span class="c1"># SELECT items_table.name AS item_name FROM items AS items_table</span></code></pre></div>
 
 <h2>Transactions</h2>
 
@@ -388,6 +448,14 @@
 <span class="n">deal</span><span class="o">.</span><span class="n">errors</span></code></pre></div>
 
 <h3>Model stuff</h3>
+
+<h4>instance.delete</h4>
+
+<p>Deletes and returns <code>self</code>. <strong>Does not run destroy hooks</strong>. Look into using destroy instead.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Artist</span><span class="o">[</span><span class="mi">1</span><span class="o">].</span><span class="n">delete</span> <span class="c1"># DELETE FROM artists WHERE (id = 1)</span>
+ <span class="c1"># =&gt; #&lt;Artist {:id=&gt;1, ...}&gt;</span></code></pre></div>
+  
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">deal</span> <span class="o">=</span> <span class="no">Deal</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>
 
