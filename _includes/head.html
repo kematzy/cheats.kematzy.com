@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>{{ page.title }} | Cheats by Kematzy</title>
-
+    <title>{{ page.title | reverse | join: " - "}} | Cheats by Kematzy</title>
+    
     <link rel="stylesheet" href="{{ page.asset_path }}/assets/css/styles.css">
     <link rel="stylesheet" href="{{ page.asset_path }}/assets/css/pygment_trac.css">
     <script src="{{ page.asset_path }}/assets/js/scale.fix.js"></script>
