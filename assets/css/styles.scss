@@ -321,7 +321,9 @@ li pre {
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  //  border-collapse: collapse;
+  //add a border around all tables
+  border: 1px solid #ccc;
 }
 
 th, td {
@@ -347,8 +349,16 @@ hr {
   border: 0;
   background: #ddd;
   height: 3px;
-  margin: 0 -20px 20px;
+  margin: 0 -20px 30px;
   border-top: 1px solid #bbb;
+}
+
+hr.divider {
+  border: 0;
+  background: #ddd;
+  height: 2px;
+  margin: 20px -20px 10px;
+  border-top: 1px solid #ccc;
 }
 
 footer {
@@ -505,4 +515,20 @@ footer {
       text-transform: uppercase;
     }
   }
+}
+
+
+// TOC.js additions
+.clickable-header {
+  cursor:pointer;
+}
+.clickable-header:hover {
+  text-decoration:underline;
+}
+.top-level-header {
+  display:inline;
+}
+.back-to-top {
+  margin-left:5px;
+  cursor:pointer;
 }
