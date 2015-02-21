@@ -1,11 +1,12 @@
 ---
-title: Plugins - Sequel ORM
+title: [Ruby, Sequel ORM, Plugins]
 layout: default
 asset_path: ../..
 
 ---
 
-# Ruby / Sequel ORM / Plugins
+# {{ page.title | join: " / " }}
+
 
 {% highlight ruby %} 
 {% endhighlight %}
@@ -13,35 +14,48 @@ asset_path: ../..
 
 ---
 
-## Schema
+## Plugin: Schema
+
+Adds backwards compatibility for `Model.set_schema` and `Model.create_table`.
+
+Sequel's built in `schema` plugin allows you to define your schema directly in the model using `Model.set_schema` (which takes a block similar to `Database#create_table`), and use `Model.create_table` to create a table using the schema information.
+
+This plugin is mostly suited to test code. If there is any chance that your application's schema could change, you should be **using the migration extension instead**.
+
+### Usage:
 
 {% highlight ruby %}
- # affect all models
-Sequel::Model.plugin(:schema)
+ # Add the schema methods to all model subclasses (called before loading subclasses)
+Sequel::Model.plugin :schema
 
- # only one model
-class Post < Sequel::Model
-  plugin :schema
-end
+ # Add the schema methods to the Album class
+Album.plugin :schema
 {% endhighlight %}
+
 
 ---
 
-## ValidationHelpers
+## Plugin: ValidationHelpers
+
+The `validation_helpers` plugin contains instance method equivalents for most of the legacy class-level validations. The names and APIs are different, though. Example:
 
 {% highlight ruby %}
- # affect all models
-Sequel::Model.plugin(:validation_helpers)
+ # Add the validation helpers to all model subclasses (called before loading subclasses)
+Sequel::Model.plugin :validation_helpers
 
- # only one model
-class Post < Sequel::Model
-  plugin :validation_helpers
+class Album < Sequel::Model
+  def validate
+    super  # NB! calling `super` first
+    validates_min_length 1, :num_tracks
+  end
 end
 {% endhighlight %}
 
+### See [Validations](/ruby/sequel/validations.html) for more info
+
 ---
 
-## Timestamp
+## Plugin: Timestamp
 
 {% highlight ruby %}
  # affect all models
@@ -56,16 +70,16 @@ end
 
 ---
 
-## List
+## Plugin: List
 
 ---
 
-## Tree
+## Plugin: Tree
 
 
 ---
 
-## [Paranoid](https://github.com/kematzy/sequel-paranoid)
+## Plugin: [Paranoid](https://github.com/kematzy/sequel-paranoid)
 
 A plugin for the Ruby ORM Sequel, that allows soft deletion of database entries.
 
@@ -148,9 +162,9 @@ end
 parent1 = ParanoidModel.create(:something => 'foo')
 parent2 = ParanoidModel.create(:something => 'bar')
 
-child1  = ChildModel.create(:something => 'foo')
-child2  = ChildModel.create(:something => 'bar')
-child3  = ChildModel.create(:something => 'baz')
+child1  = AnotherModel.create(:something => 'foo')
+child2  = AnotherModel.create(:something => 'bar')
+child3  = AnotherModel.create(:something => 'baz')
 
 parent1.add_child_model(child1)
 parent1.add_child_model(child2)
@@ -178,7 +192,7 @@ Note that **the last command is broken**, as `child3` is not associated with `pa
 
 ---
 
-## JSON Serializer
+## Plugin: JSON Serializer
 
 Add JSON output capability to all model instances
 
@@ -195,7 +209,7 @@ end
 
 ---
 
-## XML Serializer
+## Plugin: XML Serializer
 
 Add XML output capability to all model instances
 
