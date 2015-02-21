@@ -1,11 +1,32 @@
 ---
-title: Sequel ORM
+title: [Ruby, Sequel ORM]
 layout: default
 asset_path: ../..
 
 ---
 
-# Ruby / Sequel ORM
+# {{ page.title | join: " / " }}
+
+----
+
+<div id="toc"></div>
+
+---
+
+## Sub-pages
+
+### [Validations](/ruby/sequel/validations.html)
+
+### [Plugins](/ruby/sequel/plugins.html)
+
+### [Models](/ruby/sequel/models.html)
+
+### [Associations](/ruby/sequel/associations.html)
+
+### [Datasets](/ruby/sequel/datasets.html)
+
+### [Migrations](/ruby/sequel/migrations.html)
+
 
 
 ----
@@ -61,14 +82,10 @@ require_relative 'app/models'
 ## DB Creations
 
 ---
-## DB Migrations
 
----
-## Model
 
 ---
 
-## [Plugins](/ruby/sequel/plugins.html)
 
 
 ### Open a database
@@ -397,73 +414,7 @@ database.alter_table :deals do
 end
 {% endhighlight %}
 
-### Model associations
 
-{% highlight ruby %}  
-class Deal < Sequel::Model
-
-  # Us (left) <=> Them (right)
-  many_to_many  :images,
-    left_id:    :deal_id,
-    right_id:   :image_id,
-    join_table: :image_links
-
-  one_to_many   :files,
-    key:        :deal_id,
-    class:      :DataFile,
-
-  many_to_one   :parent, class: self
-  one_to_many   :children, key: :parent_id, class: self
-
-  one_to_many :gold_albums, class: :Album do |ds|
-    ds.filter { copies_sold > 50000 }
-  end
-{% endhighlight %}
-
-Provided by many_to_many
-
-{% highlight ruby %}  
-Deal[1].images
-Deal[1].add_image
-Deal[1].remove_image
-Deal[1].remove_all_images
-{% endhighlight %}
-
-### Validations
-
-{% highlight ruby %}  
-
-  def validate
-    super
-    errors.add(:name, 'cannot be empty') if !name || name.empty?
-    
-    validates_presence [:title, :site]
-    validates_unique :name
-    validates_format /\Ahttps?:\/\//, :website, :message=>'is not a valid URL'
-    validates_includes %w(a b c), :type
-    validates_integer :rating
-    validates_numeric :number
-    validates_type String, [:title, :description]
-    
-    validates_integer :rating  if new?
-    
-    # options: :message =>, :allow_nil =>, :allow_blank =>,
-    #          :allow_missing =>,
-    
-    validates_exact_length 17, :isbn
-    validates_min_length 3, :name
-    validates_max_length 100, :name
-    validates_length_range 3..100, :name
-    
-    # Setter override
-    def filename=(name)
-      @values[:filename] = name
-    end
-  end
-end
-
-deal.errors
-{% endhighlight %}
 
 ### Model stuff
 
