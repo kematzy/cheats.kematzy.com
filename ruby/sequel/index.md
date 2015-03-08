@@ -36,8 +36,7 @@ asset_path: ../..
 This page should contain an overview of Sequel's key features as well as links to all other parts.
 
 
-<pre><code class="ruby sql">
- # 1. Load Sequel
+<pre><code class="ruby sql"> # 1. Load Sequel
 require "sequel"
 
  # 2. Add global extensions
@@ -90,8 +89,7 @@ require_relative 'app/models'
 
 ### Open a database
 
-<pre><code class="ruby">
-require 'rubygems'
+<pre><code class="ruby sql">require 'rubygems'
 require 'sequel'
 
 DB = Sequel.sqlite('my_blog.db')
@@ -104,22 +102,18 @@ DB = Sequel.ado('mydb')
 
 Without a filename argument, the sqlite adapter will setup a new sqlite database in memory.
 
-<pre><code class="ruby">
-DB = Sequel.sqlite
-</code></pre>
+<pre><code class="ruby">DB = Sequel.sqlite</code></pre>
 
 ### Logging SQL statements
 
-<pre><code class="ruby">  
-require 'logger'
+<pre><code class="ruby">require 'logger'
 DB = Sequel.sqlite '', :loggers => [Logger.new($stdout)]
  # or
-DB.loggers << Logger.new(...)
-</code></pre>
+DB.loggers << Logger.new(...)</code></pre>
 
 ### Using raw SQL
 
-<pre><code class="ruby">  
+<pre><code class="ruby sql">
 DB.run "CREATE TABLE users (name VARCHAR(255) NOT NULL, age INT(3) NOT NULL)"
 dataset = DB["SELECT age FROM users WHERE name = ?", name]
 dataset.map(:age)
@@ -130,26 +124,26 @@ end
 
 ### Create a dataset
 
-<pre><code class="ruby">  
+<pre><code class="ruby">
 dataset = DB[:items]
 dataset = DB.from(:items)
 </code></pre>
 
-### Most dataset methods are chainable
+### Most dataset methods are chain-able
 
-<pre><code class="ruby">  
+<pre><code class="ruby">
 dataset = DB[:managers].where(:salary => 5000..10000).order(:name, :department)
 </code></pre>
 
 ### Insert rows
 
-<pre><code class="ruby">  
+<pre><code class="ruby">
 dataset.insert(:name => 'Sharon', :grade => 50)
 </code></pre>
 
 ### Retrieve rows
 
-<pre><code class="ruby">  
+<pre><code class="ruby">
 dataset.each{|r| p r}
 dataset.all # => [{...}, {...}, ...]
 dataset.first # => {...}
@@ -157,14 +151,14 @@ dataset.first # => {...}
 
 ### Update/Delete rows
 
-<pre><code class="ruby">  
+<pre><code class="ruby">
 dataset.filter(~:active).delete
 dataset.filter('price < ?', 100).update(:active => true)
 </code></pre>
 
 ### Datasets are Enumerable
 
-<pre><code class="ruby">  
+<pre><code class="ruby">
 dataset.map{|r| r[:name]}
 dataset.map(:name) # same as above
 
@@ -176,21 +170,21 @@ dataset.sum(:value) # same as above
 
 #### Equality
 
-<pre><code class="ruby">  
+<pre><code class="ruby">
 dataset.filter(:name => 'abc')
 dataset.filter('name = ?', 'abc')
 </code></pre>
 
 #### Inequality
 
-<pre><code class="ruby">  
+<pre><code class="ruby">
 dataset.filter{value > 100}
 dataset.exclude{value <= 100}
 </code></pre>
 
 #### Inclusion
 
-<pre><code class="ruby">  
+<pre><code class="ruby">
 dataset.filter(:value => 50..100)
 dataset.where{(value >= 50) & (value <= 100)}
 
@@ -202,21 +196,21 @@ dataset.where(:id=>other_dataset.select(:other_id))
 
 #### Subselects as scalar values
 
-<pre><code class="ruby">  
+<pre><code class="ruby sql">
 dataset.where('price > (SELECT avg(price) + 100 FROM table)')
 dataset.filter{price > dataset.select(avg(price) + 100)}
 </code></pre>
 
 #### LIKE/Regexp
 
-<pre><code class="ruby">  
+<pre><code class="ruby">
 DB[:items].filter(:name.like('AL%'))
 DB[:items].filter(:name => /^AL/)
 </code></pre>
 
 #### AND/OR/NOT
 
-<pre><code class="ruby">  
+<pre><code class="ruby sql">
 DB[:items].filter{(x > 5) & (y > 10)}.sql 
   # SELECT * FROM items WHERE ((x > 5) AND (y > 10))
 
@@ -226,7 +220,7 @@ DB[:items].filter({:x => 1, :y => 2}.sql_or & ~{:z => 3}).sql
 
 #### Mathematical operators
 
-<pre><code class="ruby">  
+<pre><code class="ruby sql">
 DB[:items].filter((:x + :y) > :z).sql 
   # SELECT * FROM items WHERE ((x + y) > z)
 
@@ -236,7 +230,7 @@ DB[:items].filter{price - 100 < avg(price)}.sql
 
 ### Ordering
 
-<pre><code class="ruby">  
+<pre><code class="ruby sql">
 dataset.order(:kind)
 dataset.reverse_order(:kind)
 dataset.order(:kind.desc, :name)
@@ -244,14 +238,14 @@ dataset.order(:kind.desc, :name)
 
 ### Limit/Offset
 
-<pre><code class="ruby">  
+<pre><code class="ruby sql">
 dataset.limit(30) # LIMIT 30
 dataset.limit(30, 10) # LIMIT 30 OFFSET 10
 </code></pre>
 
 ### Joins
 
-<pre><code class="ruby">  
+<pre><code class="ruby sql">
 DB[:items].left_outer_join(:categories, :id => :category_id).sql 
   # SELECT * FROM items LEFT OUTER JOIN categories ON categories.id = items.category_id
 
@@ -261,7 +255,7 @@ DB[:items].join(:categories, :id => :category_id).join(:groups, :id => :items__g
 
 ### Aggregate functions methods
 
-<pre><code class="ruby">  
+<pre><code class="ruby sql">
 dataset.count #=> record count
 dataset.max(:price)
 dataset.min(:price)
@@ -274,7 +268,7 @@ dataset.group(:category).select(:category, :AVG.sql_function(:price))
 
 ### SQL Functions / Literals
 
-<pre><code class="ruby">  
+<pre><code class="ruby sql">
 dataset.update(:updated_at => :NOW.sql_function)
 dataset.update(:updated_at => 'NOW()'.lit)
 
@@ -284,7 +278,7 @@ dataset.update(:updated_at => :DateValue.sql_function('1/1/2001'))
 
 ### Schema Manipulation
 
-<pre><code class="ruby">  
+<pre><code class="ruby sql">
 DB.create_table :items do
   primary_key :id
   String :name, :unique => true, :null => false
@@ -305,7 +299,7 @@ end
 
 ### Aliasing 
 
-<pre><code class="ruby">  
+<pre><code class="ruby sql">
 DB[:items].select(:name.as(:item_name))
 DB[:items].select(:name___item_name)
 DB[:items__items_table].select(:items_table__name___item_name)
@@ -315,7 +309,7 @@ DB[:items__items_table].select(:items_table__name___item_name)
 
 ## Transactions
 
-<pre><code class="ruby">  
+<pre><code class="ruby">
 DB.transaction do
   dataset.insert(:first_name => 'Inigo', :last_name => 'Montoya')
   dataset.insert(:first_name => 'Farm', :last_name => 'Boy')
@@ -326,7 +320,7 @@ end # Either both are inserted or neither are inserted
 Database#transaction is re-entrant:
 
 
-<pre><code class="ruby">  
+<pre><code class="ruby">
 DB.transaction do # BEGIN issued only here
   DB.transaction
     dataset << {:first_name => 'Inigo', :last_name => 'Montoya'}
@@ -472,7 +466,7 @@ after_destroy
 
 ### Schema
 
-<pre><code class="ruby">  
+<pre><code class="ruby">
 class Deal < Sequel::Model
   set_schema do
     primary_key :id
@@ -501,7 +495,7 @@ end
 
 ### Unrestrict primary key
 
-<pre><code class="ruby">  
+<pre><code class="ruby">
 Category.create(id: 'travel')   # error
 Category.unrestrict_primary_key
 Category.create(id: 'travel')   # ok
