@@ -1,5 +1,5 @@
 ---
-title: [Ruby, RSpec, RSpec::HTMLMatchers]
+title: [Ruby, RSpec, "RSpec::HTMLMatchers"]
 layout: default
 asset_path: ../..
 

@@ -1,5 +1,5 @@
 ---
-title: [Ruby, RSpec, RSpec::CollectionMatchers]
+title: [Ruby, RSpec, "RSpec::CollectionMatchers"]
 layout: default
 asset_path: ../..
 

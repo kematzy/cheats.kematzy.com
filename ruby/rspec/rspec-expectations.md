@@ -1,5 +1,5 @@
 ---
-title: [Ruby, RSpec, RSpec::Expectations]
+title: [Ruby, RSpec, "RSpec::Expectations"]
 layout: default
 asset_path: ../..
 

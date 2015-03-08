@@ -1,5 +1,5 @@
 ---
-title: [Ruby, RSpec, RSpec::Mocks]
+title: [Ruby, RSpec, "RSpec::Mocks"]
 layout: default
 asset_path: ../..
 

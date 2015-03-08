@@ -1,5 +1,5 @@
 ---
-title: [Ruby, RSpec, RSpec::Core]
+title: [Ruby, RSpec, "RSpec::Core"]
 layout: default
 asset_path: ../..
 

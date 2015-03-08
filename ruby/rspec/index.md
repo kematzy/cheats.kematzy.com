@@ -1,5 +1,5 @@
 ---
-title: [Ruby, RSpec - Test Driven Development]
+title: [Ruby, "RSpec - Behaviour Driven Development"]
 layout: default
 asset_path: ../..
 
