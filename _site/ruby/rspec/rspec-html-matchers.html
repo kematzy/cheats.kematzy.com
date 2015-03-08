@@ -1,0 +1,291 @@
+  <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>RSpec::HTMLMatchers - RSpec - Ruby | Cheats by Kematzy</title>
+    
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+    <link rel="stylesheet" href="../../assets/css/-pygment_trac.css">
+    <script src="../../assets/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+  
+  <body>
+    <div class="container">
+            
+      <nav class="navbar navbar-default">
+  <div class="container-fluid row">
+    
+    <div class="navbar-header col-md-6">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <h1><a href="/">Cheats by Kematzy</a></h1>
+        <p>A personal collection of Cheatsheets</p>
+      </div>
+    </div>
+    
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse col-md-6" id="header-nav">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/">HOME <span class="sr-only">(current)</span></a></li>
+        <li><a href="/toc.html">Table of Contents</a></li>
+        <li><a href="/about.html">About</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+      
+      
+
+
+<div class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      
+        
+        <li><a href="/ruby/">Ruby</a></li>
+      
+        
+        <li><a href="/ruby/rspec/">Rspec</a></li>
+      
+        
+        <li><a href="/ruby/rspec/rspec-html-matchers.html">Rspec-html-matchers</a></li>
+      
+    </ol>
+  </div>
+</div>
+
+      
+      <section>
+        <h1 id="ruby-/-rspec-/-rspec::htmlmatchers">Ruby / RSpec / RSpec::HTMLMatchers</h1>
+
+<hr>
+
+<div id="toc"></div>
+
+<hr>
+
+<p><a href="https://github.com/kucaahbe/rspec-html-matchers">Github Repo</a></p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p><a href="https://github.com/rspec">RSpec 3</a> matchers for testing your html (for <a href="https://www.relishapp.com/rspec/rspec-core/v/2-99/docs">RSpec 2</a> use 0.5.x version).</p>
+
+<h3 id="goals">Goals</h3>
+
+<ul>
+<li>for testing <strong>complicated</strong> html output, for simple matching consider use:
+
+<ul>
+<li><a href="http://api.rubyonrails.org/classes/ActionDispatch/Assertions/SelectorAssertions.html#method-i-assert_select">assert_select</a></li>
+<li><a href="https://www.relishapp.com/rspec/rspec-rails/v/2-11/docs/view-specs/view-spec">matchers provided out of the box in rspec-rails</a></li>
+<li><a href="http://rdoc.info/github/jnicklas/capybara/Capybara/Node/Matchers">matchers provided by capybara</a></li>
+</ul></li>
+<li>developer-firendly output in error messages</li>
+<li>built on top of <a href="nokogiri.org">nokogiri</a></li>
+<li>has support for <a href="https://github.com/jnicklas/capybara">capybara</a>, see below</li>
+<li>syntax is similar to <a href="http://old.rspec.info/rails/writing/views.html">have_tag</a> matcher from old-school rspec-rails, but with own syntactic sugar</li>
+<li>framework agnostic, as input should be String(or capybara&#39;s page, see below)</li>
+</ul>
+
+<h3 id="install">Install</h3>
+
+<p>Add to your Gemfile in the <code>:test</code> group:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">gem &#39;rspec-html-matchers&#39;
+</code></pre></div>
+<p>and somewhere in RSpec configuration:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">RSpec.configure do |config|
+  config.include RSpecHtmlMatchers
+end
+</code></pre></div>
+<p>or just in you spec(s):</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">describe &quot;my view spec&quot; do
+  include RSpecHtmlMatchers
+
+  it &quot;has tags&quot; do
+    expect(rendered).to have_tag(&#39;div&#39;)
+  end
+
+end
+</code></pre></div>
+<p>Cucumber configuration:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">World RSpecHtmlMatchers
+</code></pre></div>
+<p>as this gem requires <strong>nokogiri</strong>, here <a href="http://nokogiri.org/tutorials/installing_nokogiri.html">instructions for installing it</a>.</p>
+
+<h3 id="usage">Usage</h3>
+
+<p>so perhaps your code produces following output:</p>
+<div class="highlight"><pre><code class="language-html" data-lang="html">&lt;h1&gt;Simple Form&lt;/h1&gt;
+&lt;form action=&quot;/users&quot; method=&quot;post&quot;&gt;
+&lt;p&gt;
+  &lt;input type=&quot;email&quot; name=&quot;user[email]&quot; /&gt;
+&lt;/p&gt;
+&lt;p&gt;
+  &lt;input type=&quot;submit&quot; id=&quot;special_submit&quot; /&gt;
+&lt;/p&gt;
+&lt;/form&gt;
+</code></pre></div>
+<p>so you test it with following:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(rendered).to have_tag(&#39;form&#39;, :with =&gt; { :action =&gt; &#39;/users&#39;, :method =&gt; &#39;post&#39; }) do
+  with_tag &quot;input&quot;, :with =&gt; { :name =&gt; &quot;user[email]&quot;, :type =&gt; &#39;email&#39; }
+  with_tag &quot;input#special_submit&quot;, :count =&gt; 1
+  without_tag &quot;h1&quot;, :text =&gt; &#39;unneeded tag&#39;
+  without_tag &quot;p&quot;,  :text =&gt; /content/i
+end
+</code></pre></div>
+<p>Example about should be self-descriptive, but if not refer to <a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/RSpec/Matchers:have_tag">have_tag</a> documentation</p>
+
+<p>Input could be any html string. Let&#39;s take a look at these examples:</p>
+
+<h4 id="matching-tags-by-css:">matching tags by css:</h4>
+
+<p>Simple examples:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;Paragraph&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;)
+expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;Paragraph&lt;/p&gt;&#39;).to have_tag(:p)
+expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;Paragraph&lt;/p&gt;&#39;).to have_tag(&#39;p#qwerty&#39;)
+expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;Paragraph&lt;/p&gt;&#39;).to have_tag(&#39;p.qwe.rty&#39;)
+</code></pre></div>
+<p>More complicated examples:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;&lt;strong&gt;Para&lt;/strong&gt;graph&lt;/p&gt;&#39;).to have_tag(&#39;p strong&#39;)
+expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;&lt;strong&gt;Para&lt;/strong&gt;graph&lt;/p&gt;&#39;).to have_tag(&#39;p#qwerty strong&#39;)
+expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;&lt;strong&gt;Para&lt;/strong&gt;graph&lt;/p&gt;&#39;).to have_tag(&#39;p.qwe.rty strong&#39;)
+</code></pre></div>
+<p>or you can use another syntax for examples above</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;&lt;strong&gt;Para&lt;/strong&gt;graph&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;) do
+  with_tag(&#39;strong&#39;)
+end
+
+expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;&lt;strong&gt;Para&lt;/strong&gt;graph&lt;/p&gt;&#39;).to have_tag(&#39;p#qwerty&#39;) do
+  with_tag(&#39;strong&#39;)
+end
+
+expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;&lt;strong&gt;Para&lt;/strong&gt;graph&lt;/p&gt;&#39;).to have_tag(&#39;p.qwe.rty&#39;) do
+  with_tag(&#39;strong&#39;)
+end
+</code></pre></div>
+<h4 id="special-case-for-classes-matching:">Special case for classes matching:</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"> # all of these are equivalent:
+expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;Paragraph&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;, :with =&gt; { :class =&gt; &#39;qwe rty&#39; })
+expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;Paragraph&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;, :with =&gt; { :class =&gt; &#39;rty qwe&#39; })
+expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;Paragraph&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;, :with =&gt; { :class =&gt; [&#39;rty&#39;, &#39;qwe&#39;] })
+expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;Paragraph&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;, :with =&gt; { :class =&gt; [&#39;qwe&#39;, &#39;rty&#39;] })
+</code></pre></div>
+<p>The same works with <code>:without</code>:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"> # all of these are equivalent:
+expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;Paragraph&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;, :without =&gt; { :class =&gt; &#39;qwe rty&#39; })
+expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;Paragraph&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;, :without =&gt; { :class =&gt; &#39;rty qwe&#39; })
+expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;Paragraph&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;, :without =&gt; { :class =&gt; [&#39;rty&#39;, &#39;qwe&#39;] })
+expect(&#39;&lt;p class=&quot;qwe rty&quot; id=&quot;qwerty&quot;&gt;Paragraph&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;, :without =&gt; { :class =&gt; [&#39;qwe&#39;, &#39;rty&#39;] })
+</code></pre></div>
+<h3 id="content-matching:">Content matching:</h3>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(&#39;&lt;p&gt; Some content&amp;nbsphere&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;, :text =&gt; &#39; Some content here&#39;)
+</code></pre></div>
+<p>or</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(&#39;&lt;p&gt; Some content&amp;nbsphere&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;) do
+  with_text &#39; Some content here&#39;
+end
+
+expect(&#39;&lt;p&gt; Some content&amp;nbsphere&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;, :text =&gt; /Some content here/)
+</code></pre></div>
+<p>or</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(&#39;&lt;p&gt; Some content&amp;nbsphere&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;) do
+  with_text /Some content here/
+end
+
+ # mymock.text == &#39;Some content here&#39;
+expect(&#39;&lt;p&gt; Some content&amp;nbsphere&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;, :content =&gt; mymock.text)
+</code></pre></div>
+<p>or</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(&#39;&lt;p&gt; Some content&amp;nbsphere&lt;/p&gt;&#39;).to have_tag(&#39;p&#39;) do
+  with_content mymock.text
+end
+</code></pre></div>
+<h3 id="usage-with-capybara-and-cucumber:">Usage with Capybara and Cucumber:</h3>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(page).to have_tag( ... )
+</code></pre></div>
+<p>where <code>page</code> is an instance of Capybara::Session</p>
+
+<h3 id="shorthand-matchers-for-form-inputs:">Shorthand matchers for Form inputs:</h3>
+
+<ul>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:have_form">have_form</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_checkbox">with_checkbox</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_email_field">with_email_field</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_file_field">with_file_field</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_hidden_field">with_hidden_field</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_option">with_option</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_password_field">with_password_field</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_radio_button">with_radio_button</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_button">with_button</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_select">with_select</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_submit">with_submit</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_text_area">with_text_area</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_text_field">with_text_field</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_url_field">with_url_field</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_number_field">with_number_field</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_range_field">with_range_field</a></li>
+<li><a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_date_field">with_date_field</a></li>
+</ul>
+
+<p>and of course you can use the <code>without_</code> matchers (see the documentation).</p>
+
+<h3 id="more-info">More info</h3>
+
+<p>You can find more on <a href="http://rubydoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers">RubyDoc</a>, take a look at <a href="http://rdoc.info/github/kucaahbe/rspec-html-matchers/RSpec/Matchers#have_tag-instance_method">have_tag</a> method.</p>
+
+<p>Also, please read <a href="https://github.com/kucaahbe/rspec-html-matchers/blob/master/CHANGELOG.md">CHANGELOG</a>, it might be helpful.</p>
+
+<hr>
+
+<h3 id="see-also">See Also</h3>
+
+<ul>
+<li><a href="/ruby/rspec/index.html">RSpec</a> or <a href="http://github.com/rspec/rspec">http://github.com/rspec/rspec</a></li>
+<li><a href="/ruby/rspec/rspec-core.html">RSpec::Core</a> or <a href="http://github.com/rspec/rspec-core">http://github.com/rspec/rspec-core</a></li>
+<li><a href="/ruby/rspec/rspec-expectations.html">RSpec::Expectations</a> or <a href="http://github.com/rspec/rspec-expectations">http://github.com/rspec/rspec-expectations</a></li>
+<li><a href="/ruby/rspec/rspec-mocks.html">RSpec::Mocks</a> or <a href="http://github.com/rspec/rspec-mocks">http://github.com/rspec/rspec-mocks</a></li>
+<li><a href="/ruby/rspec/rspec-collection_matchers.html">RSpec::CollectionMatchers</a> or <a href="https://github.com/rspec/rspec-collection_matchers">http://github.com/rspec/rspec-collection_matchers</a></li>
+<li><a href="/ruby/rspec/rspec-html-matchers.html">RSpec::HMTMLMatchers</a> or <a href="https://github.com/kucaahbe/rspec-html-matchers">https://github.com/kucaahbe/rspec-html-matchers</a></li>
+</ul>
+
+      </section>
+      
+    </div>
+    
+    
+    <footer>
+  <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+  <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+</footer>
+
+    
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="../../assets/js/jquery-2.1.3.min.js"></script>
+    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/highlight.pack.js"></script>
+    <script src="../../assets/js/toc.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
+  </body>
+</html>

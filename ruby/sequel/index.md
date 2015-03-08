@@ -90,7 +90,7 @@ require_relative 'app/models'
 
 ### Open a database
 
-{% highlight ruby %}  
+<pre><code class="ruby">
 require 'rubygems'
 require 'sequel'
 
@@ -98,99 +98,99 @@ DB = Sequel.sqlite('my_blog.db')
 DB = Sequel.connect('postgres://user:password@localhost/my_db')
 DB = Sequel.postgres('my_db', :user => 'user', :password => 'password', :host => 'localhost')
 DB = Sequel.ado('mydb')
-{% endhighlight %}
+</code></pre>
 
 ### Open an SQLite memory database
 
 Without a filename argument, the sqlite adapter will setup a new sqlite database in memory.
 
-{% highlight ruby %}
+<pre><code class="ruby">
 DB = Sequel.sqlite
-{% endhighlight %}
+</code></pre>
 
 ### Logging SQL statements
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 require 'logger'
 DB = Sequel.sqlite '', :loggers => [Logger.new($stdout)]
  # or
 DB.loggers << Logger.new(...)
-{% endhighlight %}
+</code></pre>
 
 ### Using raw SQL
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 DB.run "CREATE TABLE users (name VARCHAR(255) NOT NULL, age INT(3) NOT NULL)"
 dataset = DB["SELECT age FROM users WHERE name = ?", name]
 dataset.map(:age)
 DB.fetch("SELECT name FROM users") do |row|
   p row[:name]
 end
-{% endhighlight %}
+</code></pre>
 
 ### Create a dataset
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 dataset = DB[:items]
 dataset = DB.from(:items)
-{% endhighlight %}
+</code></pre>
 
 ### Most dataset methods are chainable
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 dataset = DB[:managers].where(:salary => 5000..10000).order(:name, :department)
-{% endhighlight %}
+</code></pre>
 
 ### Insert rows
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 dataset.insert(:name => 'Sharon', :grade => 50)
-{% endhighlight %}
+</code></pre>
 
 ### Retrieve rows
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 dataset.each{|r| p r}
 dataset.all # => [{...}, {...}, ...]
 dataset.first # => {...}
-{% endhighlight %}
+</code></pre>
 
 ### Update/Delete rows
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 dataset.filter(~:active).delete
 dataset.filter('price < ?', 100).update(:active => true)
-{% endhighlight %}
+</code></pre>
 
 ### Datasets are Enumerable
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 dataset.map{|r| r[:name]}
 dataset.map(:name) # same as above
 
 dataset.inject(0){|sum, r| sum + r[:value]}
 dataset.sum(:value) # same as above
-{% endhighlight %}
+</code></pre>
 
 ### Filtering (see also doc/dataset_filtering.rdoc)
 
 #### Equality
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 dataset.filter(:name => 'abc')
 dataset.filter('name = ?', 'abc')
-{% endhighlight %}
+</code></pre>
 
 #### Inequality
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 dataset.filter{value > 100}
 dataset.exclude{value <= 100}
-{% endhighlight %}
+</code></pre>
 
 #### Inclusion
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 dataset.filter(:value => 50..100)
 dataset.where{(value >= 50) & (value <= 100)}
 
@@ -198,70 +198,70 @@ dataset.where('value IN ?', [50,75,100])
 dataset.where(:value=>[50,75,100])
 
 dataset.where(:id=>other_dataset.select(:other_id))
-{% endhighlight %}
+</code></pre>
 
 #### Subselects as scalar values
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 dataset.where('price > (SELECT avg(price) + 100 FROM table)')
 dataset.filter{price > dataset.select(avg(price) + 100)}
-{% endhighlight %}
+</code></pre>
 
 #### LIKE/Regexp
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 DB[:items].filter(:name.like('AL%'))
 DB[:items].filter(:name => /^AL/)
-{% endhighlight %}
+</code></pre>
 
 #### AND/OR/NOT
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 DB[:items].filter{(x > 5) & (y > 10)}.sql 
   # SELECT * FROM items WHERE ((x > 5) AND (y > 10))
 
 DB[:items].filter({:x => 1, :y => 2}.sql_or & ~{:z => 3}).sql 
   # SELECT * FROM items WHERE (((x = 1) OR (y = 2)) AND (z != 3))
-{% endhighlight %}
+</code></pre>
 
 #### Mathematical operators
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 DB[:items].filter((:x + :y) > :z).sql 
   # SELECT * FROM items WHERE ((x + y) > z)
 
 DB[:items].filter{price - 100 < avg(price)}.sql 
   # SELECT * FROM items WHERE ((price - 100) < avg(price))
-{% endhighlight %}
+</code></pre>
 
 ### Ordering
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 dataset.order(:kind)
 dataset.reverse_order(:kind)
 dataset.order(:kind.desc, :name)
-{% endhighlight %}
+</code></pre>
 
 ### Limit/Offset
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 dataset.limit(30) # LIMIT 30
 dataset.limit(30, 10) # LIMIT 30 OFFSET 10
-{% endhighlight %}
+</code></pre>
 
 ### Joins
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 DB[:items].left_outer_join(:categories, :id => :category_id).sql 
   # SELECT * FROM items LEFT OUTER JOIN categories ON categories.id = items.category_id
 
 DB[:items].join(:categories, :id => :category_id).join(:groups, :id => :items__group_id) 
   # SELECT * FROM items INNER JOIN categories ON categories.id = items.category_id INNER JOIN groups ON groups.id = items.group_id
-{% endhighlight %}
+</code></pre>
 
 ### Aggregate functions methods
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 dataset.count #=> record count
 dataset.max(:price)
 dataset.min(:price)
@@ -270,21 +270,21 @@ dataset.sum(:stock)
 
 dataset.group_and_count(:category)
 dataset.group(:category).select(:category, :AVG.sql_function(:price))
-{% endhighlight %}
+</code></pre>
 
 ### SQL Functions / Literals
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 dataset.update(:updated_at => :NOW.sql_function)
 dataset.update(:updated_at => 'NOW()'.lit)
 
 dataset.update(:updated_at => "DateValue('1/1/2001')".lit)
 dataset.update(:updated_at => :DateValue.sql_function('1/1/2001'))
-{% endhighlight %}
+</code></pre>
 
 ### Schema Manipulation
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 DB.create_table :items do
   primary_key :id
   String :name, :unique => true, :null => false
@@ -301,61 +301,61 @@ DB.create_table :test do
   String :zipcode
   enum :system, :elements => ['mac', 'linux', 'windows']
 end
-{% endhighlight %}
+</code></pre>
 
 ### Aliasing 
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 DB[:items].select(:name.as(:item_name))
 DB[:items].select(:name___item_name)
 DB[:items__items_table].select(:items_table__name___item_name)
   # SELECT items_table.name AS item_name FROM items AS items_table
-{% endhighlight %}
+</code></pre>
 
 
 ## Transactions
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 DB.transaction do
   dataset.insert(:first_name => 'Inigo', :last_name => 'Montoya')
   dataset.insert(:first_name => 'Farm', :last_name => 'Boy')
 end # Either both are inserted or neither are inserted
-{% endhighlight %}
+</code></pre>
 
 
 Database#transaction is re-entrant:
 
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 DB.transaction do # BEGIN issued only here
   DB.transaction
     dataset << {:first_name => 'Inigo', :last_name => 'Montoya'}
   end
 end # COMMIT issued only here
-{% endhighlight %}
+</code></pre>
 
 
 Transactions are aborted if an error is raised:
 
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 DB.transaction do
   raise "some error occurred"
 end # ROLLBACK issued and the error is re-raised
-{% endhighlight %}
+</code></pre>
 
 Transactions can also be aborted by raising Sequel::Rollback:
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 DB.transaction do
   raise(Sequel::Rollback) if something_bad_happened
 end # ROLLBACK issued and no error raised
-{% endhighlight %}
+</code></pre>
 
 Savepoints can be used if the database supports it:
 
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 DB.transaction do
   dataset << {:first_name => 'Farm', :last_name => 'Boy'} # Inserted
   DB.transaction(:savepoint=>true) # This savepoint is rolled back
@@ -364,32 +364,32 @@ DB.transaction do
   end
   dataset << {:first_name => 'Prince', :last_name => 'Humperdink'} # Inserted
 end
-{% endhighlight %}
+</code></pre>
 
 ### Miscellaneous:
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 dataset.sql # "SELECT * FROM items"
 dataset.delete_sql # "DELETE FROM items"
 dataset.where(:name => 'sequel').exists # "EXISTS ( SELECT * FROM items WHERE name = 'sequel' )"
 dataset.columns #=> array of columns in the result set, does a SELECT
 DB.schema(:items) => [[:id, {:type=>:integer, ...}], [:name, {:type=>:string, ...}], ...]
-{% endhighlight %}
+</code></pre>
 
 ---
 
 ### Documents
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 http://sequel.rubyforge.org/rdoc/files/doc/association_basics_rdoc.html
 http://sequel.rubyforge.org/rdoc/classes/Sequel/Schema/Generator.html
 http://sequel.rubyforge.org/rdoc/files/doc/validations_rdoc.html
 http://sequel.rubyforge.org/rdoc/classes/Sequel/Model.html
-{% endhighlight %}
+</code></pre>
 
 ### Alter table
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 database.alter_table :deals do
   add_column :name, String
   drop_column :column_name
@@ -412,7 +412,7 @@ database.alter_table :deals do
 
   set_column_type :price, 'char(10)'
 end
-{% endhighlight %}
+</code></pre>
 
 
 
@@ -423,12 +423,12 @@ end
 
 Deletes and returns `self`. **Does not run destroy hooks**. Look into using destroy instead.
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 Artist[1].delete # DELETE FROM artists WHERE (id = 1)
  # => #<Artist {:id=>1, ...}>
-{% endhighlight %}  
+</code></pre>  
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 deal = Deal[1]
 
 deal.changed_columns
@@ -448,11 +448,11 @@ deal.modified!  # set modified? to true, even if no changes
 deal.modified?  # true if modified
 
 deal.lock!
-{% endhighlight %}
+</code></pre>
 
 ### Callbacks
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 before_create
 after_create
 
@@ -468,11 +468,11 @@ after_save
 before_destroy
   DELETE QUERY
 after_destroy
-{% endhighlight %}
+</code></pre>
 
 ### Schema
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 class Deal < Sequel::Model
   set_schema do
     primary_key :id
@@ -497,12 +497,12 @@ class Deal < Sequel::Model
     # Date, DateTime, Time, File, TrueClass, FalseClass
   end
 end
-{% endhighlight %}
+</code></pre>
 
 ### Unrestrict primary key
 
-{% highlight ruby %}  
+<pre><code class="ruby">  
 Category.create(id: 'travel')   # error
 Category.unrestrict_primary_key
 Category.create(id: 'travel')   # ok
-{% endhighlight %}
+</code></pre>

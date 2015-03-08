@@ -20,7 +20,7 @@ asset_path: ../..
 `rspec-mocks` is a test-double framework for [rspec](https://github.com/rspec/rspec/) with support for method stubs,
 fakes, and message expectations on generated test-doubles and real objects alike.
 
-### Install
+## Installation
 
 ```bash
 gem install rspec       # for rspec-core, rspec-expectations, rspec-mocks
@@ -35,7 +35,7 @@ Want to run against the `master` branch? You'll need to include the dependent RS
 end
 ```
 
-### Test Doubles
+## Test Doubles
 
 A test double is an object that stands in for another object in your system during a code example. Use the `double` method, passing in an optional identifier, to create one:
 
@@ -61,7 +61,7 @@ books << instance_double("Book", "(Untitled)", :pages => 5000)
 puts books.inspect # with names, it's clearer which were actually added
 ```
 
-### Method Stubs
+## Method Stubs
 
 A method stub is an implementation that returns a pre-determined value.  Method stubs can be declared on test doubles or real objects using the same syntax. 
 
@@ -96,7 +96,7 @@ This is particularly nice when providing a list of test doubles to a method that
 order.calculate_total_price(double(:price => 1.99), double(:price => 2.99))
 ```
 
-### Consecutive return values
+## Consecutive return values
 
 When a stub might be invoked more than once, you can provide additional arguments to `and_return`.  The invocations cycle through the list. The last value is returned for any subsequent invocations:
 
@@ -115,7 +115,7 @@ To return an array in a single invocation, declare an array:
 allow(team).to receive(:players).and_return([double(:name => "David")])
 ```
 
-### Message Expectations
+## Message Expectations
 
 A message expectation is an expectation that the test double will receive a message some time before the example ends. If the message is received, the expectation is satisfied. If not, the example fails.
 
@@ -126,7 +126,7 @@ zipcode = Zipcode.new("02134", validator)
 zipcode.valid?
 ```
 
-### Test Spies
+## Test Spies
 
 Verifies the given object received the expected message during the course of the test. For a message to be verified, the given object must be setup to spy on it, either by having it explicitly stubbed or by being a null object double (e.g. `double(...).as_null_object`). Convenience methods are provided to easily create null object doubles for this purpose:
 
@@ -171,15 +171,15 @@ message << ", World"
 expect(greeter).to have_received(:greet_with).with("Hello")
 ```
 
-### Nomenclature
+##  Nomenclature
 
-#### Mock Objects and Test Stubs
+### Mock Objects and Test Stubs
 
 The names Mock Object and Test Stub suggest specialized Test Doubles.  i.e. a Test Stub is a Test Double that only supports method stubs, and a Mock Object is a Test Double that supports message expectations and method stubs.
 
 There is a lot of overlapping nomenclature here, and there are many variations of these patterns (fakes, spies, etc). Keep in mind that most of the time we're talking about method-level concepts that are variations of method stubs and message expectations, and we're applying to them to _one_ generic kind of object: a Test Double.
 
-#### Test-Specific Extension
+### Test-Specific Extension
 
 a.k.a. Partial Double, a Test-Specific Extension is an extension of a real object in a system that is instrumented with test-double like behaviour in the context of a test. This technique is very common in Ruby because we often see class objects acting as global namespaces for methods. 
 
@@ -199,7 +199,7 @@ expect(Person).to receive(:find) { person }
 
 RSpec replaces the method we're stubbing or mocking with its own test-double-like method. At the end of the example, RSpec verifies any message expectations, and then restores the original methods.
 
-### Expecting Arguments
+## Expecting Arguments
 
 ```ruby
 expect(double).to receive(:msg).with(*args)
@@ -213,7 +213,7 @@ expect(double).to receive(:msg).with("A", 1, 3)
 expect(double).to receive(:msg).with("B", 2, 4)
 ```
 
-### Argument Matchers
+## Argument Matchers
 
 Arguments that are passed to `with` are compared with actual arguments received using `==`. In cases in which you want to specify things about the arguments rather than the arguments themselves, you can use any of the matchers that ship with [rspec-expectations](rspec-expectations.html). They don't all make syntactic sense (they were primarily designed for use with `RSpec::Expectations`), but you are free to create your own custom `RSpec::Matchers`.
 
@@ -234,7 +234,7 @@ expect(double).to receive(:msg).with(array_including(5)) # first arg is an array
 expect(double).to receive(:msg).with(hash_excluding(:a => 5)) # first arg is a hash without a: 5 as one of the key-values
 ```
 
-### Receive Counts
+## Receive Counts
 
 ```ruby
 expect(double).to receive(:msg).once
@@ -248,7 +248,7 @@ expect(double).to receive(:msg).at_most(:twice)
 expect(double).to receive(:msg).at_most(n).times
 ```
 
-### Ordering
+## Ordering
 
 ```ruby
 expect(double).to receive(:msg).ordered
@@ -263,7 +263,7 @@ expect(double).to receive(:msg).with("A", 1, 3).ordered
 expect(double).to receive(:msg).with("B", 2, 4).ordered
 ```
 
-### Setting Responses
+## Setting Responses
 
 Whether you are setting a message expectation or a method stub, you can tell the object precisely how to respond. The most generic way is to pass a block to `receive`:
 
@@ -297,7 +297,7 @@ allow(double).to receive(:msg).and_yield(values, to, yield)
 allow(double).to receive(:msg).and_yield(values, to, yield).and_yield(some, other, values, this, time)
 ```
 
-### Arbitrary Handling
+## Arbitrary Handling
 
 Once in a while you'll find that the available expectations don't solve the particular problem you are trying to solve. Imagine that you expect the message to come with an Array argument that has a specific length, but you don't care what is in it. You could do this:
 
@@ -320,7 +320,7 @@ expect(double).to receive(:msg) do |&arg|
 end
 ```
 
-### Delegating to the Original Implementation
+## Delegating to the Original Implementation
 
 When working with a partial mock object, you may occasionally want to set a message expectation without interfering with how the object responds to the message. You can use `and_call_original` to achieve this:
 
@@ -329,7 +329,7 @@ expect(Person).to receive(:find).and_call_original
 Person.find # => executes the original find method and returns the result
 ```
 
-### Combining Expectation Details
+## Combining Expectation Details
 
 Combining the message name with specific arguments, receive counts and responses you can get quite a bit of detail in your expectations:
 
@@ -339,19 +339,18 @@ expect(double).to receive(:<<).with("illegal value").once.and_raise(ArgumentErro
 
 While this is a good thing when you really need it, you probably don't really need it! Take care to specify only the things that matter to the behaviour of your code.
 
-### Stubbing and Hiding Constants
+## Stubbing and Hiding Constants
 
-See the [mutating constants
-README](https://github.com/rspec/rspec-mocks/blob/master/features/mutating_constants/README.md)
+See the [mutating constants README](https://github.com/rspec/rspec-mocks/blob/master/features/mutating_constants/README.md)
 for info on this feature.
 
-### Use `before(:example)`, not `before(:context)`
+##  Use `before(:example)`, not `before(:context)`
 
 Stubs in `before(:context)` are not supported. The reason is that all stubs and mocks get cleared out after each example, so any stub that is set in `before(:context)` would work in the first example that happens to run in that group, but not for any others.
 
 Instead of `before(:context)`, use `before(:example)`.
 
-### Settings mocks or stubs on any instance of a class
+## Settings mocks or stubs on any instance of a class
 
 rspec-mocks provides two methods, `allow_any_instance_of` and `expect_any_instance_of`, that will allow you to stub or mock any instance of a class. They are used in place of `allow` or `expect`:
 
@@ -380,7 +379,7 @@ This feature is sometimes useful when working with legacy code, though in genera
   which doesn't help.)
 
 
-### Further Reading
+## Further Reading
 
 There are many different viewpoints about the meaning of mocks and stubs. If
 you are interested in learning more, here is some recommended reading:
@@ -394,7 +393,7 @@ you are interested in learning more, here is some recommended reading:
 
 -----
 
-### See Also
+## See Also
 
 * [RSpec](/ruby/rspec/index.html) or [http://github.com/rspec/rspec](http://github.com/rspec/rspec)
 * [RSpec::Core](/ruby/rspec/rspec-core.html) or [http://github.com/rspec/rspec-core](http://github.com/rspec/rspec-core)

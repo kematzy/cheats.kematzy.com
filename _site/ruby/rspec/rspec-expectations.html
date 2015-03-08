@@ -1,0 +1,329 @@
+  <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>RSpec::Expectations - RSpec - Ruby | Cheats by Kematzy</title>
+    
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+    <link rel="stylesheet" href="../../assets/css/-pygment_trac.css">
+    <script src="../../assets/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+  
+  <body>
+    <div class="container">
+            
+      <nav class="navbar navbar-default">
+  <div class="container-fluid row">
+    
+    <div class="navbar-header col-md-6">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <h1><a href="/">Cheats by Kematzy</a></h1>
+        <p>A personal collection of Cheatsheets</p>
+      </div>
+    </div>
+    
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse col-md-6" id="header-nav">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/">HOME <span class="sr-only">(current)</span></a></li>
+        <li><a href="/toc.html">Table of Contents</a></li>
+        <li><a href="/about.html">About</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+      
+      
+
+
+<div class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      
+        
+        <li><a href="/ruby/">Ruby</a></li>
+      
+        
+        <li><a href="/ruby/rspec/">Rspec</a></li>
+      
+        
+        <li><a href="/ruby/rspec/rspec-expectations.html">Rspec-expectations</a></li>
+      
+    </ol>
+  </div>
+</div>
+
+      
+      <section>
+        <h1 id="ruby-/-rspec-/-rspec::expectations">Ruby / RSpec / RSpec::Expectations</h1>
+
+<hr>
+
+<div id="toc"></div>
+
+<hr>
+
+<p><a href="https://github.com/rspec/rspec-expectations">Github Repo</a></p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>RSpec::Expectations lets you express expected outcomes on an object in an example.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(account.balance).to eq(Money.new(37.42, :USD))
+</code></pre></div>
+<h3 id="install">Install</h3>
+
+<p>If you want to use <code>rspec-expectations</code> with <a href="/index.html">rspec</a>, just install the rspec gem and RubyGems will also install <a href="/rspec-expectations.html">rspec-expectations</a> for you (along with <a href="/rspec-core.html">rspec-core</a> and <a href="/rspec-mocks.html">rspec-mocks</a>):</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">gem install rspec
+</code></pre></div>
+<p>Want to run against the <code>master</code> branch? You&#39;ll need to include the dependent RSpec repos as well. Add the following to your <code>Gemfile</code>:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">%w[rspec-core rspec-expectations rspec-mocks rspec-support].each do |lib|
+  gem lib, :git =&gt; &quot;git://github.com/rspec/#{lib}.git&quot;, :branch =&gt; &#39;master&#39;
+end
+</code></pre></div>
+<p>You can also use rspec-expectations with Test::Unit, Minitest, or Cucumber by installing it directly:</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">gem install rspec-expectations
+</code></pre></div>
+<h3 id="basic-usage">Basic usage</h3>
+
+<p>Here&#39;s an example using rspec-core:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">RSpec.describe Order do
+  it &quot;sums the prices of the items in its line items&quot; do
+    order = Order.new
+    order.add_entry(LineItem.new(:item =&gt; Item.new(
+      :price =&gt; Money.new(1.11, :USD)
+    )))
+    order.add_entry(LineItem.new(:item =&gt; Item.new(
+      :price =&gt; Money.new(2.22, :USD),
+      :quantity =&gt; 2
+    )))
+    expect(order.total).to eq(Money.new(5.55, :USD))
+  end
+end
+</code></pre></div>
+<p>The <code>describe</code> and <code>it</code> methods come from <a href="/rspec-core.html">rspec-core</a>.  The <code>Order</code>, <code>LineItem</code>, <code>Item</code> and <code>Money</code> classes would be from <em>your</em> code. The last line of the example expresses an expected outcome. If <code>order.total == Money.new(5.55, :USD)</code>, then the example passes. If not, it fails with a message like:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">expected: #&lt;Money @value=5.55 @currency=:USD&gt;
+     got: #&lt;Money @value=1.11 @currency=:USD&gt;
+</code></pre></div>
+<h3 id="built-in-matchers">Built-in matchers</h3>
+
+<h4 id="equivalence">Equivalence</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(actual).to eq(expected)  # passes if actual == expected
+expect(actual).to eql(expected) # passes if actual.eql?(expected)
+expect(actual).not_to eql(not_expected) # passes if not(actual.eql?(expected))
+</code></pre></div>
+<p>Note: The new <code>expect</code> syntax no longer supports the <code>==</code> matcher.</p>
+
+<h4 id="identity">Identity</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(actual).to be(expected)    # passes if actual.equal?(expected)
+expect(actual).to equal(expected) # passes if actual.equal?(expected)
+</code></pre></div>
+<h4 id="comparisons">Comparisons</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(actual).to be &gt;  expected
+expect(actual).to be &gt;= expected
+expect(actual).to be &lt;= expected
+expect(actual).to be &lt;  expected
+expect(actual).to be_within(delta).of(expected)
+</code></pre></div>
+<h4 id="regular-expressions">Regular expressions</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(actual).to match(/expression/)
+</code></pre></div>
+<p>Note: The new <code>expect</code> syntax no longer supports the <code>=~</code> matcher.</p>
+
+<h4 id="types/classes">Types/classes</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(actual).to be_an_instance_of(expected) # passes if actual.class == expected
+expect(actual).to be_a(expected)              # passes if actual.kind_of?(expected)
+expect(actual).to be_an(expected)             # an alias for be_a
+expect(actual).to be_a_kind_of(expected)      # another alias
+</code></pre></div>
+<h4 id="truthiness">Truthiness</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(actual).to be_truthy   # passes if actual is truthy (not nil or false)
+expect(actual).to be true     # passes if actual == true
+expect(actual).to be_falsy    # passes if actual is falsy (nil or false)
+expect(actual).to be false    # passes if actual == false
+expect(actual).to be_nil      # passes if actual is nil
+expect(actual).to_not be_nil  # passes if actual is not nil
+</code></pre></div>
+<h4 id="expecting-errors">Expecting errors</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect { ... }.to raise_error
+expect { ... }.to raise_error(ErrorClass)
+expect { ... }.to raise_error(&quot;message&quot;)
+expect { ... }.to raise_error(ErrorClass, &quot;message&quot;)
+</code></pre></div>
+<h4 id="expecting-throws">Expecting throws</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect { ... }.to throw_symbol
+expect { ... }.to throw_symbol(:symbol)
+expect { ... }.to throw_symbol(:symbol, &#39;value&#39;)
+</code></pre></div>
+<h4 id="yielding">Yielding</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect { |b| 5.tap(&amp;b) }.to yield_control # passes regardless of yielded args
+
+expect { |b| yield_if_true(true, &amp;b) }.to yield_with_no_args # passes only if no args are yielded
+
+expect { |b| 5.tap(&amp;b) }.to yield_with_args(5)
+expect { |b| 5.tap(&amp;b) }.to yield_with_args(Fixnum)
+expect { |b| &quot;a string&quot;.tap(&amp;b) }.to yield_with_args(/str/)
+
+expect { |b| [1, 2, 3].each(&amp;b) }.to yield_successive_args(1, 2, 3)
+expect { |b| { :a =&gt; 1, :b =&gt; 2 }.each(&amp;b) }.to yield_successive_args([:a, 1], [:b, 2])
+</code></pre></div>
+<h4 id="predicate-matchers">Predicate matchers</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(actual).to be_xxx         # passes if actual.xxx?
+expect(actual).to have_xxx(:arg) # passes if actual.has_xxx?(:arg)
+</code></pre></div>
+<h4 id="ranges-(ruby-&gt;=-1.9-only)">Ranges (Ruby &gt;= 1.9 only)</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(1..10).to cover(3)
+</code></pre></div>
+<h4 id="collection-membership">Collection membership</h4>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(actual).to include(expected)
+expect(actual).to start_with(expected)
+expect(actual).to end_with(expected)
+
+expect(actual).to contain_exactly(individual, items)
+ # ...which is the same as:
+expect(actual).to match_array(expected_array)
+</code></pre></div>
+<p><strong>Examples</strong></p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect([1, 2, 3]).to include(1)
+expect([1, 2, 3]).to include(1, 2)
+expect([1, 2, 3]).to start_with(1)
+expect([1, 2, 3]).to start_with(1, 2)
+expect([1, 2, 3]).to end_with(3)
+expect([1, 2, 3]).to end_with(2, 3)
+expect({:a =&gt; &#39;b&#39;}).to include(:a =&gt; &#39;b&#39;)
+expect(&quot;this string&quot;).to include(&quot;is str&quot;)
+expect(&quot;this string&quot;).to start_with(&quot;this&quot;)
+expect(&quot;this string&quot;).to end_with(&quot;ring&quot;)
+expect([1, 2, 3]).to contain_exactly(2, 3, 1)
+expect([1, 2, 3]).to match_array([3, 2, 1])
+</code></pre></div>
+<h3 id="should-syntax"><code>should</code> syntax</h3>
+
+<p>In addition to the <code>expect</code> syntax, <code>rspec-expectations</code> continues to support the <code>should</code> syntax:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">actual.should eq expected
+actual.should be &gt; 3
+[1, 2, 3].should_not include 4
+</code></pre></div>
+<p>See <a href="https://github.com/rspec/rspec-expectations/blob/master/Should.md">detailed information on the <code>should</code> syntax and its usage.</a></p>
+
+<h3 id="compound-matcher-expressions">Compound Matcher Expressions</h3>
+
+<p>You can also create compound matcher expressions using <code>and</code> or <code>or</code>:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(alphabet).to start_with(&quot;a&quot;).and end_with(&quot;z&quot;)
+expect(stoplight.color).to eq(&quot;red&quot;).or eq(&quot;green&quot;).or eq(&quot;yellow&quot;)
+</code></pre></div>
+<h3 id="composing-matchers">Composing Matchers</h3>
+
+<p>Many of the built-in matchers are designed to take matchers as arguments, to allow you to flexibly specify only the essential aspects of an object or data structure. In addition, all of the built-in matchers have one or more aliases that provide better phrasing for when they are used as arguments to another matcher.</p>
+
+<h3 id="examples">Examples</h3>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect { k += 1.05 }.to change { k }.by( a_value_within(0.1).of(1.0) )
+
+expect { s = &quot;barn&quot; }.to change { s }
+  .from( a_string_matching(/foo/) )
+  .to( a_string_matching(/bar/) )
+
+expect([&quot;barn&quot;, 2.45]).to contain_exactly(
+  a_value_within(0.1).of(2.5),
+  a_string_starting_with(&quot;bar&quot;)
+)
+
+expect([&quot;barn&quot;, &quot;food&quot;, 2.45]).to end_with(
+  a_string_matching(&quot;foo&quot;),
+  a_value &gt; 2
+)
+
+expect([&quot;barn&quot;, 2.45]).to include( a_string_starting_with(&quot;bar&quot;) )
+
+expect(:a =&gt; &quot;food&quot;, :b =&gt; &quot;good&quot;).to include(:a =&gt; a_string_matching(/foo/))
+
+hash = {
+  :a =&gt; {
+    :b =&gt; [&quot;foo&quot;, 5],
+    :c =&gt; { :d =&gt; 2.05 }
+  }
+}
+
+expect(hash).to match(
+  :a =&gt; {
+    :b =&gt; a_collection_containing_exactly(
+      a_string_starting_with(&quot;f&quot;),
+      an_instance_of(Fixnum)
+    ),
+    :c =&gt; { :d =&gt; (a_value &lt; 3) }
+  }
+)
+
+expect { |probe|
+  [1, 2, 3].each(&amp;probe)
+}.to yield_successive_args( a_value &lt; 2, 2, a_value &gt; 2 )
+</code></pre></div>
+<h3 id="usage-outside-rspec-core">Usage outside rspec-core</h3>
+
+<p>You always need to load <code>rspec/expectations</code> even if you only want to use one part of the library:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">require &#39;rspec/expectations&#39;
+</code></pre></div>
+<p>Then simply include <code>RSpec::Matchers</code> in any class:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">class MyClass
+  include RSpec::Matchers
+
+  def do_something(arg)
+    expect(arg).to be &gt; 0
+    # do other stuff
+  end
+end
+</code></pre></div>
+<hr>
+
+<h3 id="see-also">See Also</h3>
+
+<ul>
+<li><a href="/ruby/rspec/index.html">RSpec</a> or <a href="http://github.com/rspec/rspec">http://github.com/rspec/rspec</a></li>
+<li><a href="/ruby/rspec/rspec-core.html">RSpec::Core</a> or <a href="http://github.com/rspec/rspec-core">http://github.com/rspec/rspec-core</a></li>
+<li><a href="/ruby/rspec/rspec-expectations.html">RSpec::Expectations</a> or <a href="http://github.com/rspec/rspec-expectations">http://github.com/rspec/rspec-expectations</a></li>
+<li><a href="/ruby/rspec/rspec-mocks.html">RSpec::Mocks</a> or <a href="http://github.com/rspec/rspec-mocks">http://github.com/rspec/rspec-mocks</a></li>
+<li><a href="/ruby/rspec/rspec-collection_matchers.html">RSpec::CollectionMatchers</a> or <a href="https://github.com/rspec/rspec-collection_matchers">http://github.com/rspec/rspec-collection_matchers</a></li>
+<li><a href="/ruby/rspec/rspec-html-matchers.html">RSpec::HMTMLMatchers</a> or <a href="https://github.com/kucaahbe/rspec-html-matchers">https://github.com/kucaahbe/rspec-html-matchers</a></li>
+</ul>
+
+      </section>
+      
+    </div>
+    
+    
+    <footer>
+  <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+  <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+</footer>
+
+    
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="../../assets/js/jquery-2.1.3.min.js"></script>
+    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/highlight.pack.js"></script>
+    <script src="../../assets/js/toc.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
+  </body>
+</html>
