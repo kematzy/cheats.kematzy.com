@@ -100,113 +100,126 @@ Example about should be self-descriptive, but if not refer to [have_tag](http://
 
 Input could be any html string. Let's take a look at these examples:
 
-* matching tags by css:
+#### matching tags by css:
 
-  ```ruby
-  # simple examples:
-  expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p')
-  expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag(:p)
-  expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p#qwerty')
-  expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p.qwe.rty')
-  # more complicated examples:
-  expect('<p class="qwe rty" id="qwerty"><strong>Para</strong>graph</p>').to have_tag('p strong')
-  expect('<p class="qwe rty" id="qwerty"><strong>Para</strong>graph</p>').to have_tag('p#qwerty strong')
-  expect('<p class="qwe rty" id="qwerty"><strong>Para</strong>graph</p>').to have_tag('p.qwe.rty strong')
-  # or you can use another syntax for examples above
-  expect('<p class="qwe rty" id="qwerty"><strong>Para</strong>graph</p>').to have_tag('p') do
-    with_tag('strong')
-  end
-  expect('<p class="qwe rty" id="qwerty"><strong>Para</strong>graph</p>').to have_tag('p#qwerty') do
-    with_tag('strong')
-  end
-  expect('<p class="qwe rty" id="qwerty"><strong>Para</strong>graph</p>').to have_tag('p.qwe.rty') do
-    with_tag('strong')
-  end
-  ```
+Simple examples:
 
-* special case for classes matching:
+```ruby
+expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p')
+expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag(:p)
+expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p#qwerty')
+expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p.qwe.rty')
+```
 
-  ```ruby
-  # all of this are equivalent:
-  expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :with => { :class => 'qwe rty' })
-  expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :with => { :class => 'rty qwe' })
-  expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :with => { :class => ['rty', 'qwe'] })
-  expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :with => { :class => ['qwe', 'rty'] })
-  ```
+More complicated examples:
 
-  The same works with `:without`:
+```ruby
+expect('<p class="qwe rty" id="qwerty"><strong>Para</strong>graph</p>').to have_tag('p strong')
+expect('<p class="qwe rty" id="qwerty"><strong>Para</strong>graph</p>').to have_tag('p#qwerty strong')
+expect('<p class="qwe rty" id="qwerty"><strong>Para</strong>graph</p>').to have_tag('p.qwe.rty strong')
+```
 
-  ```ruby
-  # all of this are equivalent:
-  expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :without => { :class => 'qwe rty' })
-  expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :without => { :class => 'rty qwe' })
-  expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :without => { :class => ['rty', 'qwe'] })
-  expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :without => { :class => ['qwe', 'rty'] })
-  ```
+or you can use another syntax for examples above
 
-* content matching:
+```ruby
+expect('<p class="qwe rty" id="qwerty"><strong>Para</strong>graph</p>').to have_tag('p') do
+  with_tag('strong')
+end
 
-  ```ruby
-  expect('<p> Some content&nbsphere</p>').to have_tag('p', :text => ' Some content here')
-  # or
-  expect('<p> Some content&nbsphere</p>').to have_tag('p') do
-    with_text ' Some content here'
-  end
+expect('<p class="qwe rty" id="qwerty"><strong>Para</strong>graph</p>').to have_tag('p#qwerty') do
+  with_tag('strong')
+end
 
-  expect('<p> Some content&nbsphere</p>').to have_tag('p', :text => /Some content here/)
-  # or
-  expect('<p> Some content&nbsphere</p>').to have_tag('p') do
-    with_text /Some content here/
-  end
+expect('<p class="qwe rty" id="qwerty"><strong>Para</strong>graph</p>').to have_tag('p.qwe.rty') do
+  with_tag('strong')
+end
+```
 
-  # mymock.text == 'Some content here'
-  expect('<p> Some content&nbsphere</p>').to have_tag('p', :content => mymock.text)
-  # or
-  expect('<p> Some content&nbsphere</p>').to have_tag('p') do
-    with_content mymock.text
-  end
-  ```
+#### Special case for classes matching:
 
-* usage with capybara and cucumber:
 
-  ```ruby
-  expect(page).to have_tag( ... )
-  ```
+```ruby
+ # all of these are equivalent:
+expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :with => { :class => 'qwe rty' })
+expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :with => { :class => 'rty qwe' })
+expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :with => { :class => ['rty', 'qwe'] })
+expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :with => { :class => ['qwe', 'rty'] })
+```
+
+The same works with `:without`:
+
+```ruby
+ # all of these are equivalent:
+expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :without => { :class => 'qwe rty' })
+expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :without => { :class => 'rty qwe' })
+expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :without => { :class => ['rty', 'qwe'] })
+expect('<p class="qwe rty" id="qwerty">Paragraph</p>').to have_tag('p', :without => { :class => ['qwe', 'rty'] })
+```
+
+### Content matching:
+
+```ruby
+expect('<p> Some content&nbsphere</p>').to have_tag('p', :text => ' Some content here')
+```
+
+or
+
+```ruby
+expect('<p> Some content&nbsphere</p>').to have_tag('p') do
+  with_text ' Some content here'
+end
+
+expect('<p> Some content&nbsphere</p>').to have_tag('p', :text => /Some content here/)
+```
+or
+
+```ruby
+expect('<p> Some content&nbsphere</p>').to have_tag('p') do
+  with_text /Some content here/
+end
+
+ # mymock.text == 'Some content here'
+expect('<p> Some content&nbsphere</p>').to have_tag('p', :content => mymock.text)
+```
+
+or
+
+```ruby
+expect('<p> Some content&nbsphere</p>').to have_tag('p') do
+  with_content mymock.text
+end
+```
+
+### Usage with Capybara and Cucumber:
+
+```ruby
+expect(page).to have_tag( ... )
+```
 
 where `page` is an instance of Capybara::Session
 
-* also included shorthand matchers for form inputs:
+### Shorthand matchers for Form inputs:
 
-  - [have\_form](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:have_form)
-  - [with\_checkbox](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_checkbox)
-  - [with\_email\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_email_field)
-  - [with\_file\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_file_field)
-  - [with\_hidden\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_hidden_field)
-  - [with\_option](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_option)
-  - [with\_password_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_password_field)
-  - [with\_radio\_button](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_radio_button)
-  - [with\_button](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_button)
-  - [with\_select](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_select)
-  - [with\_submit](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_submit)
-  - [with\_text\_area](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_text_area)
-  - [with\_text\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_text_field)
-  - [with\_url\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_url_field)
-  - [with\_number\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_number_field)
-  - [with\_range\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_range_field)
-  - [with\_date\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_date_field)
+- [have\_form](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:have_form)
+- [with\_checkbox](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_checkbox)
+- [with\_email\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_email_field)
+- [with\_file\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_file_field)
+- [with\_hidden\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_hidden_field)
+- [with\_option](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_option)
+- [with\_password_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_password_field)
+- [with\_radio\_button](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_radio_button)
+- [with\_button](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_button)
+- [with\_select](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_select)
+- [with\_submit](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_submit)
+- [with\_text\_area](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_text_area)
+- [with\_text\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_text_field)
+- [with\_url\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_url_field)
+- [with\_number\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_number_field)
+- [with\_range\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_range_field)
+- [with\_date\_field](http://rdoc.info/github/kucaahbe/rspec-html-matchers/master/RSpec/Matchers:with_date_field)
 
 and of course you can use the `without_` matchers (see the documentation).
 
-### rspec 1 partial backwards compatibility:
-
-you can match:
-
-```ruby
-expect(response).to have_tag('div', 'expected content')
-expect(response).to have_tag('div', /regexp matching expected content/)
-```
-
-[RSpec 1 `have_tag` documentation](http://old.rspec.info/rails/writing/views.html)
 
 ### More info
 
