@@ -116,18 +116,16 @@ davids_old_posts = davids_posts.filter('stamp < ?', Date.today - 7)
 Datasets are Enumerable objects, so they can be manipulated using any of the Enumerable methods, such as map, inject, etc.
 
 
-## Methods
+## Overview of Methods
 
 Most Dataset methods that users will use can be broken down into two types:
 
 * Methods that return modified datasets
-
 * Methods that execute code on the database
 
 ### Methods that return modified datasets
 
 Most dataset methods fall into this category, which can be further broken down by the clause they affect:
-
 
 | SQL | Methods |
 | --- | --- |
@@ -143,23 +141,6 @@ Most dataset methods fall into this category, which can be further broken down b
 | locking | for_update, lock_style |
 | common table expressions | with, with_recursive |
 | other | clone, distinct, naked, qualify, server, with_sql |
-
-
-### Methods that execute code on the database
-
-Most other dataset methods commonly used will execute the dataset's SQL on the database:
-
-| SQL | Methods |
-| --- | --- |
-| SELECT (All Records) | all, each, map, to_hash, to_hash_groups, select_map, select_order_map, select_hash, select_hash_groups
-| SELECT (First Record)	| first, last, [], single_record
-| SELECT (Single Value)	| get, single_value
-| SELECT (Aggregates)	| count, avg, max, min, sum, range, interval
-| INSERT	| insert, <<, import, multi_insert
-| UPDATE	| update
-| DELETE	| delete
-| other	| columns, columns!, truncate
-
 
 ---
 
@@ -1082,7 +1063,704 @@ SELECT table.* FROM table
 {% endhighlight %}
 
 
+--- 
+
+### Methods that execute code on the database
+
+Most other dataset methods commonly used will execute the dataset's SQL on the database:
+
+| SQL | Methods |
+| --- | --- |
+| SELECT (All Records) | all, each, map, to_hash, to_hash_groups, select_map, select_order_map, select_hash, select_hash_groups
+| SELECT (First Record)	| first, last, [], single_record
+| SELECT (Single Value)	| get, single_value
+| SELECT (Aggregates)	| count, avg, max, min, sum, range, interval
+| INSERT	| insert, <<, import, multi_insert
+| UPDATE	| update
+| DELETE	| delete
+| other	| columns, columns!, truncate
+
+---
+
+## Public Instance methods
+
+### << (arg)
+
+Inserts the given argument into the database. Returns self so it can be used safely when chaining:
+
+{% highlight ruby %}
+DB[:items] << {:id=>0, :name=>'Zero'} << DB[:old_items].select(:id, name)
+{% endhighlight %}
+
+
+<hr class="divider">
+### [] (*conditions)
+
+Returns the first record matching the conditions. Examples:
+
+{% highlight ruby %}
+DB[:table][:id=>1] # SELECT * FROM table WHERE (id = 1) LIMIT 1
+ # => {:id=1}
+{% endhighlight %}
+
+<hr class="divider">
+### all (&block)
+
+Returns an array with all records in the dataset. If a block is given, the array is iterated over after all items have been loaded.
+
+{% highlight ruby %}
+DB[:table].all # SELECT * FROM table
+ # => [{:id=>1, ...}, {:id=>2, ...}, ...]
+
+ # Iterate over all rows in the table
+DB[:table].all{|row| p row}
+{% endhighlight %}
+
+<hr class="divider">
+###  avg (column=Sequel.virtual_row(&Proc.new))
+Returns the average value for the given column/expression. Uses a virtual row block if no argument is given.
+
+{% highlight ruby %}
+DB[:table].avg(:number)           #=> SELECT avg(number) FROM table LIMIT 1
+ # => 3
+DB[:table].avg{function(column)}  #=> SELECT avg(function(column)) FROM table LIMIT 1
+ # => 1
+{% endhighlight %}
+
+<hr class="divider">
+### columns ()
+
+Returns the columns in the result set in order as an array of symbols. If the columns are currently cached, returns the cached value. Otherwise, a SELECT query is performed to retrieve a single row in order to get the columns.
+
+If you are looking for all columns for a single table and maybe some information about each column (e.g. database type), see Database#schema.
+
+{% highlight ruby %}
+DB[:table].columns   # => [:id, :name]
+{% endhighlight %}
+
+
+<hr class="divider">
+### columns! ()
+
+Ignore any cached column information and perform a query to retrieve a row in order to get the columns.
+
+{% highlight ruby %}
+DB[:table].columns!  # => [:id, :name]
+{% endhighlight %}
+
+<hr class="divider">
+
+### count (arg=(no_arg=true), &block)
+
+Returns the number of records in the dataset. If an argument is provided, it is used as the argument to count. If a block is provided, it is treated as a virtual row, and the result is used as the argument to count.
+
+{% highlight ruby %}
+DB[:table].count                    #=> SELECT count(*) AS count FROM table LIMIT 1
+ # => 3
+DB[:table].count(:column)           #=> SELECT count(column) AS count FROM table LIMIT 1
+ # => 2
+DB[:table].count{foo(column)}       #=> SELECT count(foo(column)) AS count FROM table LIMIT 1
+ # => 1
+{% endhighlight %}
+
+<hr class="divider">
+### delete (&block)
+
+Deletes the records in the dataset. The returned value should be number of records deleted, but that is adapter dependent.
+
+{% highlight ruby %}
+DB[:table].delete     #=> DELETE * FROM table
+  # => 3
+{% endhighlight %}
+
+
+<hr class="divider">
+### each ()
+Iterates over the records in the dataset as they are yielded from the database adapter, and returns self.
+
+{% highlight ruby %}
+DB[:table].each{|row| p row}      #=> SELECT * FROM table
+{% endhighlight %}
+
+
+Note that this method is not safe to use on many adapters if you are running additional queries inside the provided block. If you are running queries inside the block, you should use all instead of each for the outer queries, or use a separate thread or shard inside each.
+
+
+<hr class="divider">
+### empty? ()
+
+Returns true if no records exist in the dataset, false otherwise
+
+{% highlight ruby %}
+DB[:table].empty?       #=> SELECT 1 AS one FROM table LIMIT 1
+ # => false
+{% endhighlight %}
+
+<hr class="divider">
+### first (*args, &block)
+
+If a integer argument is given, it is interpreted as a limit, and then returns all matching records up to that limit. If no argument is passed, it returns the first matching record. If any other type of argument(s) is passed, it is given to filter and the first matching record is returned. If a block is given, it is used to filter the dataset before returning anything.
+
+If there are no records in the dataset, returns nil (or an empty array if an integer argument is given).
+
+**Examples:**
+
+{% highlight ruby %}
+DB[:table].first                        #=> SELECT * FROM table LIMIT 1
+ # => {:id=>7}
+
+DB[:table].first(2)                     #=> SELECT * FROM table LIMIT 2
+ # => [{:id=>6}, {:id=>4}]
+
+DB[:table].first(:id=>2)                #=> SELECT * FROM table WHERE (id = 2) LIMIT 1
+ # => {:id=>2}
+
+DB[:table].first("id = 3")              #=> SELECT * FROM table WHERE (id = 3) LIMIT 1
+ # => {:id=>3}
+
+DB[:table].first("id = ?", 4)           #=> SELECT * FROM table WHERE (id = 4) LIMIT 1
+ # => {:id=>4}
+
+DB[:table].first{id > 2}                #=> SELECT * FROM table WHERE (id > 2) LIMIT 1
+ # => {:id=>5}
+
+DB[:table].first("id > ?", 4){id < 6}   #=> SELECT * FROM table WHERE ((id > 4) AND (id < 6)) LIMIT 1
+ # => {:id=>5}
+
+DB[:table].first(2){id < 2}             #=> SELECT * FROM table WHERE (id < 2) LIMIT 2
+ # => [{:id=>1}]
+
+{% endhighlight %}
+
+<hr class="divider">
+
+### first! (*args, &block)
+
+Calls first. If first returns nil (signaling that no row matches), raise a Sequel::NoMatchingRow exception.
+
+<hr class="divider">
+### get (column=(no_arg=true; nil), &block)
+
+Return the column value for the first matching record in the dataset. Raises an error if both an argument and block is given.
+
+{% highlight ruby %}
+DB[:table].get(:id)         #=> SELECT id FROM table LIMIT 1
+ # => 3
+
+ds.get{sum(id)}             #=> SELECT sum(id) AS v FROM table LIMIT 1
+ # => 6
+{% endhighlight %}
+
+You can pass an array of arguments to return multiple arguments, but you must make sure each element in the array has an alias that Sequel can determine:
+
+{% highlight ruby %}
+DB[:table].get([:id, :name])              #=> SELECT id, name FROM table LIMIT 1
+ # => [3, 'foo']
+DB[:table].get{[sum(id).as(sum), name]}   #=> SELECT sum(id) AS sum, name FROM table LIMIT 1
+ # => [6, 'foo']
+{% endhighlight %}
+
+
+<hr class="divider">
+### import (columns, values, opts=OPTS)
+
+Inserts multiple records into the associated table. This method can be used to efficiently insert a large number of records into a table in a single query if the database supports it. Inserts are automatically wrapped in a transaction.
+
+This method is called with a columns array and an array of value arrays:
+
+{% highlight ruby %}
+DB[:table].import([:x, :y], [[1, 2], [3, 4]])
+ # INSERT INTO table (x, y) VALUES (1, 2) 
+ # INSERT INTO table (x, y) VALUES (3, 4)
+{% endhighlight %}
+
+This method also accepts a dataset instead of an array of value arrays:
+
+{% highlight ruby %}
+DB[:table].import([:x, :y], DB[:table2].select(:a, :b))     #=> INSERT INTO table (x, y) SELECT a, b FROM table2
+{% endhighlight %}
+
+| **Options:** ||
+| --- | --- |
+| :commit_every | Open a new transaction for every given number of records. For example, if you provide a value of 50, will commit after every 50 records.
+| :return	| When the :value is :primary_key, returns an array of autoincremented primary key values for the rows inserted.
+| :server	| Set the server/shard to use for the transaction and insert queries.
+| :slice	| Same as :commit_every, :commit_every takes precedence.
+
+<hr class="divider">
+### insert (*values, &block)
+
+Inserts values into the associated table. The returned value is generally the value of the primary key for the inserted row, but that is adapter dependent.
+
+| insert handles a number of different argument formats:| |
+| --- | --- |
+| no arguments or single empty hash	| Uses DEFAULT VALUES
+| single hash	| Most common format, treats keys as columns an values as values
+| single array	| Treats entries as values, with no columns
+| two arrays	| Treats first array as columns, second array as values
+| single Dataset	| Treats as an insert based on a selection from the dataset given, with no columns
+| array and dataset	| Treats as an insert based on a selection from the dataset given, with the columns given by the array.
+
+
+**Examples:**
+
+{% highlight ruby %}
+DB[:items].insert                             #=> INSERT INTO items DEFAULT VALUES
+
+DB[:items].insert({})                         #=> INSERT INTO items DEFAULT VALUES
+
+DB[:items].insert([1,2,3])                    #=> INSERT INTO items VALUES (1, 2, 3)
+
+DB[:items].insert([:a, :b], [1,2])            #=> INSERT INTO items (a, b) VALUES (1, 2)
+
+DB[:items].insert(:a => 1, :b => 2)           #=> INSERT INTO items (a, b) VALUES (1, 2)
+
+DB[:items].insert(DB[:old_items])             #=> INSERT INTO items SELECT * FROM old_items
+
+DB[:items].insert([:a, :b], DB[:old_items])   #=> INSERT INTO items (a, b) SELECT * FROM old_items
+{% endhighlight %}
+
+
+<hr class="divider">
+### interval (column=Sequel.virtual_row(&Proc.new))
+
+Returns the interval between minimum and maximum values for the given column/expression. Uses a virtual row block if no argument is given.
+
+{% highlight ruby %}
+DB[:table].interval(:id) # SELECT (max(id) - min(id)) FROM table LIMIT 1
+ # => 6
+DB[:table].interval{function(column)} # SELECT (max(function(column)) - min(function(column))) FROM table LIMIT 1
+ # => 7
+{% endhighlight %}
+
+<hr class="divider">
+### last (*args, &block)
+
+Reverses the order and then runs first with the given arguments and block. Note that this will not necessarily give you the last record in the dataset, unless you have an unambiguous order. If there is not currently an order for this dataset, raises an Error.
+
+{% highlight ruby %}
+DB[:table].order(:id).last # SELECT * FROM table ORDER BY id DESC LIMIT 1
+ # => {:id=>10}
+
+DB[:table].order(Sequel.desc(:id)).last(2) # SELECT * FROM table ORDER BY id ASC LIMIT 2
+ # => [{:id=>1}, {:id=>2}]
+{% endhighlight %}
+
+<hr class="divider">
+### map (column=nil, &block)
+
+Maps column values for each record in the dataset (if a column name is given), or performs the stock mapping functionality of Enumerable otherwise. Raises an Error if both an argument and block are given.
+
+{% highlight ruby %}
+DB[:table].map(:id) # SELECT * FROM table
+ # => [1, 2, 3, ...]
+
+DB[:table].map{|r| r[:id] * 2} # SELECT * FROM table
+ # => [2, 4, 6, ...]
+{% endhighlight %}
+
+You can also provide an array of column names:
+
+{% highlight ruby %}
+DB[:table].map([:id, :name])   #=> SELECT * FROM table
+ # => [[1, 'A'], [2, 'B'], [3, 'C'], ...]
+{% endhighlight %}
+
+
+<hr class="divider">
+### max (column=Sequel.virtual_row(&Proc.new))
+
+Returns the maximum value for the given column/expression. Uses a virtual row block if no argument is given.
+
+{% highlight ruby %}
+DB[:table].max(:id) # SELECT max(id) FROM table LIMIT 1
+ # => 10
+DB[:table].max{function(column)} # SELECT max(function(column)) FROM table LIMIT 1
+ # => 7
+{% endhighlight %}
+
+<hr class="divider">
+### min (column=Sequel.virtual_row(&Proc.new))
+
+Returns the minimum value for the given column/expression. Uses a virtual row block if no argument is given.
+
+{% highlight ruby %}
+DB[:table].min(:id) # SELECT min(id) FROM table LIMIT 1
+ # => 1
+DB[:table].min{function(column)} # SELECT min(function(column)) FROM table LIMIT 1
+ # => 0
+{% endhighlight %}
+
+<hr class="divider">
+### multi_insert (hashes, opts=OPTS)
+
+This is a front end for import that allows you to submit an array of hashes instead of arrays of columns and values:
+
+{% highlight ruby %}
+DB[:table].multi_insert([{:x => 1}, {:x => 2}])
+ # INSERT INTO table (x) VALUES (1)
+ # INSERT INTO table (x) VALUES (2)
+{% endhighlight %}
+
+Be aware that all hashes should have the same keys if you use this calling method, otherwise some columns could be missed or set to null instead of to default values.
+
+This respects the same options as import.
+
+<hr class="divider">
+### paged_each (opts=OPTS)
+
+Yields each row in the dataset, but interally uses multiple queries as needed to process the entire result set without keeping all rows in the dataset in memory, even if the underlying driver buffers all query results in memory.
+
+Because this uses multiple queries internally, in order to remain consistent, it also uses a transaction internally. Additionally, to work correctly, the dataset must have unambiguous order. Using an ambiguous order can result in an infinite loop, as well as subtler bugs such as yielding duplicate rows or rows being skipped.
+
+Sequel checks that the datasets using this method have an order, but it cannot ensure that the order is unambiguous.
+
+| **Options:** ||
+| --- | --- |
+| :rows_per_fetch	| The number of rows to fetch per query. Defaults to 1000.
+| :strategy	| The strategy to use for paging of results. By default this is :offset, for using an approach with a limit and offset for every page. This can be set to :filter, which uses a limit and a filter that excludes rows from previous pages. In order for this strategy to work, you must be selecting the columns you are ordering by, and non of the columns can contain NULLs. Note that some Sequel adapters have optimised implementations that will use cursors or streaming regardless of the :strategy option used.
+| :filter_values	| If the :strategy=>:filter option is used, this option should be a proc that accepts the last retrieved row for the previous page and an array of ORDER BY expressions, and returns an array of values relating to those expressions for the last retrieved row. You will need to use this option if your ORDER BY expressions are not simple columns, if they contain qualified identifiers that would be ambiguous unqualified, if they contain any identifiers that are aliased in SELECT, and potentially other cases.
+
+**Examples:**
+
+{% highlight ruby %}
+DB[:table].order(:id).paged_each{|row| }
+ # SELECT * FROM table ORDER BY id LIMIT 1000
+ # SELECT * FROM table ORDER BY id LIMIT 1000 OFFSET 1000
+ # ...
+
+DB[:table].order(:id).paged_each(:rows_per_fetch=>100){|row| }
+ # SELECT * FROM table ORDER BY id LIMIT 100
+ # SELECT * FROM table ORDER BY id LIMIT 100 OFFSET 100
+ # ...
+
+DB[:table].order(:id).paged_each(:strategy=>:filter){|row| }
+ # SELECT * FROM table ORDER BY id LIMIT 1000
+ # SELECT * FROM table WHERE id > 1001 ORDER BY id LIMIT 1000
+ # ...
+
+DB[:table].order(:table__id).paged_each(:strategy=>:filter,
+  :filter_values=>proc{|row, exprs| [row[:id]]}){|row| }
+ # SELECT * FROM table ORDER BY id LIMIT 1000
+ # SELECT * FROM table WHERE id > 1001 ORDER BY id LIMIT 1000
+ # ...
+{% endhighlight %}
+
+<hr class="divider">
+### range (column=Sequel.virtual_row(&Proc.new))
+
+Returns a Range instance made from the minimum and maximum values for the given column/expression. Uses a virtual row block if no argument is given.
+
+{% highlight ruby %}
+DB[:table].range(:id) # SELECT max(id) AS v1, min(id) AS v2 FROM table LIMIT 1
+ # => 1..10
+DB[:table].interval{function(column)} # SELECT max(function(column)) AS v1, min(function(column)) AS v2 FROM table LIMIT 1
+ # => 0..7
+{% endhighlight %}
+
+<hr class="divider">
+### select_hash (key_column, value_column)
+
+Returns a hash with key_column values as keys and value_column values as values. Similar to #to_hash, but only selects the columns given.
+
+{% highlight ruby %}
+DB[:table].select_hash(:id, :name) # SELECT id, name FROM table
+ # => {1=>'a', 2=>'b', ...}
+{% endhighlight %}
+
+You can also provide an array of column names for either the key_column, the value column, or both:
+
+{% highlight ruby %}
+DB[:table].select_hash([:id, :foo], [:name, :bar]) # SELECT * FROM table
+ # {[1, 3]=>['a', 'c'], [2, 4]=>['b', 'd'], ...}
+{% endhighlight %}
+
+When using this method, you must be sure that each expression has an alias that Sequel can determine. Usually you can do this by calling the as method on the expression and providing an alias.
+
+<hr class="divider">
+
+### select_hash_groups (key_column, value_column)
+
+Returns a hash with key_column values as keys and an array of value_column values. Similar to #to_hash_groups, but only selects the columns given.
+
+{% highlight ruby %}
+DB[:table].select_hash_groups(:name, :id) # SELECT id, name FROM table
+ # => {'a'=>[1, 4, ...], 'b'=>[2, ...], ...}
+{% endhighlight %}
+
+You can also provide an array of column names for either the key_column, the value column, or both:
+
+{% highlight ruby %}
+DB[:table].select_hash_groups([:first, :middle], [:last, :id]) # SELECT * FROM table
+ # {['a', 'b']=>[['c', 1], ['d', 2], ...], ...}
+{% endhighlight %}
+
+When using this method, you must be sure that each expression has an alias that Sequel can determine. Usually you can do this by calling the as method on the expression and providing an alias.
+
+<hr class="divider">
+### select_map (column=nil, &block)
+
+Selects the column given (either as an argument or as a block), and returns an array of all values of that column in the dataset. If you give a block argument that returns an array with multiple entries, the contents of the resulting array are undefined. Raises an Error if called with both an argument and a block.
+
+{% highlight ruby %}
+DB[:table].select_map(:id) # SELECT id FROM table
+ # => [3, 5, 8, 1, ...]
+
+DB[:table].select_map{id * 2} # SELECT (id * 2) FROM table
+ # => [6, 10, 16, 2, ...]
+{% endhighlight %}
+ 
+You can also provide an array of column names:
+
+{% highlight ruby %}
+DB[:table].select_map([:id, :name]) # SELECT id, name FROM table
+ # => [[1, 'A'], [2, 'B'], [3, 'C'], ...]
+{% endhighlight %}
+
+If you provide an array of expressions, you must be sure that each entry in the array has an alias that Sequel can determine. Usually you can do this by calling the as method on the expression and providing an alias.
+
+<hr class="divider">
+### select_order_map (column=nil, &block)
+
+The same as #select_map, but in addition orders the array by the column.
+
+{% highlight ruby %}
+DB[:table].select_order_map(:id) # SELECT id FROM table ORDER BY id
+ # => [1, 2, 3, 4, ...]
+
+DB[:table].select_order_map{id * 2} # SELECT (id * 2) FROM table ORDER BY (id * 2)
+ # => [2, 4, 6, 8, ...]
+{% endhighlight %}
+
+You can also provide an array of column names:
+
+{% highlight ruby %}
+DB[:table].select_order_map([:id, :name]) # SELECT id, name FROM table ORDER BY id, name
+ # => [[1, 'A'], [2, 'B'], [3, 'C'], ...]
+{% endhighlight %}
+
+If you provide an array of expressions, you must be sure that each entry in the array has an alias that Sequel can determine. Usually you can do this by calling the as method on the expression and providing an alias.
+
+<hr class="divider">
+
+### single_record ()
+
+Returns the first record in the dataset, or nil if the dataset has no records. Users should probably use first instead of this method.
+
+<hr class="divider">
+
+### single_value ()
+
+Returns the first value of the first record in the dataset. Returns nil if dataset is empty. Users should generally use get instead of this method.
+
+<hr class="divider">
+### sum (column=Sequel.virtual_row(&Proc.new))
+
+Returns the sum for the given column/expression. Uses a virtual row block if no column is given.
+
+{% highlight ruby %}
+DB[:table].sum(:id)  #=> SELECT sum(id) FROM table LIMIT 1
+ # => 55
+DB[:table].sum{function(column)}   #=> SELECT sum(function(column)) FROM table LIMIT 1
+ # => 10
+{% endhighlight %}
+
+<hr class="divider">
+### to_hash (key_column, value_column = nil)
+
+Returns a hash with one column used as key and another used as value. If rows have duplicate values for the key column, the latter row(s) will overwrite the value of the previous row(s). If the value_column is not given or nil, uses the entire hash as the value.
+
+{% highlight ruby %}
+DB[:table].to_hash(:id, :name) # SELECT * FROM table
+ # {1=>'Jim', 2=>'Bob', ...}
+
+DB[:table].to_hash(:id) # SELECT * FROM table
+ # {1=>{:id=>1, :name=>'Jim'}, 2=>{:id=>2, :name=>'Bob'}, ...}
+{% endhighlight %}
+
+You can also provide an array of column names for either the key_column, the value column, or both:
+
+{% highlight ruby %}
+DB[:table].to_hash([:id, :foo], [:name, :bar]) # SELECT * FROM table
+ # {[1, 3]=>['Jim', 'bo'], [2, 4]=>['Bob', 'be'], ...}
+
+DB[:table].to_hash([:id, :name]) # SELECT * FROM table
+ # {[1, 'Jim']=>{:id=>1, :name=>'Jim'}, [2, 'Bob'=>{:id=>2, :name=>'Bob'}, ...}
+{% endhighlight %}
+
+
+<hr class="divider">
+### to_hash_groups (key_column, value_column = nil)
+
+Returns a hash with one column used as key and the values being an array of column values. If the value_column is not given or nil, uses the entire hash as the value.
+
+{% highlight ruby %}
+DB[:table].to_hash_groups(:name, :id) # SELECT * FROM table
+ # {'Jim'=>[1, 4, 16, ...], 'Bob'=>[2], ...}
+
+DB[:table].to_hash_groups(:name) # SELECT * FROM table
+ # {'Jim'=>[{:id=>1, :name=>'Jim'}, {:id=>4, :name=>'Jim'}, ...], 'Bob'=>[{:id=>2, :name=>'Bob'}], ...}
+{% endhighlight %}
+
+You can also provide an array of column names for either the key_column, the value column, or both:
+
+{% highlight ruby %}
+DB[:table].to_hash_groups([:first, :middle], [:last, :id]) # SELECT * FROM table
+ # {['Jim', 'Bob']=>[['Smith', 1], ['Jackson', 4], ...], ...}
+
+DB[:table].to_hash_groups([:first, :middle]) # SELECT * FROM table
+ # {['Jim', 'Bob']=>[{:id=>1, :first=>'Jim', :middle=>'Bob', :last=>'Smith'}, ...], ...}
+{% endhighlight %}
+
+### truncate ()
+
+Truncates the dataset. Returns nil.
+
+{% highlight ruby %}
+DB[:table].truncate # TRUNCATE table # => nil
+{% endhighlight %}
+
+<hr class="divider">
+### update (values=OPTS, &block)
+
+Updates values for the dataset. The returned value is generally the number of rows updated, but that is adapter dependent. values should a hash where the keys are columns to set and values are the values to which to set the columns.
+
+{% highlight ruby %}
+DB[:table].update(:x=>nil) # UPDATE table SET x = NULL
+ # => 10
+
+DB[:table].update(:x=>:x+1, :y=>0) # UPDATE table SET x = (x + 1), y = 0
+ # => 10
+{% endhighlight %}
+
+<hr class="divider">
+### with_sql_all (sql, &block)
+
+Run the given SQL and return an array of all rows. If a block is given, each row is yielded to the block after all rows are loaded. See with_sql_each.
+
+<hr class="divider">
+### with_sql_delete (sql)
+
+Execute the given SQL and return the number of rows deleted. This exists solely as an optimization, replacing #with_sql(sql).delete. It's significantly faster as it does not require cloning the current dataset.
+
+<hr class="divider">
+
+### with_sql_each (sql)
+
+Run the given SQL and yield each returned row to the block.
+
+This method should not be called on a shared dataset if the columns selected in the given SQL do not match the columns in the receiver.
+
+<hr class="divider">
+### with_sql_first (sql)
+
+Run the given SQL and return the first row, or nil if no rows were returned. See with_sql_each.
+
+<hr class="divider">
+### with_sql_insert (sql)
+
+Execute the given SQL and (on most databases) return the primary key of the inserted row.
+
+<hr class="divider">
+### with_sql_single_value (sql)
+
+Run the given SQL and return the first value in the first row, or nil if no rows were returned. For this to make sense, the SQL given should select only a single value. See with_sql_each.
+
+
+## Protected Instance methods
+
+
+###_import (columns, values, opts)
+
+Internals of import. If primary key values are requested, use separate insert commands for each row. Otherwise, call multi_insert_sql and execute each statement it gives separately.
+
+
+### _select_map_multiple (ret_cols)
+
+Return an array of arrays of values given by the symbols in ret_cols.
+
+
+<hr class="divider">
+
+### _select_map_single ()
+
+Returns an array of the first value in each row.
+
+---
+
+## User Methods relating to SQL Creation
+
+## Public Instance methods
+
+<hr class="divider">
+
+### exists ()
+Returns an EXISTS clause for the dataset as an SQL::PlaceholderLiteralString.
+
+{% highlight ruby %}
+DB.select(1).where(DB[:items].exists)
+ # SELECT 1 WHERE (EXISTS (SELECT * FROM items))
+{% endhighlight %}
+
+
+<hr class="divider">
+###  insert_sql (*values)
+Returns an INSERT SQL query string. See insert.
+
+{% highlight ruby %}
+DB[:items].insert_sql(:a=>1)
+ # => "INSERT INTO items (a) VALUES (1)"
+{% endhighlight %}
+
+<hr class="divider">
+
+### literal_append (sql, v)
+
+Append a literal representation of a value to the given SQL string.
+
+If an unsupported object is given, an Error is raised.
+
+<hr class="divider">
+
+### multi_insert_sql (columns, values)
+
+Returns an array of insert statements for inserting multiple records. This method is used by multi_insert to format insert statements and expects a keys array and and an array of value arrays.
+
+This method should be overridden by descendants if the support inserting multiple records in a single SQL statement.
+
+<hr class="divider">
+### sql ()
+
+Same as `select_sql`, not aliased directly to make subclassing simpler.
+
+<hr class="divider">
+### truncate_sql ()
+
+Returns a TRUNCATE SQL query string. See truncate
+
+{% highlight ruby %}
+DB[:items].truncate_sql     # => 'TRUNCATE items'
+{% endhighlight %}
+
+
+<hr class="divider">
+### update_sql (values = OPTS)
+
+Formats an `UPDATE` statement using the given values. See update.
+
+{% highlight ruby %}
+DB[:items].update_sql(:price => 100, :category => 'software')
+ # => "UPDATE items SET price = 100, category = 'software'
+{% endhighlight %}
+
+Raises an Error if the dataset is grouped or includes more than one table.
+
+
 
 --- 
+
+
+
+
 
 /EOF
