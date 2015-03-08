@@ -17,4 +17,6 @@ Listing of Ruby related contents goes here...
 
 ## [Sinatra](/ruby/sinatra/) <span>- a great Ruby Web Framework.</span>
 
+## [RSpec](/ruby/rspec/) <span>- Behaviour Driven Development for Ruby</span>
+
 ## [Gems](/ruby/gems/) <span>- great Ruby gems to remember and use</span>

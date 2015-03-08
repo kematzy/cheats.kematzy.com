@@ -13,7 +13,7 @@ asset_path: ../..
 
 ---
 
-[Github Repo](https://github.com/rspec/rspec-expectations)
+[Github Repo](https://github.com/kucaahbe/rspec-html-matchers)
 
 ## Introduction
 
@@ -214,24 +214,15 @@ You can find more on [RubyDoc](http://rubydoc.info/github/kucaahbe/rspec-html-ma
 
 Also, please read [CHANGELOG](https://github.com/kucaahbe/rspec-html-matchers/blob/master/CHANGELOG.md), it might be helpful.
 
+-------------
 
-### Contributors
+### See Also
 
-- [Kelly Felkins](http://github.com/kellyfelkins)
-- [Ryan Wilcox](http://github.com/rwilcox)
-- [Simon Schoeters](https://github.com/cimm)
-- [Felix Tjandrawibawa](https://github.com/cemenghttps://github.com/cemeng)
-- [Szymon Przybył](https://github.com/apocalyptiq)
-- [Manuel Meurer](https://github.com/manuelmeurer)
-- [Andreas Riemer](https://github.com/arfl)
+* [RSpec](/ruby/rspec/index.html) or [http://github.com/rspec/rspec](http://github.com/rspec/rspec)
+* [RSpec::Core](/ruby/rspec/rspec-core.html) or [http://github.com/rspec/rspec-core](http://github.com/rspec/rspec-core)
+* [RSpec::Expectations](/ruby/rspec/rspec-expectations.html) or [http://github.com/rspec/rspec-expectations](http://github.com/rspec/rspec-expectations)
+* [RSpec::Mocks](/ruby/rspec/rspec-mocks.html) or [http://github.com/rspec/rspec-mocks](http://github.com/rspec/rspec-mocks)
+* [RSpec::CollectionMatchers](/ruby/rspec/rspec-collection_matchers.html) or [http://github.com/rspec/rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers)
+* [RSpec::HMTMLMatchers](/ruby/rspec/rspec-html-matchers.html) or [https://github.com/kucaahbe/rspec-html-matchers](https://github.com/kucaahbe/rspec-html-matchers)
 
 
-MIT Licensed
-
-Copyright (c) 2011-2015 Dmitrij Mjakotnyi
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

@@ -82,8 +82,12 @@ expect(collection).to have_at_most(n).items
 expect(collection).to have_at_least(n).items
 ```
 
-### See also
+### See Also
 
-* [http://github.com/rspec/rspec](http://github.com/rspec/rspec)
-* [http://github.com/rspec/rspec-core](http://github.com/rspec/rspec-core)
-* [http://github.com/rspec/rspec-expectations](http://github.com/rspec/rspec-expectations)
+* [RSpec](/ruby/rspec/index.html) or [http://github.com/rspec/rspec](http://github.com/rspec/rspec)
+* [RSpec::Core](/ruby/rspec/rspec-core.html) or [http://github.com/rspec/rspec-core](http://github.com/rspec/rspec-core)
+* [RSpec::Expectations](/ruby/rspec/rspec-expectations.html) or [http://github.com/rspec/rspec-expectations](http://github.com/rspec/rspec-expectations)
+* [RSpec::Mocks](/ruby/rspec/rspec-mocks.html) or [http://github.com/rspec/rspec-mocks](http://github.com/rspec/rspec-mocks)
+* [RSpec::CollectionMatchers](/ruby/rspec/rspec-collection_matchers.html) or [http://github.com/rspec/rspec-collection_matchers](https://github.com/rspec/rspec-collection_matchers)
+* [RSpec::HMTMLMatchers](/ruby/rspec/rspec-html-matchers.html) or [https://github.com/kucaahbe/rspec-html-matchers](https://github.com/kucaahbe/rspec-html-matchers)
+
