@@ -298,7 +298,9 @@ pre {
   width: 100%;
   padding: 20px;
   border-top: 3px solid #ccc;
-  background: #3A3C42;
+  //  background: #3A3C42;
+  background: #232323;
+  
   color: #f8f8f2;
   margin: 0 -20px 20px;
   
@@ -532,3 +534,6 @@ footer {
   margin-left:5px;
   cursor:pointer;
 }
+
+
+@import "highlightjs/railscasts"

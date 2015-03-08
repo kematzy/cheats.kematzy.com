@@ -36,8 +36,8 @@ asset_path: ../..
 This page should contain an overview of Sequel's key features as well as links to all other parts.
 
 
-{% highlight ruby %}
-  # 1. Load Sequel
+<pre><code class="ruby sql">
+ # 1. Load Sequel
 require "sequel"
 
  # 2. Add global extensions
@@ -70,7 +70,7 @@ Sequel::Model.plugin(:paranoid)
 
  # 5. Load Model Classes
 require_relative 'app/models'
-{% endhighlight %}
+</code></pre>
 
 
 
