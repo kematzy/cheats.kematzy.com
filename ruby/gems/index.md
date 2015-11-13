@@ -4,14 +4,18 @@ layout: default
 asset_path: ../..
 ---
 
-# Ruby Gems 
+# Ruby Gems
 
-A listing of great Ruby Gems goes here...
+A listing of great Ruby Gems goes here... updated....
 
 
 ---
 
-## [Bundler](http://bundler.com/)
+## [Bundler](http://bundler.io/)
+
+
+---
+## [Liquid](liquid.html)
 
 
 ---

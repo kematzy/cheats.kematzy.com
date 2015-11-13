@@ -1,0 +1,506 @@
+  <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Liquid - Ruby | Cheats by Kematzy</title>
+
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- <link rel="stylesheet" href="../assets/css/-pygment_trac.css"> -->
+    <script src="/assets/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+
+  <body>
+    <div id="page" class="container">
+
+      <nav id="header" class="navbar navbar-default">
+  <div class="container-fluid row">
+
+    <div class="navbar-header col-md-6">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <h1><a href="/">Cheats by Kematzy</a></h1>
+        <p>A personal collection of Cheatsheets</p>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse col-md-6" id="header-nav">
+      <ul class="nav navbar-nav">
+      
+        
+          
+        <li class="">
+          <a href="/index.html" title="back to the homepage">Home</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/toc.html" title="full table of contents for this website">Table of Contents</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/about.html" title="find out more information about this website">About</a>
+        </li>
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+      
+
+
+<div id="breadcrumbs" class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      
+        
+        <li><a href="/ruby/">Ruby</a></li>
+      
+        
+        <li><a href="/ruby/gems/">Gems</a></li>
+      
+        
+        <li><a href="/ruby/gems/liquid.html">Liquid</a></li>
+      
+    </ol>
+  </div>
+</div>
+
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          <h1 id="ruby-liquid">Ruby / Liquid</h1>
+
+<p>There are two types of markup in Liquid: Output and Tag.</p>
+
+<ul>
+<li>Output markup (which may resolve to text) is surrounded by</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{{ matched pairs of curly brackets (ie, braces) }}</code></pre></div>
+
+<ul>
+<li>Tag markup (which cannot resolve to text) is surrounded by</li>
+</ul>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% matched pairs of curly brackets and percent signs %}</code></pre></div>
+
+<hr>
+
+<h2 id="output">Output</h2>
+
+<p>Here is a simple example of Output:</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">Hello {{name}}
+Hello {{user.name}}
+Hello {{ &#39;tobi&#39; }}</code></pre></div>
+
+<p><a name="filters"></a></p>
+
+<h3 id="advanced-output-filters">Advanced output: Filters</h3>
+
+<p>Output markup takes filters.  Filters are simple methods.  The first parameter
+is always the output of the left side of the filter.  The return value of the
+filter will be the new left value when the next filter is run.  When there are
+no more filters, the template will receive the resulting string.</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">Hello {{ &#39;tobi&#39; | upcase }}
+Hello tobi has {{ &#39;tobi&#39; | size }} letters!
+Hello {{ &#39;*tobi*&#39; | textilize | upcase }}</code></pre></div>
+
+<h3 id="standard-filters">Standard Filters</h3>
+
+<ul>
+<li><p><code>date</code> - reformat a date (<a href="http://docs.shopify.com/themes/liquid-documentation/filters/additional-filters#date">syntax reference</a>)</p></li>
+<li><p><code>capitalize</code> - capitalize words in the input sentence</p></li>
+<li><p><code>downcase</code> - convert an input string to lowercase</p></li>
+<li><p><code>upcase</code> - convert an input string to uppercase</p></li>
+<li><p><code>first</code> - get the first element of the passed in array</p></li>
+<li><p><code>last</code> - get the last element of the passed in array</p></li>
+<li><p><code>join</code> - join elements of the array with certain character between them</p></li>
+<li><p><code>sort</code> - sort elements of the array</p></li>
+<li><p><code>map</code> - map/collect an array on a given property</p></li>
+<li><p><code>size</code> - return the size of an array or string</p></li>
+<li><p><code>escape</code> - escape a string</p></li>
+<li><p><code>escape_once</code> - returns an escaped version of html without affecting existing escaped entities</p></li>
+<li><p><code>strip_html</code> - strip html from string</p></li>
+<li><p><code>strip_newlines</code> - strip all newlines (\n) from string</p></li>
+<li><p><code>newline_to_br</code> - replace each newline (\n) with html break</p></li>
+<li><p><code>replace</code> - replace each occurrence <em>e.g.</em> <code>barbar #=&gt; &#39;barbar&#39;</code></p></li>
+<li><p><code>replace_first</code> - replace the first occurrence <em>e.g.</em> <code>foobar #=&gt; &#39;foobar&#39;</code></p></li>
+<li><p><code>remove</code> - remove each occurrence <em>e.g.</em> <code>barbar #=&gt; &#39;barbar&#39;</code></p></li>
+<li><p><code>remove_first</code> - remove the first occurrence <em>e.g.</em> <code>bar #=&gt; &#39;bar&#39;</code></p></li>
+<li><p><code>truncate</code> - truncate a string down to x characters. It also accepts a second parameter that will append to the string <em>e.g.</em> <code>foob. #=&gt; &#39;foob.&#39;</code></p></li>
+<li><p><code>truncatewords</code> - truncate a string down to x words</p></li>
+<li><p><code>prepend</code> - prepend a string <em>e.g.</em> <code>foobar #=&gt; &#39;foobar&#39;</code></p></li>
+<li><p><code>append</code> - append a string <em>e.g.</em> <code>foobar #=&gt; &#39;foobar&#39;</code></p></li>
+<li><p><code>slice</code> - slice a string. Takes an offset and length, <em>e.g.</em> <code>hello #=&gt; llo</code></p></li>
+<li><p><code>minus</code> - subtraction <em>e.g.</em>  <code>2 #=&gt; 2</code></p></li>
+<li><p><code>plus</code> - addition <em>e.g.</em>  <code>2 #=&gt; &#39;11&#39;</code>, <code>2 #=&gt; 2</code></p></li>
+<li><p><code>times</code> - multiplication  <em>e.g</em> <code>20 #=&gt; 20</code></p></li>
+<li><p><code>divided_by</code> - integer division <em>e.g.</em> <code>3 #=&gt; 3</code></p></li>
+<li><p><code>split</code> - split a string on a matching pattern <em>e.g.</em> <code>ab #=&gt; [&#39;a&#39;,&#39;b&#39;]</code></p></li>
+<li><p><code>modulo</code> - remainder, <em>e.g.</em> <code>1 #=&gt; 1</code></p></li>
+</ul>
+
+<h2 id="tags">Tags</h2>
+
+<p>Tags are used for the logic in your template. New tags are very easy to code, so I hope to get many contributions to the standard tag library after releasing this code.</p>
+
+<p>Here is a list of currently supported tags:</p>
+
+<ul>
+<li><p><strong>assign</strong> - Assigns some value to a variable</p></li>
+<li><p><strong>capture</strong> - Block tag that captures text into a variable</p></li>
+<li><p><strong>case</strong> - Block tag, its the standard case...when block</p></li>
+<li><p><strong>comment</strong> - Block tag, comments out the text in the block</p></li>
+<li><p><strong>cycle</strong> - Cycle is usually used within a loop to alternate between values, like colors or DOM classes.</p></li>
+<li><p><strong>for</strong> - For loop</p></li>
+<li><p><strong>if</strong> - Standard if/else block</p></li>
+<li><p><strong>include</strong> - Includes another template; useful for partials</p></li>
+<li><p><strong>raw</strong> - temporarily disable tag processing to avoid syntax conflicts.</p></li>
+<li><p><strong>unless</strong> - Mirror of if statement</p></li>
+</ul>
+
+<h3 id="comments">Comments</h3>
+
+<p>Comment is the simplest tag.  It just swallows content.</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">We made 1 million dollars {% comment %} in losses {% endcomment %} this year</code></pre></div>
+
+<h3 id="raw">Raw</h3>
+
+<p>Raw temporarily disables tag processing.
+This is useful for generating content (eg, Mustache, Handlebars) which uses conflicting syntax.</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{{% raw %}}
+    In Handlebars, {{ this }} will be HTML-escaped, but {{{ that }}} will not.
+{{% endraw %}}</code></pre></div>
+
+<h3 id="if-else">If / Else</h3>
+
+<p><code>if / else</code> should be well-known from any other programming language.
+Liquid allows you to write simple expressions in the <code>if</code> or <code>unless</code> (and
+optionally, <code>elsif</code> and <code>else</code>) clause:</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% if user %}
+  Hello {{ user.name }}
+{% endif %}</code></pre></div>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid"># Same as above
+{% if user != null %}
+  Hello {{ user.name }}
+{% endif %}</code></pre></div>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% if user.name == &#39;tobi&#39; %}
+  Hello tobi
+{% elsif user.name == &#39;bob&#39; %}
+  Hello bob
+{% endif %}</code></pre></div>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% if user.name == &#39;tobi&#39; or user.name == &#39;bob&#39; %}
+  Hello tobi or bob
+{% endif %}</code></pre></div>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% if user.name == &#39;bob&#39; and user.age &gt; 45 %}
+  Hello old bob
+{% endif %}</code></pre></div>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% if user.name != &#39;tobi&#39; %}
+  Hello non-tobi
+{% endif %}</code></pre></div>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid"># Same as above
+{% unless user.name == &#39;tobi&#39; %}
+  Hello non-tobi
+{% endunless %}</code></pre></div>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid"># Check for the size of an array
+{% if user.payments == empty %}
+   you never paid !
+{% endif %}
+
+{% if user.payments.size &gt; 0  %}
+   you paid !
+{% endif %}</code></pre></div>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% if user.age &gt; 18 %}
+   Login here
+{% else %}
+   Sorry, you are too young
+{% endif %}</code></pre></div>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid"># array = 1,2,3
+{% if array contains 2 %}
+   array includes 2
+{% endif %}</code></pre></div>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid"># string = &#39;hello world&#39;
+{% if string contains &#39;hello&#39; %}
+   string includes &#39;hello&#39;
+{% endif %}</code></pre></div>
+
+<h3 id="case-statement">Case Statement</h3>
+
+<p>If you need more conditions, you can use the <code>case</code> statement:</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% case condition %}
+{% when 1 %}
+hit 1
+{% when 2 or 3 %}
+hit 2 or 3
+{% else %}
+... else ...
+{% endcase %}</code></pre></div>
+
+<p><em>Example:</em></p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% case template %}
+
+{% when &#39;label&#39; %}
+     // {{ label.title }}
+{% when &#39;product&#39; %}
+     // {{ product.vendor | link_to_vendor }} / {{ product.title }}
+{% else %}
+     // {{page_title}}
+{% endcase %}</code></pre></div>
+
+<h3 id="cycle">Cycle</h3>
+
+<p>Often you have to alternate between different colors or similar tasks.  Liquid
+has built-in support for such operations, using the <code>cycle</code> tag.</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% cycle &#39;one&#39;, &#39;two&#39;, &#39;three&#39; %}
+{% cycle &#39;one&#39;, &#39;two&#39;, &#39;three&#39; %}
+{% cycle &#39;one&#39;, &#39;two&#39;, &#39;three&#39; %}
+{% cycle &#39;one&#39;, &#39;two&#39;, &#39;three&#39; %}</code></pre></div>
+
+<p>will result in</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">one
+two
+three
+one
+</code></pre></div>
+<p>If no name is supplied for the cycle group, then it&#39;s assumed that multiple calls with the same parameters are one group.</p>
+
+<p>If you want to have total control over cycle groups, you can optionally specify the name of the group.  This can even be a variable.</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% cycle &#39;group 1&#39;: &#39;one&#39;, &#39;two&#39;, &#39;three&#39; %}
+{% cycle &#39;group 1&#39;: &#39;one&#39;, &#39;two&#39;, &#39;three&#39; %}
+{% cycle &#39;group 2&#39;: &#39;one&#39;, &#39;two&#39;, &#39;three&#39; %}
+{% cycle &#39;group 2&#39;: &#39;one&#39;, &#39;two&#39;, &#39;three&#39; %}</code></pre></div>
+
+<p>will result in</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">one
+two
+one
+two</code></pre></div>
+
+<h3 id="for-loops">For loops</h3>
+
+<p>Liquid allows <code>for</code> loops over collections:</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% for item in array %}
+  {{ item }}
+{% endfor %}</code></pre></div>
+
+<p>When iterating a hash, <code>item[0]</code> contains the key, and <code>item[1]</code> contains the value:</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% for item in hash %}
+  {{ item[0] }}: {{ item[1] }}
+{% endfor %}</code></pre></div>
+
+<p>During every <code>for</code> loop, the following helper variables are available for extra styling needs:</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">forloop.length      # =&gt; length of the entire for loop
+forloop.index       # =&gt; index of the current iteration
+forloop.index0      # =&gt; index of the current iteration (zero based)
+forloop.rindex      # =&gt; how many items are still left?
+forloop.rindex0     # =&gt; how many items are still left? (zero based)
+forloop.first       # =&gt; is this the first iteration?
+forloop.last        # =&gt; is this the last iteration?</code></pre></div>
+
+<p>There are several attributes you can use to influence which items you receive in your loop</p>
+
+<p><code>limit:int</code> lets you restrict how many items you get.
+<code>offset:int</code> lets you start the collection with the nth item.</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid"># array = [1,2,3,4,5,6]
+{% for item in array limit:2 offset:2 %}
+  {{ item }}
+{% endfor %}
+ # results in 3,4</code></pre></div>
+
+<p>Reversing the loop</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% for item in collection reversed %} {{item}} {% endfor %}</code></pre></div>
+
+<p>Instead of looping over an existing collection, you can define a range of numbers to loop through.  The range can be defined by both literal and variable numbers:</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid"># if item.quantity is 4...
+{% for i in (1..item.quantity) %}
+  {{ i }}
+{% endfor %}
+ # results in 1,2,3,4</code></pre></div>
+
+<h3 id="variable-assignment">Variable Assignment</h3>
+
+<p>You can store data in your own variables, to be used in output or other tags as
+desired.  The simplest way to create a variable is with the <code>assign</code> tag, which
+has a pretty straightforward syntax:</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% assign name = &#39;freestyle&#39; %}
+
+{% for t in collections.tags %}{% if t == name %}
+  &lt;p&gt;Freestyle!&lt;/p&gt;
+{% endif %}{% endfor %}</code></pre></div>
+
+<p>Another way of doing this would be to assign <code>true / false</code> values to the variable:</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% assign freestyle = false %}
+
+{% for t in collections.tags %}{% if t == &#39;freestyle&#39; %}
+  {% assign freestyle = true %}
+{% endif %}{% endfor %}
+
+{% if freestyle %}
+  &lt;p&gt;Freestyle!&lt;/p&gt;
+{% endif %}</code></pre></div>
+
+<p>If you want to combine a number of strings into a single string and save it to
+a variable, you can do that with the <code>capture</code> tag. This tag is a block which
+&quot;captures&quot; whatever is rendered inside it, then assigns the captured value to
+the given variable instead of rendering it to the screen.</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% capture attribute_name %}{{ item.title | handleize }}-{{ i }}-color{% endcapture %}
+
+  &lt;label for=&quot;{{ attribute_name }}&quot;&gt;Color:&lt;/label&gt;
+  &lt;select name=&quot;attributes[{{ attribute_name }}]&quot; id=&quot;{{ attribute_name }}&quot;&gt;
+    &lt;option value=&quot;red&quot;&gt;Red&lt;/option&gt;
+    &lt;option value=&quot;green&quot;&gt;Green&lt;/option&gt;
+    &lt;option value=&quot;blue&quot;&gt;Blue&lt;/option&gt;
+  &lt;/select&gt;</code></pre></div>
+
+<hr>
+
+<h2 id="advanced-arrays-in-shopify-39-s-liquid">Advanced Arrays in Shopify&#39;s Liquid</h2>
+
+<p>29 JULY 2014</p>
+
+<p>Liquid is Shopify&#39;s templating language. It&#39;s great and packed with useful helpers. Unfortunately, it struggles when it comes to creating arrays (probably fair, it&#39;s a templating language, afterall).</p>
+
+<p>Creating an array is a simple process, albeit not very intuitive:</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% assign myArray = &quot;item-1|item-2|item-3&quot; | split: &quot;|&quot; %}</code></pre></div>
+
+<p>We&#39;re assigning a string to a new variable called myArray. The array is created when we use the split filter. Now we can run a for loop on our array:</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% for item in myArray %}
+    {{ item }}
+  {% endfor %}</code></pre></div>
+
+<p>Will output:</p>
+
+<p>item-1
+item-2
+item-3</p>
+
+<h2 id="associative-arrays">Associative Arrays</h2>
+
+<p>Now things get a little complicated. Shopify has a great new feature for sorting collections. Instead of creating the dropdown manually, I wanted to create a simple for loop that looked like:</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% assign sortTitles = &quot;Featured|$ Low to High|$ High to Low|A-Z|Z-A|Oldest to Newest|Newest to Oldest|Best Selling&quot; | split: &quot;|&quot; %}
+&lt;select&gt;
+  {% for title in sortTitles %}
+    &lt;option value=&quot;{{ title | handle }}&quot;&gt;{{ title }}&lt;/option&gt;
+  {% endfor %}
+&lt;/select&gt;</code></pre></div>
+
+<p>Unfortunately,  does not accurately correspond to the values we need to pass to the URL. I need to tie (or associate) the handle with a front-facing title that anyone could edit. Double array to the rescue!</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% assign sortHandles = &quot;manual|price-ascending|price-descending|title-ascending|title-descending|created-ascending|created-descending|best-selling&quot; | split: &quot;|&quot; %}
+{% assign sortTitles = &quot;Featured|$ Low to High|$ High to Low|A-Z|Z-A|Oldest to Newest|Newest to Oldest|Best Selling&quot; | split: &quot;|&quot; %}
+
+&lt;select&gt;
+  {% for handle in sortHandles %}
+    &lt;option value=&quot;{{ handle }}&quot;&gt;{{ sortTitles[forloop.index0] }}&lt;/option&gt;
+  {% endfor %}
+&lt;/select&gt;</code></pre></div>
+
+<p>We can use the current loop&#39;s index value and use it to get our title from the sortTitles array. You just need to make sure that if you reorder any of the items in one array you do the same reordering in the other one.</p>
+
+<p>The final markup, if you&#39;re interested, looks like this:</p>
+
+<div class="highlight"><pre><code class="language-liquid" data-lang="liquid">{% for handle in sortHandles %}
+  {% if collection.sort_by == blank and collection.default_sort_by == handle %}
+    {% assign currentTitle = sortTitles[forloop.index0] %}
+  {% elsif collection.sort_by == handle %}
+    {% assign currentTitle = sortTitles[forloop.index0] %}
+  {% endif %}
+{% endfor %}
+
+&lt;label class=&quot;selected-text&quot;&gt;Sort by: &lt;strong&gt;{{ currentTitle }}&lt;/strong&gt;&lt;/label&gt;
+&lt;select&gt;
+  {% for handle in sortHandles %}
+    {% if collection.sort_by == blank and collection.default_sort_by == handle %}
+      &lt;option value=&quot;{{handle}}&quot; selected=&quot;selected&quot;&gt;{{ sortTitles[forloop.index0] }}&lt;/option&gt;
+    {% elsif collection.sort_by == handle %}
+      &lt;option value=&quot;{{handle}}&quot; selected=&quot;selected&quot;&gt;{{ sortTitles[forloop.index0] }}&lt;/option&gt;
+    {% else %}
+      &lt;option value=&quot;{{handle}}&quot;&gt;{{ sortTitles[forloop.index0] }}&lt;/option&gt;
+    {% endif %}
+  {% endfor %}
+&lt;/select&gt;</code></pre></div>
+
+<p>There&#39;s quite a bit of JavaScript involved as well, but we&#39;ll save that for another post!</p>
+
+        </div>
+
+      </div>
+
+      <div id="footer" class="row">
+  <div class="col-md-12">
+    <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+    <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+  </div>
+</div>
+
+      
+    </div>
+
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="../assets/js/jquery-2.1.3.min.js"></script>
+    <script src="../assets/js/bootstrap.min.js"></script>
+    <script src="../assets/js/highlight.pack.js"></script>
+    <script src="../assets/js/toc.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
+  </body>
+</html>
