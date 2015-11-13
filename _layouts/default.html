@@ -1,21 +1,24 @@
   {% include head.html %}
-  
+
   <body>
-    <div class="container">
-            
+    <div id="page" class="container">
+
       {% include navbar.html %}
-      
+
       {% include breadcrumbs.html %}
-      
-      <section>
-        {{ content }}
-      </section>
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          {{ content }}
+        </div>
+
+      </div>
+
+      {% include footer.html %}
       
     </div>
-    
-    
-    {% include footer.html %}
-    
+
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
     <script src="{{ page.asset_path }}/assets/js/jquery-2.1.3.min.js"></script>
     <script src="{{ page.asset_path }}/assets/js/bootstrap.min.js"></script>

@@ -1,6 +1,6 @@
-<nav class="navbar navbar-default">
+<nav id="header" class="navbar navbar-default">
   <div class="container-fluid row">
-    
+
     <div class="navbar-header col-md-6">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
         <span class="sr-only">Toggle navigation</span>
@@ -13,13 +13,19 @@
         <p>A personal collection of Cheatsheets</p>
       </div>
     </div>
-    
+
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse col-md-6" id="header-nav">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="/">HOME <span class="sr-only">(current)</span></a></li>
-        <li><a href="/toc.html">Table of Contents</a></li>
-        <li><a href="/about.html">About</a></li>
+      {% for link in site.navigation %}
+        {% assign current = nil %}
+          {% if page.url contains link.url %}
+          {% assign current = 'active' %}
+        {% endif %}
+        <li class="{{ current }}">
+          <a href="{{ link.url }}" title="{{ link.title }}">{{ link.txt }}</a>
+        </li>
+        {% endfor %}
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->

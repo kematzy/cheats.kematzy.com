@@ -35,10 +35,15 @@ markdown_ext: "markdown,mkdown,mkdn,mkd,md"
 # Markdown
 # highlighter: rouge
 # highlighter: pygments
-highlighter: false
+# markdown: rdiscount
 markdown: redcarpet
 redcarpet:
   extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data", "strikethrough", "superscript"]
+highlighter: false
+
+# markdown: redcarpet
+# redcarpet:
+#   extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data", "strikethrough", "superscript"]
 
 # markdown: redcarpet
 # redcarpet:
@@ -71,3 +76,14 @@ sass:
   style: :compressed
 #     #
 #     # sass_dir: ./_sass
+
+navigation:
+ - txt: Home
+   title: "back to the homepage"
+   url: /index.html
+ - txt: Table of Contents
+   title: 'full table of contents for this website'
+   url: /toc.html
+ - txt: About
+   title: 'find out more information about this website'
+   url: /about.html
