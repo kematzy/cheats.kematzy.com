@@ -8,7 +8,7 @@ asset_path: ../..
 # {{ page.title | join: " / " }}
 
 
-{% highlight ruby %} 
+{% highlight ruby %}
 
 {% endhighlight %}
 
@@ -27,7 +27,7 @@ def validate
 
   validates_presence [:title, :site]
   validates_unique :name
-  validates_format /\Ahttps?:\/\//, :website, :message=>'is not a valid URL'
+  validates_format /\Ahttps?:\/\/\\/, :website, :message=>'is not a valid URL'
   validates_includes %w(a b c), :type
   validates_integer :rating
   validates_numeric :number
@@ -42,7 +42,7 @@ def validate
   validates_min_length 3, :name
   validates_max_length 100, :name
   validates_length_range 3..100, :name
-  
+
   # Setter override
   def filename=(name)
     @values[:filename] = name
@@ -60,7 +60,7 @@ deal.errors
 Check attribute value(s) is not considered `blank` by the database, but allow `false` values.
 
 {% highlight ruby %}
- # validating single field 
+ # validating single field
 validates_presence(:title)
 
  # validating multiple fields
@@ -73,7 +73,7 @@ Check attribute value(s) string representation is a valid float.
 
 
 {% highlight ruby %}
- # validating single field 
+ # validating single field
 validates_numeric(:price)
 
  # validating multiple fields
@@ -86,7 +86,7 @@ Check that the attribute values are the given exact length.
 
 {% highlight ruby %}
 validates_exact_length 17, :isbn
- 
+
 validates_exact_length 2, :country_code
 {% endhighlight %}
 
@@ -219,7 +219,7 @@ This validation does not respect the `:allow_*` options that the other validatio
 Case insensitive uniqueness validation on a database that is case sensitive by default, use:
 
 {% highlight ruby %}
- # 
+ #
 validates_unique :column, :where=>(proc do |ds, obj, cols|
   ds.where(cols.map do |c|
     v = obj.send(c)
@@ -239,7 +239,7 @@ end)
 
 
 {% highlight ruby %}
-DEFAULT_OPTIONS  =  { 
+DEFAULT_OPTIONS  =  {
   #
   :exact_length=>{
     :message=>lambda{|exact| "is not #{exact} characters"}
@@ -247,52 +247,51 @@ DEFAULT_OPTIONS  =  {
   #  
   :format=>{
     :message=>lambda{|with| 'is invalid'}
-  }, 
+  },
   #
   :includes=>{
     :message=>lambda{|set| "is not in range or set: #{set.inspect}"}
-  }, 
-  # 
+  },
+  #
   :integer=>{
     :message=>lambda{"is not a number"}
-  }, 
-  # 
+  },
+  #
   :length_range=>{
     :message=>lambda{|range| "is too short or too long"}
-  }, 
-  # 
+  },
+  #
   :max_length=>{
-    :message=>lambda{|max| "is longer than #{max} characters"}, 
+    :message=>lambda{|max| "is longer than #{max} characters"},
     :nil_message=>lambda{"is not present"}
-  }, 
-  # 
+  },
+  #
   :min_length=>{
     :message=>lambda{|min| "is shorter than #{min} characters"}
-  }, 
-  # 
+  },
+  #
   :not_null=>{
     :message=>lambda{"is not present"}
-  }, 
-  # 
+  },
+  #
   :numeric=>{
     :message=>lambda{"is not a number"}
-  }, 
-  # 
+  },
+  #
   :type=>{
     :message=>lambda{|klass| klass.is_a?(Array) ? "is not a valid #{klass.join(" or ").downcase}" : "is not a valid #{klass.to_s.downcase}"}
-  }, 
-  # 
+  },
+  #
   :presence=>{
     :message=>lambda{"is not present"}
-  }, 
-  # 
+  },
+  #
   :unique=>{
     :message=>lambda{'is already taken'}
-  } 
+  }
 }
 {% endhighlight %}
 
 
 
 Default validation options used by Sequel. Can be modified to change the error messages for all models (e.g. for internationalization), or to set certain default options for validations (e.g. `:allow_nil=>true` for all `validates_format`).
-

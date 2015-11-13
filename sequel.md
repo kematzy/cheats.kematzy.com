@@ -136,20 +136,20 @@ DB[:items].filter(:name => /^AL/)
 #### AND/OR/NOT
 
 {% highlight ruby %}  
-  DB[:items].filter{(x > 5) & (y > 10)}.sql 
+  DB[:items].filter{(x > 5) & (y > 10)}.sql
   # SELECT * FROM items WHERE ((x > 5) AND (y > 10))
 
-  DB[:items].filter({:x => 1, :y => 2}.sql_or & ~{:z => 3}).sql 
+  DB[:items].filter({:x => 1, :y => 2}.sql_or & ~{:z => 3}).sql
   # SELECT * FROM items WHERE (((x = 1) OR (y = 2)) AND (z != 3))
 {% endhighlight %}
 
 #### Mathematical operators
 
 {% highlight ruby %}  
-  DB[:items].filter((:x + :y) > :z).sql 
+  DB[:items].filter((:x + :y) > :z).sql
   # SELECT * FROM items WHERE ((x + y) > z)
 
-  DB[:items].filter{price - 100 < avg(price)}.sql 
+  DB[:items].filter{price - 100 < avg(price)}.sql
   # SELECT * FROM items WHERE ((price - 100) < avg(price))
 {% endhighlight %}
 
@@ -171,10 +171,10 @@ dataset.limit(30, 10) # LIMIT 30 OFFSET 10
 ### Joins
 
 {% highlight ruby %}  
-  DB[:items].left_outer_join(:categories, :id => :category_id).sql 
+  DB[:items].left_outer_join(:categories, :id => :category_id).sql
   # SELECT * FROM items LEFT OUTER JOIN categories ON categories.id = items.category_id
 
-  DB[:items].join(:categories, :id => :category_id).join(:groups, :id => :items__group_id) 
+  DB[:items].join(:categories, :id => :category_id).join(:groups, :id => :items__group_id)
   # SELECT * FROM items INNER JOIN categories ON categories.id = items.category_id INNER JOIN groups ON groups.id = items.group_id
 {% endhighlight %}
 
@@ -210,7 +210,7 @@ DB.create_table :items do
   TrueClass :active, :default => true
   foreign_key :category_id, :categories
   DateTime :created_at
-  
+
   index :created_at
 end
 
@@ -373,7 +373,7 @@ Deal[1].remove_all_images
   def validate
     super
     errors.add(:name, 'cannot be empty') if !name || name.empty?
-    
+
     validates_presence [:title, :site]
     validates_unique :name
     validates_format /\Ahttps?:\/\//, :website, :message=>'is not a valid URL'
@@ -391,7 +391,7 @@ Deal[1].remove_all_images
     validates_min_length 3, :name
     validates_max_length 100, :name
     validates_length_range 3..100, :name
-    
+
     # Setter override
     def filename=(name)
       @values[:filename] = name
@@ -446,7 +446,7 @@ class Deal < Sequel::Model
     primary_key :id
     primary_key [:id, :title]
     String :name, primary_key: true
-    
+
     String  :title
     Numeric :price
     DateTime :expires

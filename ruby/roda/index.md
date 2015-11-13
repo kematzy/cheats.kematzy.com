@@ -1,13 +1,13 @@
 ---
 title: [Ruby, Roda - Web Framework]
 layout: default
-asset_path: ../..
+asset\_path: ../..
 
 ---
 
 # {{ page.title | join: " / " }}
 
-----
+---- 
 
 <div id="toc"></div>
 
@@ -15,10 +15,19 @@ asset_path: ../..
 
 ## Sub-pages
 
-### [Roda Plugins](/ruby/roda/plugins/)
+### [Roda Plugins][1]
 
 
 ## Introduction
 
 This page should show Roda information
 
+
+	# this is ruby code
+	route do |r|
+	  r.emails do
+	    
+	  end
+	end
+
+[1]:	/ruby/roda/plugins/
