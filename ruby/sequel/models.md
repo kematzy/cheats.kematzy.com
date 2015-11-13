@@ -616,6 +616,9 @@ FINDER_TYPES  =  [:first, :all, :each, :get].freeze
 | fast_instance_delete_sql | [R] | SQL string fragment used for faster DELETE statement creation when deleting/destroying model instances, or nil if the optimization should not be used. For internal use only.
 | instance_dataset | [R] | The dataset that instance datasets (#this) are based on. Generally a naked version of the model's dataset limited to one row. For internal use only.
 | plugins | [R]	 | Array of plugin modules loaded by this class <br>{% highlight ruby %}Sequel::Model.plugins # => [Sequel::Model, Sequel::Model::Associations]{% endhighlight %}
+
+| **Attributes** |||
+| --- | --- | --- |
 | primary_key | [R] | The primary key for the class. Sequel can determine this automatically for many databases, but not all, so you may need to set it manually. If not determined automatically, the default is :id.
 | raise_on_save_failure | [RW] | Whether to raise an error instead of returning nil on a failure to save/create/save_changes/update/destroy due to a validation failure or a before_* hook returning false (default: true).
 | raise_on_typecast_failure | [RW] | Whether to raise an error when unable to typecast data for a column (default: true). This should be set to false if you want to use validations to display nice error messages to the user (e.g. most web applications). You can use the validates_schema_types validation (from the validation_helpers plugin) in connection with this setting to check for typecast failures during validation.
@@ -624,7 +627,7 @@ FINDER_TYPES  =  [:first, :all, :each, :get].freeze
 | simple_table | [R] | Should be the literal table name if this Model's dataset is a simple table (no select, order, join, etc.), or nil otherwise. This and #simple_pk are used for an optimization in Model.[].
 | strict_param_setting | [RW] | Whether new/set/update and their variants should raise an error if an invalid key is used. A key is invalid if no setter method exists for that key or the access to the setter method is restricted (e.g. due to it being a primary key field). If set to false, silently skip any key where the setter method doesn't exist or access to it is restricted.
 | typecast_empty_string_to_nil | [RW] | Whether to typecast the empty string ('') to nil for columns that are not string or blob. In most cases the empty string would be the way to specify a NULL SQL value in string form (nil.to_s == ''), and an empty string would not usually be typecast correctly for other types, so the default is true.
-| typecast_on_assignment | [RW] Whether to typecast attribute values on assignment (default: true). If set to false, no typecasting is done, so it will be left up to the database to typecast the value correctly.
+| typecast_on_assignment | [RW] | Whether to typecast attribute values on assignment (default: true). If set to false, no typecasting is done, so it will be left up to the database to typecast the value correctly.
 | use_after_commit_rollback | [RW] | Whether to enable the after_commit and after_rollback hooks when saving/destroying instances. On by default, can be turned off for performance reasons or when using prepared transactions (which aren't compatible with after commit/rollback).
 | use_transactions | [RW] | Whether to use a transaction by default when saving/deleting records (default: true). If you are sending database queries in before_* or after_* hooks, you shouldn't change the default setting without a good reason.
 

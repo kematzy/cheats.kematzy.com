@@ -765,17 +765,69 @@ artist.errors.full_messages         # =&gt; [&#39;name cannot be Invalid&#39;]</
 
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Sequel::Model.plugins # =&gt; [Sequel::Model, Sequel::Model::Associations]</code></pre></div>
 
-<p>| primary_key | [R] | The primary key for the class. Sequel can determine this automatically for many databases, but not all, so you may need to set it manually. If not determined automatically, the default is :id.
-| raise_on_save_failure | [RW] | Whether to raise an error instead of returning nil on a failure to save/create/save_changes/update/destroy due to a validation failure or a before_* hook returning false (default: true).
-| raise_on_typecast_failure | [RW] | Whether to raise an error when unable to typecast data for a column (default: true). This should be set to false if you want to use validations to display nice error messages to the user (e.g. most web applications). You can use the validates_schema_types validation (from the validation_helpers plugin) in connection with this setting to check for typecast failures during validation.
-| require_modification | [RW] | Whether to raise an error if an UPDATE or DELETE query related to a model instance does not modify exactly 1 row. If set to false, Sequel will not check the number of rows modified (default: true).
-| simple_pk | [R] | Should be the literal primary key column name if this Model&#39;s table has a simple primary key, or nil if the model has a compound primary key or no primary key.
-| simple_table | [R] | Should be the literal table name if this Model&#39;s dataset is a simple table (no select, order, join, etc.), or nil otherwise. This and #simple_pk are used for an optimization in Model.[].
-| strict_param_setting | [RW] | Whether new/set/update and their variants should raise an error if an invalid key is used. A key is invalid if no setter method exists for that key or the access to the setter method is restricted (e.g. due to it being a primary key field). If set to false, silently skip any key where the setter method doesn&#39;t exist or access to it is restricted.
-| typecast_empty_string_to_nil | [RW] | Whether to typecast the empty string (&#39;&#39;) to nil for columns that are not string or blob. In most cases the empty string would be the way to specify a NULL SQL value in string form (nil.to_s == &#39;&#39;), and an empty string would not usually be typecast correctly for other types, so the default is true.
-| typecast_on_assignment | [RW] Whether to typecast attribute values on assignment (default: true). If set to false, no typecasting is done, so it will be left up to the database to typecast the value correctly.
-| use_after_commit_rollback | [RW] | Whether to enable the after_commit and after_rollback hooks when saving/destroying instances. On by default, can be turned off for performance reasons or when using prepared transactions (which aren&#39;t compatible with after commit/rollback).
-| use_transactions | [RW] | Whether to use a transaction by default when saving/deleting records (default: true). If you are sending database queries in before_* or after_* hooks, you shouldn&#39;t change the default setting without a good reason.</p>
+<table><thead>
+<tr>
+<th><strong>Attributes</strong></th>
+<th></th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>primary_key</td>
+<td>[R]</td>
+<td>The primary key for the class. Sequel can determine this automatically for many databases, but not all, so you may need to set it manually. If not determined automatically, the default is :id.</td>
+</tr>
+<tr>
+<td>raise_on_save_failure</td>
+<td>[RW]</td>
+<td>Whether to raise an error instead of returning nil on a failure to save/create/save_changes/update/destroy due to a validation failure or a before_* hook returning false (default: true).</td>
+</tr>
+<tr>
+<td>raise_on_typecast_failure</td>
+<td>[RW]</td>
+<td>Whether to raise an error when unable to typecast data for a column (default: true). This should be set to false if you want to use validations to display nice error messages to the user (e.g. most web applications). You can use the validates_schema_types validation (from the validation_helpers plugin) in connection with this setting to check for typecast failures during validation.</td>
+</tr>
+<tr>
+<td>require_modification</td>
+<td>[RW]</td>
+<td>Whether to raise an error if an UPDATE or DELETE query related to a model instance does not modify exactly 1 row. If set to false, Sequel will not check the number of rows modified (default: true).</td>
+</tr>
+<tr>
+<td>simple_pk</td>
+<td>[R]</td>
+<td>Should be the literal primary key column name if this Model&#39;s table has a simple primary key, or nil if the model has a compound primary key or no primary key.</td>
+</tr>
+<tr>
+<td>simple_table</td>
+<td>[R]</td>
+<td>Should be the literal table name if this Model&#39;s dataset is a simple table (no select, order, join, etc.), or nil otherwise. This and #simple_pk are used for an optimization in Model.[].</td>
+</tr>
+<tr>
+<td>strict_param_setting</td>
+<td>[RW]</td>
+<td>Whether new/set/update and their variants should raise an error if an invalid key is used. A key is invalid if no setter method exists for that key or the access to the setter method is restricted (e.g. due to it being a primary key field). If set to false, silently skip any key where the setter method doesn&#39;t exist or access to it is restricted.</td>
+</tr>
+<tr>
+<td>typecast_empty_string_to_nil</td>
+<td>[RW]</td>
+<td>Whether to typecast the empty string (&#39;&#39;) to nil for columns that are not string or blob. In most cases the empty string would be the way to specify a NULL SQL value in string form (nil.to_s == &#39;&#39;), and an empty string would not usually be typecast correctly for other types, so the default is true.</td>
+</tr>
+<tr>
+<td>typecast_on_assignment</td>
+<td>[RW]</td>
+<td>Whether to typecast attribute values on assignment (default: true). If set to false, no typecasting is done, so it will be left up to the database to typecast the value correctly.</td>
+</tr>
+<tr>
+<td>use_after_commit_rollback</td>
+<td>[RW]</td>
+<td>Whether to enable the after_commit and after_rollback hooks when saving/destroying instances. On by default, can be turned off for performance reasons or when using prepared transactions (which aren&#39;t compatible with after commit/rollback).</td>
+</tr>
+<tr>
+<td>use_transactions</td>
+<td>[RW]</td>
+<td>Whether to use a transaction by default when saving/deleting records (default: true). If you are sending database queries in before_* or after_* hooks, you shouldn&#39;t change the default setting without a good reason.</td>
+</tr>
+</tbody></table>
 
 <h2 id="public-instance-methods">Public Instance methods</h2>
 
