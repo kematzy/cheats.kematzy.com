@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Sinatra - Web Framework - Ruby | Cheats by Kematzy</title>
+    <title>Associations - Sequel ORM - Ruby | Cheats by Kematzy</title>
 
     <link rel="stylesheet" href="../../assets/css/styles.css">
     <!-- <link rel="stylesheet" href="../../assets/css/-pygment_trac.css"> -->
@@ -41,9 +41,7 @@
       
         
           
-          
-        
-        <li class="active">
+        <li class="">
           <a href="/index.html" title="back to the homepage">Home</a>
         </li>
         
@@ -77,10 +75,10 @@
         <li><a href="/ruby/">Ruby</a></li>
       
         
-        <li><a href="/ruby/sinatra/">Sinatra</a></li>
+        <li><a href="/ruby/sequel/">Sequel</a></li>
       
         
-        <li><a href="/ruby/sinatra/index.html">Index</a></li>
+        <li><a href="/ruby/sequel/associations.html">Associations</a></li>
       
     </ol>
   </div>
@@ -90,7 +88,7 @@
       <div id="page-contents" class="row">
 
         <div class="col-md-12">
-          <h1 id="ruby-sinatra-web-framework">Ruby / Sinatra - Web Framework</h1>
+          <h1 id="ruby-sequel-orm-associations">Ruby / Sequel ORM / Associations</h1>
 
 <hr>
 
@@ -98,13 +96,57 @@
 
 <hr>
 
-<h2 id="sub-pages">Sub-pages</h2>
-
-<h3 id="sinatra-extensions"><a href="/ruby/sinatra/extensions.html">Sinatra Extensions</a></h3>
-
 <h2 id="introduction">Introduction</h2>
 
-<p>This page should show Sinatra information</p>
+<hr>
+
+<h2 id="model-associations">Model Associations</h2>
+
+<h3 id="one_to_one-short-description-goes-here">one_to_one <small>- short description goes here....</small></h3>
+
+<p><hr class="divider"></p>
+
+<h3 id="one_to_many-short-description-goes-here">one_to_many <small>- short description goes here....</small></h3>
+
+<p><hr class="divider"></p>
+
+<h3 id="many_to_one-short-description-goes-here">many_to_one <small>- short description goes here....</small></h3>
+
+<p><hr class="divider"></p>
+
+<h3 id="many_to_many-short-description-goes-here">many_to_many <small>- short description goes here....</small></h3>
+
+<hr>
+
+<h2 id="model-associations">Model Associations</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">class Deal &lt; Sequel::Model
+
+  # Us (left) &lt;=&gt; Them (right)
+  many_to_many  :images,
+    left_id:    :deal_id,
+    right_id:   :image_id,
+    join_table: :image_links
+
+  one_to_many   :files,
+    key:        :deal_id,
+    class:      :DataFile,
+
+  many_to_one   :parent, class: self
+  one_to_many   :children, key: :parent_id, class: self
+
+  one_to_many :gold_albums, class: :Album do |ds|
+    ds.filter { copies_sold &gt; 50000 }
+  end</code></pre></div>
+
+<p>Provided by many_to_many</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Deal[1].images
+Deal[1].add_image
+Deal[1].remove_image
+Deal[1].remove_all_images</code></pre></div>
+
+<p><a href="http://sequel.rubyforge.org/rdoc/files/doc/association_basics_rdoc.html">Associations Basics</a></p>
 
         </div>
 

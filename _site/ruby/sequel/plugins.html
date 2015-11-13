@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Plugins - Sequel ORM | Cheats by Kematzy</title>
+    <title>Plugins - Sequel ORM - Ruby | Cheats by Kematzy</title>
 
     <link rel="stylesheet" href="../../assets/css/styles.css">
-    <link rel="stylesheet" href="../../assets/css/pygment_trac.css">
+    <!-- <link rel="stylesheet" href="../../assets/css/-pygment_trac.css"> -->
     <script src="../../assets/js/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
@@ -15,13 +15,13 @@
     <![endif]-->
   </head>
 
-  
+
   <body>
-    <div class="container">
-            
-      <nav class="navbar navbar-default">
+    <div id="page" class="container">
+
+      <nav id="header" class="navbar navbar-default">
   <div class="container-fluid row">
-    
+
     <div class="navbar-header col-md-6">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
         <span class="sr-only">Toggle navigation</span>
@@ -34,23 +34,39 @@
         <p>A personal collection of Cheatsheets</p>
       </div>
     </div>
-    
+
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse col-md-6" id="header-nav">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="/">HOME <span class="sr-only">(current)</span></a></li>
-        <li><a href="/toc.html">Table of Contents</a></li>
-        <li><a href="/about.html">About</a></li>
+      
+        
+          
+        <li class="">
+          <a href="/index.html" title="back to the homepage">Home</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/toc.html" title="full table of contents for this website">Table of Contents</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/about.html" title="find out more information about this website">About</a>
+        </li>
+        
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
 
-      
+
       
 
 
-<div class="row">
+<div id="breadcrumbs" class="row">
   <div class="col-md-12">
     <ol class="breadcrumb">
       <li><a href="/">Home</a></li>
@@ -68,185 +84,222 @@
   </div>
 </div>
 
-      
-      <section>
-        <h1>Ruby / Sequel ORM / Plugins</h1>
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          <h1 id="ruby-sequel-orm-plugins">Ruby / Sequel ORM / Plugins</h1>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"></code></pre></div>
 
 <hr>
 
-<h2>Schema</h2>
+<h2 id="plugin-schema">Plugin: Schema</h2>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># affect all models</span>
-<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:schema</span><span class="p">)</span>
+<p>Adds backwards compatibility for <code>Model.set_schema</code> and <code>Model.create_table</code>.</p>
 
- <span class="c1"># only one model</span>
-<span class="k">class</span> <span class="nc">Post</span> <span class="o">&lt;</span> <span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span>
-  <span class="n">plugin</span> <span class="ss">:schema</span>
-<span class="k">end</span></code></pre></div>
+<p>Sequel&#39;s built in <code>schema</code> plugin allows you to define your schema directly in the model using <code>Model.set_schema</code> (which takes a block similar to <code>Database#create_table</code>), and use <code>Model.create_table</code> to create a table using the schema information.</p>
 
-<hr>
+<p>This plugin is mostly suited to test code. If there is any chance that your application&#39;s schema could change, you should be <strong>using the migration extension instead</strong>.</p>
 
-<h2>ValidationHelpers</h2>
+<h3 id="usage">Usage:</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># affect all models</span>
-<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:validation_helpers</span><span class="p">)</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># Add the schema methods to all model subclasses (called before loading subclasses)
+Sequel::Model.plugin :schema
 
- <span class="c1"># only one model</span>
-<span class="k">class</span> <span class="nc">Post</span> <span class="o">&lt;</span> <span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span>
-  <span class="n">plugin</span> <span class="ss">:validation_helpers</span>
-<span class="k">end</span></code></pre></div>
+ # Add the schema methods to the Album class
+Album.plugin :schema</code></pre></div>
 
 <hr>
 
-<h2>Timestamp</h2>
+<h2 id="plugin-validationhelpers">Plugin: ValidationHelpers</h2>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># affect all models</span>
-<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:timestamps</span><span class="p">)</span>
+<p>The <code>validation_helpers</code> plugin contains instance method equivalents for most of the legacy class-level validations. The names and APIs are different, though. Example:</p>
 
- <span class="c1"># only one model</span>
-<span class="k">class</span> <span class="nc">Post</span> <span class="o">&lt;</span> <span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span>
-  <span class="n">plugin</span> <span class="ss">:timestamps</span>
-<span class="k">end</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># Add the validation helpers to all model subclasses (called before loading subclasses)
+Sequel::Model.plugin :validation_helpers
 
-<hr>
+class Album &lt; Sequel::Model
+  def validate
+    super  # NB! calling `super` first
+    validates_min_length 1, :num_tracks
+  end
+end</code></pre></div>
 
-<h2>List</h2>
-
-<hr>
-
-<h2>Tree</h2>
+<h3 id="see-validations-for-more-info">See <a href="/ruby/sequel/validations.html">Validations</a> for more info</h3>
 
 <hr>
 
-<h2><a href="https://github.com/kematzy/sequel-paranoid">Paranoid</a></h2>
+<h2 id="plugin-timestamp">Plugin: Timestamp</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># affect all models
+Sequel::Model.plugin(:timestamps)
+
+ # only one model
+class Post &lt; Sequel::Model
+  plugin :timestamps
+end</code></pre></div>
+
+<hr>
+
+<h2 id="plugin-list">Plugin: List</h2>
+
+<hr>
+
+<h2 id="plugin-tree">Plugin: Tree</h2>
+
+<hr>
+
+<h2 id="plugin-paranoid">Plugin: <a href="https://github.com/kematzy/sequel-paranoid">Paranoid</a></h2>
 
 <p>A plugin for the Ruby ORM Sequel, that allows soft deletion of database entries.</p>
 
-<h3>Basics</h3>
+<h3 id="basics">Basics</h3>
 
 <p>In order to use the paranoid plugin in the very basic version, just add it your model like this:</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># affect all models</span>
-<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:paranoid</span><span class="p">)</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># affect all models
+Sequel::Model.plugin(:paranoid)
 
- <span class="c1"># affects only one model</span>
-<span class="k">class</span> <span class="nc">Post</span> <span class="o">&lt;</span> <span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span>
-  <span class="n">plugin</span> <span class="ss">:paranoid</span>
-<span class="k">end</span></code></pre></div>
+ # affects only one model
+class Post &lt; Sequel::Model
+  plugin :paranoid
+end</code></pre></div>
 
 <p>This will assume that you have a column <code>deleted_at</code>, which gets filled with the current timestamp once the model gets destroyed:</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">instance</span> <span class="o">=</span> <span class="no">ParanoidModel</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">:something</span><span class="p">)</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">instance = ParanoidModel.create(:something)
 
-<span class="n">instance</span><span class="o">.</span><span class="n">deleted?</span>   <span class="c1"># =&gt; false</span>
-<span class="n">instance</span><span class="o">.</span><span class="n">deleted_at</span> <span class="c1"># =&gt; nil</span>
+instance.deleted?   # =&gt; false
+instance.deleted_at # =&gt; nil
 
-<span class="n">instance</span><span class="o">.</span><span class="n">destroy</span>
+instance.destroy
 
-<span class="n">instance</span><span class="o">.</span><span class="n">deleted?</span>   <span class="c1"># =&gt; true</span>
-<span class="n">instance</span><span class="o">.</span><span class="n">deleted_at</span> <span class="c1"># =&gt; current timestamp</span></code></pre></div>
+instance.deleted?   # =&gt; true
+instance.deleted_at # =&gt; current timestamp</code></pre></div>
 
-<h3>Reading the data</h3>
+<h3 id="reading-the-data">Reading the data</h3>
 
 <p>By default the plugin will not change the way scopes have been working. </p>
 
 <p>So if you want to take the deletion state of an entry into account you can use the following dataset filters:</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">ParanoidModel</span><span class="o">.</span><span class="n">present</span><span class="o">.</span><span class="n">all</span>      <span class="c1"># =&gt; Will return all the non-deleted entries from the db.</span>
-<span class="no">ParanoidModel</span><span class="o">.</span><span class="n">deleted</span><span class="o">.</span><span class="n">all</span>      <span class="c1"># =&gt; Will return all the deleted entries from the db.</span>
-<span class="no">ParanoidModel</span><span class="o">.</span><span class="n">with_deleted</span><span class="o">.</span><span class="n">all</span> <span class="c1"># =&gt; Will ignore the deletion state (and is the default).</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">ParanoidModel.present.all      # =&gt; Will return all the non-deleted entries from the db.
+ParanoidModel.deleted.all      # =&gt; Will return all the deleted entries from the db.
+ParanoidModel.with_deleted.all # =&gt; Will ignore the deletion state (and is the default).</code></pre></div>
 
-<h3>Renaming the deletion timestamp columns</h3>
+<h3 id="renaming-the-deletion-timestamp-columns">Renaming the deletion timestamp columns</h3>
 
 <p>If you don&#39;t want to use the default column name <code>deleted_at</code>, you can easily rename that column:</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">ParanoidModel</span> <span class="o">&lt;</span> <span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span>
-  <span class="n">plugin</span> <span class="ss">:paranoid</span><span class="p">,</span> <span class="ss">:deleted_at_field_name</span> <span class="o">=&gt;</span> <span class="ss">:destroyed_at</span>
-<span class="k">end</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">class ParanoidModel &lt; Sequel::Model
+  plugin :paranoid, :deleted_at_field_name =&gt; :destroyed_at
+end
 
-<span class="n">instance</span> <span class="o">=</span> <span class="no">ParanoidModel</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">:something</span> <span class="o">=&gt;</span> <span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+instance = ParanoidModel.create(:something =&gt; &#39;foo&#39;)
 
-<span class="n">instance</span><span class="o">.</span><span class="n">destroy</span>
-<span class="n">instance</span><span class="o">.</span><span class="n">destroyed_at</span> <span class="c1"># =&gt; current timestamp</span></code></pre></div>
+instance.destroy
+instance.destroyed_at # =&gt; current timestamp</code></pre></div>
 
-<h3>Enabling the non-deleted default scope</h3>
+<h3 id="enabling-the-non-deleted-default-scope">Enabling the non-deleted default scope</h3>
 
 <p>In order to exclude deleted entries by default from any query, you can enable an option in the plugin. One major reason for don&#39;t enabling it by default is the fact, that associations are kinda broken, when you want to load also deleted associated instances:</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">ParanoidModel</span> <span class="o">&lt;</span> <span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span>
-  <span class="n">plugin</span> <span class="ss">:paranoid</span><span class="p">,</span> <span class="ss">:enable_default_scope</span> <span class="o">=&gt;</span> <span class="kp">true</span>
-  <span class="n">one_to_many</span> <span class="ss">:child_models</span>
-<span class="k">end</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">class ParanoidModel &lt; Sequel::Model
+  plugin :paranoid, :enable_default_scope =&gt; true
+  one_to_many :child_models
+end
 
-<span class="k">class</span> <span class="nc">AnotherModel</span> <span class="o">&lt;</span> <span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span>
-  <span class="n">plugin</span> <span class="ss">:paranoid</span>
-  <span class="n">many_to_one</span> <span class="ss">:paranoid_model</span>
-<span class="k">end</span>
+class AnotherModel &lt; Sequel::Model
+  plugin :paranoid
+  many_to_one :paranoid_model
+end
 
- <span class="c1"># create some dummy data</span>
+ # create some dummy data
 
-<span class="n">parent1</span> <span class="o">=</span> <span class="no">ParanoidModel</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">:something</span> <span class="o">=&gt;</span> <span class="s1">&#39;foo&#39;</span><span class="p">)</span>
-<span class="n">parent2</span> <span class="o">=</span> <span class="no">ParanoidModel</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">:something</span> <span class="o">=&gt;</span> <span class="s1">&#39;bar&#39;</span><span class="p">)</span>
+parent1 = ParanoidModel.create(:something =&gt; &#39;foo&#39;)
+parent2 = ParanoidModel.create(:something =&gt; &#39;bar&#39;)
 
-<span class="n">child1</span>  <span class="o">=</span> <span class="no">ChildModel</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">:something</span> <span class="o">=&gt;</span> <span class="s1">&#39;foo&#39;</span><span class="p">)</span>
-<span class="n">child2</span>  <span class="o">=</span> <span class="no">ChildModel</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">:something</span> <span class="o">=&gt;</span> <span class="s1">&#39;bar&#39;</span><span class="p">)</span>
-<span class="n">child3</span>  <span class="o">=</span> <span class="no">ChildModel</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="ss">:something</span> <span class="o">=&gt;</span> <span class="s1">&#39;baz&#39;</span><span class="p">)</span>
+child1  = AnotherModel.create(:something =&gt; &#39;foo&#39;)
+child2  = AnotherModel.create(:something =&gt; &#39;bar&#39;)
+child3  = AnotherModel.create(:something =&gt; &#39;baz&#39;)
 
-<span class="n">parent1</span><span class="o">.</span><span class="n">add_child_model</span><span class="p">(</span><span class="n">child1</span><span class="p">)</span>
-<span class="n">parent1</span><span class="o">.</span><span class="n">add_child_model</span><span class="p">(</span><span class="n">child2</span><span class="p">)</span>
-<span class="n">parent2</span><span class="o">.</span><span class="n">add_child_model</span><span class="p">(</span><span class="n">child3</span><span class="p">)</span>
+parent1.add_child_model(child1)
+parent1.add_child_model(child2)
+parent2.add_child_model(child3)
 
- <span class="c1"># destroy one of the children</span>
+ # destroy one of the children
 
-<span class="n">child1</span><span class="o">.</span><span class="n">destroy</span>
-<span class="n">child1</span><span class="o">.</span><span class="n">deleted?</span> <span class="c1"># =&gt; true</span>
+child1.destroy
+child1.deleted? # =&gt; true
 
- <span class="c1"># load the children</span>
+ # load the children
 
-<span class="no">ChildModel</span><span class="o">.</span><span class="n">all</span>                              <span class="c1"># =&gt; [child2, child3] (works as expected)</span>
-<span class="no">ChildModel</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">unfiltered</span><span class="o">.</span><span class="n">all</span>           <span class="c1"># =&gt; [child1, child2, child3] (works as expected)</span>
+ChildModel.all                              # =&gt; [child2, child3] (works as expected)
+ChildModel.dataset.unfiltered.all           # =&gt; [child1, child2, child3] (works as expected)
 
-<span class="n">parent1</span><span class="o">.</span><span class="n">child_models_dataset</span><span class="o">.</span><span class="n">all</span>            <span class="c1"># =&gt; [child2] (works as expected)</span>
-<span class="n">parent1</span><span class="o">.</span><span class="n">child_models_dataset</span><span class="o">.</span><span class="n">unfiltered</span><span class="o">.</span><span class="n">all</span> <span class="c1"># =&gt; [child1, child2, child3] (broken)</span></code></pre></div>
+parent1.child_models_dataset.all            # =&gt; [child2] (works as expected)
+parent1.child_models_dataset.unfiltered.all # =&gt; [child1, child2, child3] (broken)</code></pre></div>
 
 <p>Note that <strong>the last command is broken</strong>, as <code>child3</code> is not associated with <code>parent1</code>. The reason for that is <code>unfiltered</code>, which will not only remove the <code>deleted_at</code> check but also the association condition of the query.</p>
 
 <hr>
 
-<h2>JSON Serializer</h2>
+<h2 id="plugin-json-serializer">Plugin: JSON Serializer</h2>
 
 <p>Add JSON output capability to all model instances</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># affect all models</span>
-<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:json_serializer</span><span class="p">)</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># affect all models
+Sequel::Model.plugin(:json_serializer)
 
- <span class="c1"># affects only one model</span>
-<span class="k">class</span> <span class="nc">Post</span> <span class="o">&lt;</span> <span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span>
-  <span class="n">plugin</span> <span class="ss">:json_serializer</span>
-<span class="k">end</span></code></pre></div>
+ # affects only one model
+class Post &lt; Sequel::Model
+  plugin :json_serializer
+end</code></pre></div>
 
 <hr>
 
-<h2>XML Serializer</h2>
+<h2 id="plugin-xml-serializer">Plugin: XML Serializer</h2>
 
 <p>Add XML output capability to all model instances</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># affect all models</span>
-<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:xml_serializer</span><span class="p">)</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># affect all models
+Sequel::Model.plugin(:xml_serializer)
 
- <span class="c1"># only one model</span>
-<span class="k">class</span> <span class="nc">Post</span> <span class="o">&lt;</span> <span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span>
-  <span class="n">plugin</span> <span class="ss">:xml_serializer</span>
-<span class="k">end</span></code></pre></div>
+ # only one model
+class Post &lt; Sequel::Model
+  plugin :xml_serializer
+end</code></pre></div>
 
 <hr>
 
-      </section>
+        </div>
+
+      </div>
+
+      <div id="footer" class="row">
+  <div class="col-md-12">
+    <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+    <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+  </div>
+</div>
+
       
     </div>
-    
-    
-    
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->    
+
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="../../assets/js/jquery-2.1.3.min.js"></script>
+    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/highlight.pack.js"></script>
+    <script src="../../assets/js/toc.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
   </body>
 </html>

@@ -1,0 +1,351 @@
+  <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Mailman - Gems - Ruby | Cheats by Kematzy</title>
+
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+    <!-- <link rel="stylesheet" href="../../assets/css/-pygment_trac.css"> -->
+    <script src="../../assets/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+
+  <body>
+    <div id="page" class="container">
+
+      <nav id="header" class="navbar navbar-default">
+  <div class="container-fluid row">
+
+    <div class="navbar-header col-md-6">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <h1><a href="/">Cheats by Kematzy</a></h1>
+        <p>A personal collection of Cheatsheets</p>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse col-md-6" id="header-nav">
+      <ul class="nav navbar-nav">
+      
+        
+          
+        <li class="">
+          <a href="/index.html" title="back to the homepage">Home</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/toc.html" title="full table of contents for this website">Table of Contents</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/about.html" title="find out more information about this website">About</a>
+        </li>
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+      
+
+
+<div id="breadcrumbs" class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      
+        
+        <li><a href="/ruby/">Ruby</a></li>
+      
+        
+        <li><a href="/ruby/gems/">Gems</a></li>
+      
+        
+        <li><a href="/ruby/gems/mailman.html">Mailman</a></li>
+      
+    </ol>
+  </div>
+</div>
+
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          <h1 id="ruby-gems-mailman">Ruby / Gems / Mailman</h1>
+
+<hr>
+
+<div id="toc"></div>
+
+<hr>
+
+<h2 id="introduction-mailman-user-guide">Introduction - Mailman User Guide</h2>
+
+<p>Mailman is a microframework for processing incoming email.</p>
+
+<p>Here is an example Mailman app that takes incoming messages to a support email account, and adds them to a database.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"> # mailman_app.rb
+require &#39;mailman&#39;
+
+Mailman.config.maildir = &#39;~/Maildir&#39;
+
+Mailman::Application.run do
+  to &#39;support@example.org&#39; do
+    Ticket.new_from_message(message)
+  end
+end
+</code></pre></div>
+<p>The Mailman app could then be started by running <code>ruby mailman_app.rb</code>.</p>
+
+<h2 id="installation">Installation</h2>
+
+<p>Installation is as simple as:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">gem install mailman
+</code></pre></div>
+<h2 id="routes-amp-conditions">Routes &amp; Conditions</h2>
+
+<p>A <strong>Condition</strong> specifies the part of the message to match against. <code>to</code>, <code>from</code>, and <code>subject</code> are some valid conditions. </p>
+
+<p>A <strong>Matcher</strong> is used by a condition to determine whether it matches the message. Matchers can be strings or regular expressions. One or more Condition/Matcher pairs are combined with a block of code to form a <strong>Route</strong>.</p>
+
+<h3 id="matchers">Matchers</h3>
+
+<p>There are string and regular expression matchers. Both can perform captures.</p>
+
+<h4 id="string">String</h4>
+
+<p>String matchers are very simple. They search through a whole field for a specific substring. For instance: <code>&#39;ID&#39;</code> would match <code>Ticket ID</code>, <code>User ID</code>, etc.</p>
+
+<p>They can also perform named captures. <code>&#39;%username%@example.org&#39;</code> will match any email address that ends with <code>@example.org</code>, and store the user part of the address in a capture called <code>username</code>. Captures can be accessed by using the <code>params</code> helper inside of blocks, or with block arguments (see below for details).</p>
+
+<p>The capture names may only contain letters and underscores. Behind the scenes they are compiled to regular expressions, and each capture is the equivalent to <code>.*</code>. There is currently no way to escape <code>%</code> characters. If a literal <code>%</code> is required, and Mailman thinks it is a named capture, use a regular expression matcher instead.</p>
+
+<h4 id="regular-expression">Regular expression</h4>
+
+<p>Regular expressions may be used as matchers. All captures will be available from the params helper (<code>params[:captures]</code>) as an Array, and as block arguments.</p>
+
+<h3 id="routes">Routes</h3>
+
+<p>Routes are defined within a Mailman application block:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Mailman::Application.run do
+  # routes here
+end
+</code></pre></div>
+<p>Messages are passed through routes in the order they are defined in the application from top to bottom. The first matching route&#39;s block will be called.</p>
+
+<h4 id="condition-chaining">Condition Chaining</h4>
+
+<p>Conditions can be chained so that the route will only be executed if all conditions pass:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">to(&#39;support@example.org&#39;).subject(/urgent/) do
+  # process urgent message here
+end
+</code></pre></div>
+<h4 id="special-routes">Special routes</h4>
+
+<p>The <code>default</code> route is a catch-all that is run if no other routes match:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">default do
+  # process non-matching messages
+end
+</code></pre></div>
+<h4 id="block-arguments">Block Arguments</h4>
+
+<p>All captures from matchers are available as block arguments:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">from(&#39;%user%@example.org&#39;).subject(/Ticket (\d+)/) do |username, ticket_id|
+  puts &quot;Got message from #{username} about Ticket #{ticket_id}&quot;
+end
+</code></pre></div>
+<h4 id="class-routing">Class Routing</h4>
+
+<p>Messages can also be routed to methods. For instance, to route to an Object with a <code>receive</code> instance method defined, this will work:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">from &#39;%user%@example.org&#39;, Sample
+</code></pre></div>
+<p>Messages can also be routed to arbitrary instance methods:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">from &#39;%user%@example.org&#39;, &#39;ExampleClass#new_message&#39;
+</code></pre></div>
+<p>The method should accept two arguments, the message object, and the params:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">def receive(message, params)
+  # process message here
+end
+</code></pre></div>
+<h4 id="route-helpers">Route Helpers</h4>
+
+<p>There are two helpers available inside of route blocks:</p>
+
+<p>The <code>params</code> hash holds all captures from matchers:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">from(&#39;%user%@example.org&#39;).subject(/RE: (.*)/) do
+  params[:user] #=&gt; &#39;chunkybacon&#39;
+  # it is an indifferent hash, so you can use strings and symbols
+  # interchangeably as keys
+  params[&#39;captures&#39;][0] #=&gt; &#39;A very important message about pigs&#39;
+end
+</code></pre></div>
+<p>The <code>message</code> helper is a <code>Mail::Message</code> object that contains the entire message. See the <a href="http://github.com/mikel/mail/">mail</a> docs for information on the properties available.</p>
+
+<h3 id="conditions">Conditions</h3>
+
+<p>Currently there are five conditions available: <code>to</code>, <code>from</code>, <code>cc</code>, <code>subject</code>, <code>body</code></p>
+
+<p>More can be added easily (see <code>lib/mailman/route/conditions.rb</code>).</p>
+
+<h2 id="receivers">Receivers</h2>
+
+<p>There are currently three types of receivers in Mailman: Standard Input, Maildir, and POP3. If IMAP or any complex setups are required, use a mail retriever like <a href="http://pyropus.ca/software/getmail/">getmail</a> with the Maildir receiver.</p>
+
+<h3 id="standard-input">Standard Input</h3>
+
+<p>If a message is piped to a Mailman app, this receiver will override any configured receivers. The app will process the message, and then quit. This receiver is useful for testing and debugging. This feature can be disabled with the <code>Mailman.config.ignore_stdin</code> option.</p>
+
+<p><strong>Example</strong>: <code>cat plain_message.eml | ruby mailman_app.rb</code></p>
+
+<p><em>Note that the standard input receiver is not supported on Windows platforms.</em></p>
+
+<h3 id="pop3">POP3</h3>
+
+<p>The POP3 receiver is enabled when the <code>Mailman.config.pop3</code> hash is set. It will poll every minute by default (this can be changed with <code>Mailman.config.poll_interval</code>). After new messages are processed, they will be deleted from the server. <em>No  copy of messages will be saved anywhere after processing</em>. If you want to keep a copy of messages, it is recommended that you use a mail retriever with the Maildir receiver. You could also use Gmail and set it to keep messages after they have been retrieved with POP3.</p>
+
+<p>You can pass a Hash to <code>ssl</code> with <a href="http://www.ruby-doc.org/stdlib/libdoc/openssl/rdoc/OpenSSL/SSL/SSLContext.html">SSL context options</a>. For example, when you have a self-signed certificate: <code>ssl: { ca_file: &#39;/etc/pki/my_ca.pem&#39; }</code>.</p>
+
+<h3 id="imap">IMAP</h3>
+
+<p>The IMAP receiver is enabled when the <code>Mailman.config.imap</code> hash is set. Polling can be set with <code>Mailman.config.poll_interval</code>. This will read all unread messages in the INBOX by default. Here are example settings for gmail.</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Mailman.config.imap = {
+  server: &#39;imap.gmail.com&#39;,
+  port: 993, # you usually don&#39;t need to set this, but it&#39;s there if you need to
+  ssl: true,
+  # Use starttls instead of ssl (do not specify both)
+  #starttls: true,
+  username: &#39;foo@somedomain.com&#39;,
+  password: &#39;totallyunsecuredpassword&#39;
+}
+
+</code></pre></div>
+<ul>
+<li>When using gmail, remember to <a href="https://support.google.com/mail/troubleshooter/1668960">enable IMAP</a></li>
+<li>You can pass a Hash to <code>ssl</code>, just like with POP3.</li>
+</ul>
+
+<h3 id="maildir">Maildir</h3>
+
+<p>The Maildir receiver is enabled when <code>Mailman.config.maildir</code> is set to a directory. If the <code>cur</code>, <code>new</code>, and <code>tmp</code> folders do not already exist in the folder, they will be created. All messages in <code>new</code> folder will be processed when the application launches, then moved to the <code>cur</code> folder, and marked as seen. After processing these messages, Mailman will use the <a href="http://github.com/ttilley/fssm">fssm</a> gem to monitor the <code>new</code> folder, and process messages as they are created.</p>
+
+<h2 id="configuration">Configuration</h2>
+
+<p>Configuration is stored in the <code>Mailman.config</code> object. All paths are relative to the process&#39;s working directory or absolute if starting with a <code>/</code>.</p>
+
+<h3 id="logging">Logging</h3>
+
+<p><code>Mailman.config.logger</code> can be set to a <code>Logger</code> instance. You should change this if you want to log to a file in production.</p>
+
+<p><strong>Example</strong>: <code>Mailman.config.logger = Logger.new(&#39;logs/mailman.log&#39;)</code></p>
+
+<p><strong>Default</strong>: <code>Logger.new(STDOUT)</code></p>
+
+<h3 id="pop3-receiver">POP3 Receiver</h3>
+
+<p><code>Mailman.config.pop3</code> stores an optional POP3 configuration hash. If it is
+set, Mailman will use POP3 polling as the receiver.</p>
+
+<p><strong>Example</strong>:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Mailman.config.pop3 = {
+  :username =&gt; &#39;chunkybacon@gmail.com&#39;,
+  :password =&gt; &#39;foobar&#39;,
+  :server   =&gt; &#39;pop.gmail.com&#39;,
+  :port     =&gt; 995, # you can usually omit this, but it&#39;s there
+  :ssl      =&gt; true # defaults to false
+}
+</code></pre></div>
+<h3 id="polling">Polling</h3>
+
+<p><code>Mailman.config.poll_interval</code> is the duration in seconds to wait between checking for new messages on the server. It is currently only used by the POP3 reciever. If it is set to <code>0</code>, Mailman will do a one-time retrieval and then exit.</p>
+
+<p><strong>Default</strong>: <code>60</code></p>
+
+<h3 id="maildir">Maildir</h3>
+
+<p><code>Mailman.config.maildir</code> is the location of a Maildir folder to watch. If it is set, Mailman will use Maildir watching as the receiver.</p>
+
+<p><strong>Example</strong>: <code>Mailman.config.maildir = &#39;~/Maildir&#39;</code></p>
+
+<h3 id="rails">Rails</h3>
+
+<p><code>Mailman.config.rails_root</code> is the location of the root of a Rails app to load the environment from. If this option is set to <code>nil</code>, Rails environment loading will be disabled.</p>
+
+<p><strong>Default</strong>: <code>&#39;.&#39;</code></p>
+
+<h3 id="standard-input-receiver">Standard input receiver</h3>
+
+<p><code>Mailman.config.ignore_stdin</code> disables the STDIN receiver, which can interfere with running Mailman with cron or as a daemon.</p>
+
+<p><strong>Default</strong>: <code>false</code></p>
+
+<h3 id="graceful-death">Graceful death</h3>
+
+<p><code>Mailman.config.graceful_death</code>, if set, will catch SIGINTs (Control-C) and allow the mail receiver to finish its current iteration before exiting. Note that this currently only works with POP3 receivers.</p>
+
+<h3 id="middleware">Middleware</h3>
+
+<p><code>Mailman.config.middleware</code> gives you access to the Mailman middleware stack. Middleware allows you to execute code before and after each message is processed. Middleware is super useful for things like error handling and any other actions you need to do before/after each message is processed.</p>
+
+<p>Here&#39;s an example of some simple error logging middleware:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"> # Define the middleware
+class ErrorLoggingMiddleware
+  def call(mail)
+    begin
+      yield
+    rescue
+      puts &quot;There was an error processing this message! #{mail.subject}&quot;
+      raise
+    end
+  end
+end
+
+ # Add it to the Mailman middleware stack
+Mailman.config.middleware.add ErrorLoggingMiddleware
+</code></pre></div>
+        </div>
+
+      </div>
+
+      <div id="footer" class="row">
+  <div class="col-md-12">
+    <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+    <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+  </div>
+</div>
+
+      
+    </div>
+
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="../../assets/js/jquery-2.1.3.min.js"></script>
+    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/highlight.pack.js"></script>
+    <script src="../../assets/js/toc.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
+  </body>
+</html>

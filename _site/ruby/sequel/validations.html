@@ -1,0 +1,375 @@
+  <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Validations - Sequel ORM - Ruby | Cheats by Kematzy</title>
+
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+    <!-- <link rel="stylesheet" href="../../assets/css/-pygment_trac.css"> -->
+    <script src="../../assets/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+
+  <body>
+    <div id="page" class="container">
+
+      <nav id="header" class="navbar navbar-default">
+  <div class="container-fluid row">
+
+    <div class="navbar-header col-md-6">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <h1><a href="/">Cheats by Kematzy</a></h1>
+        <p>A personal collection of Cheatsheets</p>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse col-md-6" id="header-nav">
+      <ul class="nav navbar-nav">
+      
+        
+          
+        <li class="">
+          <a href="/index.html" title="back to the homepage">Home</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/toc.html" title="full table of contents for this website">Table of Contents</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/about.html" title="find out more information about this website">About</a>
+        </li>
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+      
+
+
+<div id="breadcrumbs" class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      
+        
+        <li><a href="/ruby/">Ruby</a></li>
+      
+        
+        <li><a href="/ruby/sequel/">Sequel</a></li>
+      
+        
+        <li><a href="/ruby/sequel/validations.html">Validations</a></li>
+      
+    </ol>
+  </div>
+</div>
+
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          <h1 id="ruby-sequel-orm-validations">Ruby / Sequel ORM / Validations</h1>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"></code></pre></div>
+
+<h2 id="overview">Overview</h2>
+
+<h2 id="validations">Validations</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">def validate
+  super
+  errors.add(:name, &#39;cannot be empty&#39;) if !name || name.empty?
+
+  validates_presence [:title, :site]
+  validates_unique :name
+  validates_format /\Ahttps?:\/\/\\/, :website, :message=&gt;&#39;is not a valid URL&#39;
+  validates_includes %w(a b c), :type
+  validates_integer :rating
+  validates_numeric :number
+  validates_type String, [:title, :description]
+
+  validates_integer :rating  if new?
+
+  # options: :message =&gt;, :allow_nil =&gt;, :allow_blank =&gt;,
+  #          :allow_missing =&gt;,
+
+  validates_exact_length 17, :isbn
+  validates_min_length 3, :name
+  validates_max_length 100, :name
+  validates_length_range 3..100, :name
+
+  # Setter override
+  def filename=(name)
+    @values[:filename] = name
+  end
+end
+end
+
+deal.errors</code></pre></div>
+
+<p><br></p>
+
+<h3 id="validates_presence-atts-opts-opts">- validates_presence(atts, opts=OPTS)</h3>
+
+<p>Check attribute value(s) is not considered <code>blank</code> by the database, but allow <code>false</code> values.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># validating single field
+validates_presence(:title)
+
+ # validating multiple fields
+validates_presence [:title, :site]</code></pre></div>
+
+<p><br></p>
+
+<h3 id="validates_numeric-atts-opts-opts">- validates_numeric (atts, opts=OPTS)</h3>
+
+<p>Check attribute value(s) string representation is a valid float.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># validating single field
+validates_numeric(:price)
+
+ # validating multiple fields
+validates_numeric [:price, :discounted_price]</code></pre></div>
+
+<p><br></p>
+
+<h3 id="validates_exact_length-exact-atts-opts-opts">- validates_exact_length (exact, atts, opts=OPTS)</h3>
+
+<p>Check that the attribute values are the given exact length.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">validates_exact_length 17, :isbn
+
+validates_exact_length 2, :country_code</code></pre></div>
+
+<p><br></p>
+
+<h3 id="validates_format-with-atts-opts-opts">- validates_format (with, atts, opts=OPTS)</h3>
+
+<p>Check the string representation of the attribute value(s) against the regular expression with.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">validates_format /\Ahttps?:\/\//, :website, :message=&gt;&#39;is not a valid URL&#39;</code></pre></div>
+
+<p><br></p>
+
+<h3 id="validates_includes-set-atts-opts-opts">- validates_includes (set, atts, opts=OPTS)</h3>
+
+<p>Check attribute value(s) is included in the given set.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">validates_includes %w(a b c), :type</code></pre></div>
+
+<p><br></p>
+
+<h3 id="validates_integer-atts-opts-opts">- validates_integer (atts, opts=OPTS)</h3>
+
+<p>Check attribute value(s) string representation is a valid integer.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">validates_integer(:rating) #=&gt; &quot;:rating is not a number&quot;
+
+ # only validate value if new record
+validates_integer :rating  if new?</code></pre></div>
+
+<p><br></p>
+
+<h3 id="validates_length_range-range-atts-opts-opts">- validates_length_range (range, atts, opts=OPTS)</h3>
+
+<p>Check that the attribute values length is in the specified range.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">validates_length_range(3..100, :name)  #=&gt; &quot;:name is too short or too long&quot;</code></pre></div>
+
+<p><br></p>
+
+<h3 id="validates_max_length-max-atts-opts-opts">- validates_max_length (max, atts, opts=OPTS)</h3>
+
+<p>Check that the attribute values are not longer than the given max length.</p>
+
+<p>Accepts a <code>:nil_message</code> option that is the error message to use when the value is <code>nil</code> instead of being too long.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">validates_max_length( 100, :name)  #=&gt; &quot;:name is longer than #{max} characters&quot;</code></pre></div>
+
+<p><br></p>
+
+<h3 id="validates_min_length-min-atts-opts-opts">- validates_min_length (min, atts, opts=OPTS)</h3>
+
+<p>Check that the attribute values are not shorter than the given min length.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">validates_min_length( 3, :name) #=&gt;</code></pre></div>
+
+<p><br></p>
+
+<h3 id="validates_not_null-atts-opts-opts">- validates_not_null (atts, opts=OPTS)</h3>
+
+<p>Check attribute value(s) are not<code>NULL/nil</code>.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># TODO: add example here...</code></pre></div>
+
+<p><br></p>
+
+<h3 id="validates_schema_types-atts-keys-opts-opts">- validates_schema_types (atts=keys, opts=OPTS)</h3>
+
+<p>Validates for all of the model columns (or just the given columns) that the column value is an instance of the expected class based on the column&#39;s schema type.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># TODO: add example here...</code></pre></div>
+
+<p><br></p>
+
+<h3 id="validates_type-klass-atts-opts-opts">- validates_type (klass, atts, opts=OPTS)</h3>
+
+<p>Check if value is an instance of a class. If <code>klass</code> is an array, the value must be an instance of one of the classes in the array.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">validates_type String, [:title, :description]
+
+ # value must one of the classes in the klass array
+validates_type [String,Integer], [:title, :description, :id]</code></pre></div>
+
+<p><br></p>
+
+<h3 id="validates_unique-atts">- validates_unique (*atts)</h3>
+
+<p>Checks that there are no duplicate values in the database for the given attributes. Pass an array of fields instead of multiple fields to specify that the combination of fields must be unique, instead of that each field should have a unique value.</p>
+
+<h4 id="note-important-syntax-versions">Note!!  - Important Syntax Versions</h4>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># validate grouping of fields (column1 and column2) together
+validates_unique([:column1, :column2])
+
+ # validates each field separately
+validates_unique(:column1, :column2)</code></pre></div>
+
+<p>You can pass a block, which is yielded the dataset in which the columns must be unique. So if you are doing a soft delete of records, in which the name must be unique, but only for active records:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">validates_unique(:name){|ds| ds.filter(:active)}</code></pre></div>
+
+<p>You should <strong>also add a unique index in the database</strong>, as this suffers from a fairly obvious race condition.</p>
+
+<p>This validation does not respect the <code>:allow_*</code> options that the other validations accept, since it can deal with a grouping of multiple attributes.</p>
+
+<h4 id="possible-options">Possible Options:</h4>
+
+<ul>
+<li><p><strong>:dataset</strong> - The base dataset to use for the unique query, defaults to the model&#39;s dataset</p></li>
+<li><p><strong>:message</strong> -  The message to use (default: &#39;is already taken&#39;)</p></li>
+<li><p><strong>:only_if_modified</strong> - Only check the uniqueness if the object is new or one of the columns has been modified.</p></li>
+<li><p><strong>:where</strong> -  A callable object where call takes three arguments, a dataset, the current object, and an array of columns, and should return a modified dataset that is filtered to include only rows with the same values as the current object for each column in the array.</p></li>
+</ul>
+
+<p>Case insensitive uniqueness validation on a database that is case sensitive by default, use:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">#
+validates_unique :column, :where=&gt;(proc do |ds, obj, cols|
+  ds.where(cols.map do |c|
+    v = obj.send(c)
+    v = v.downcase if v
+    [Sequel.function(:lower, c), v]
+  end)
+end)</code></pre></div>
+
+<p><br></p>
+
+<h2 id=""><br></h2>
+
+<h2 id="default-options">Default Options</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DEFAULT_OPTIONS  =  {
+  #
+  :exact_length=&gt;{
+    :message=&gt;lambda{|exact| &quot;is not #{exact} characters&quot;}
+  },
+  #  
+  :format=&gt;{
+    :message=&gt;lambda{|with| &#39;is invalid&#39;}
+  },
+  #
+  :includes=&gt;{
+    :message=&gt;lambda{|set| &quot;is not in range or set: #{set.inspect}&quot;}
+  },
+  #
+  :integer=&gt;{
+    :message=&gt;lambda{&quot;is not a number&quot;}
+  },
+  #
+  :length_range=&gt;{
+    :message=&gt;lambda{|range| &quot;is too short or too long&quot;}
+  },
+  #
+  :max_length=&gt;{
+    :message=&gt;lambda{|max| &quot;is longer than #{max} characters&quot;},
+    :nil_message=&gt;lambda{&quot;is not present&quot;}
+  },
+  #
+  :min_length=&gt;{
+    :message=&gt;lambda{|min| &quot;is shorter than #{min} characters&quot;}
+  },
+  #
+  :not_null=&gt;{
+    :message=&gt;lambda{&quot;is not present&quot;}
+  },
+  #
+  :numeric=&gt;{
+    :message=&gt;lambda{&quot;is not a number&quot;}
+  },
+  #
+  :type=&gt;{
+    :message=&gt;lambda{|klass| klass.is_a?(Array) ? &quot;is not a valid #{klass.join(&quot; or &quot;).downcase}&quot; : &quot;is not a valid #{klass.to_s.downcase}&quot;}
+  },
+  #
+  :presence=&gt;{
+    :message=&gt;lambda{&quot;is not present&quot;}
+  },
+  #
+  :unique=&gt;{
+    :message=&gt;lambda{&#39;is already taken&#39;}
+  }
+}</code></pre></div>
+
+<p>Default validation options used by Sequel. Can be modified to change the error messages for all models (e.g. for internationalization), or to set certain default options for validations (e.g. <code>:allow_nil=&gt;true</code> for all <code>validates_format</code>).</p>
+
+        </div>
+
+      </div>
+
+      <div id="footer" class="row">
+  <div class="col-md-12">
+    <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+    <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+  </div>
+</div>
+
+      
+    </div>
+
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="../../assets/js/jquery-2.1.3.min.js"></script>
+    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/highlight.pack.js"></script>
+    <script src="../../assets/js/toc.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
+  </body>
+</html>

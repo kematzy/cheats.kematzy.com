@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Sequel ORM | Cheats by Kematzy</title>
+    <title>Sequel ORM - Ruby | Cheats by Kematzy</title>
 
     <link rel="stylesheet" href="../../assets/css/styles.css">
-    <link rel="stylesheet" href="../../assets/css/pygment_trac.css">
+    <!-- <link rel="stylesheet" href="../../assets/css/-pygment_trac.css"> -->
     <script src="../../assets/js/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
@@ -15,13 +15,13 @@
     <![endif]-->
   </head>
 
-  
+
   <body>
-    <div class="container">
-            
-      <nav class="navbar navbar-default">
+    <div id="page" class="container">
+
+      <nav id="header" class="navbar navbar-default">
   <div class="container-fluid row">
-    
+
     <div class="navbar-header col-md-6">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
         <span class="sr-only">Toggle navigation</span>
@@ -34,23 +34,41 @@
         <p>A personal collection of Cheatsheets</p>
       </div>
     </div>
-    
+
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse col-md-6" id="header-nav">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="/">HOME <span class="sr-only">(current)</span></a></li>
-        <li><a href="/toc.html">Table of Contents</a></li>
-        <li><a href="/about.html">About</a></li>
+      
+        
+          
+          
+        
+        <li class="active">
+          <a href="/index.html" title="back to the homepage">Home</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/toc.html" title="full table of contents for this website">Table of Contents</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/about.html" title="find out more information about this website">About</a>
+        </li>
+        
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
 
-      
+
       
 
 
-<div class="row">
+<div id="breadcrumbs" class="row">
   <div class="col-md-12">
     <ol class="breadcrumb">
       <li><a href="/">Home</a></li>
@@ -68,472 +86,450 @@
   </div>
 </div>
 
-      
-      <section>
-        <h1>Ruby / Sequel ORM</h1>
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          <h1 id="ruby-sequel-orm">Ruby / Sequel ORM</h1>
 
 <hr>
 
-<h2>Overview</h2>
+<div id="toc"></div>
+
+<hr>
+
+<h2 id="sub-pages">Sub-pages</h2>
+
+<h3 id="validations"><a href="/ruby/sequel/validations.html">Validations</a></h3>
+
+<h3 id="plugins"><a href="/ruby/sequel/plugins.html">Plugins</a></h3>
+
+<h3 id="models"><a href="/ruby/sequel/models.html">Models</a></h3>
+
+<h3 id="associations"><a href="/ruby/sequel/associations.html">Associations</a></h3>
+
+<h3 id="datasets"><a href="/ruby/sequel/datasets.html">Datasets</a></h3>
+
+<h3 id="migrations"><a href="/ruby/sequel/migrations.html">Migrations</a></h3>
+
+<hr>
+
+<h2 id="overview">Overview</h2>
 
 <p>This page should contain an overview of Sequel&#39;s key features as well as links to all other parts.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># 1. Load Sequel</span>
-<span class="nb">require</span> <span class="s2">&quot;sequel&quot;</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># 1. Load Sequel
+require &quot;sequel&quot;
 
- <span class="c1"># 2. Add global extensions</span>
-<span class="no">Sequel</span><span class="o">.</span><span class="n">extension</span><span class="p">(</span><span class="ss">:blank</span><span class="p">)</span>
+ # 2. Add global extensions
+Sequel.extension(:blank)
 
- <span class="c1"># 3. Connnect to DB</span>
-<span class="n">configure</span> <span class="ss">:development</span> <span class="k">do</span>
-  <span class="no">DB</span> <span class="o">=</span> <span class="no">Sequel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="ss">:adapter</span><span class="o">=&gt;</span><span class="s1">&#39;mysql2&#39;</span><span class="p">,</span> <span class="ss">:host</span><span class="o">=&gt;</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="ss">:database</span><span class="o">=&gt;</span><span class="s1">&#39;rubymodularapp-dev-development&#39;</span><span class="p">,</span> <span class="ss">:user</span><span class="o">=&gt;</span><span class="s1">&#39;root&#39;</span><span class="p">,</span> <span class="ss">:password</span><span class="o">=&gt;</span><span class="s1">&#39;root&#39;</span><span class="p">)</span>
-<span class="k">end</span>
+ # 3. Connnect to DB
+configure :development do
+  DB = Sequel.connect(:adapter=&gt;&#39;mysql2&#39;, :host=&gt;&#39;localhost&#39;, :database=&gt;&#39;rubymodularapp-dev-development&#39;, :user=&gt;&#39;root&#39;, :password=&gt;&#39;root&#39;)
+end
 
-<span class="n">configure</span> <span class="ss">:production</span> <span class="k">do</span>
-   <span class="c1"># DB = Sequel.connect(:adapter=&gt;&#39;mysql&#39;, :host=&gt;&#39;localhost&#39;, :database=&gt;&#39;ppt-db-app&#39;, :user=&gt;&#39;root&#39;, :password=&gt;&#39;root&#39;)</span>
-   <span class="no">DB</span> <span class="o">=</span> <span class="no">Sequel</span><span class="o">.</span><span class="n">sqlite</span><span class="p">(</span><span class="s1">&#39;db/production.db&#39;</span><span class="p">)</span>
- <span class="k">end</span>
+configure :production do
+   # DB = Sequel.connect(:adapter=&gt;&#39;mysql&#39;, :host=&gt;&#39;localhost&#39;, :database=&gt;&#39;ppt-db-app&#39;, :user=&gt;&#39;root&#39;, :password=&gt;&#39;root&#39;)
+   DB = Sequel.sqlite(&#39;db/production.db&#39;)
+ end
 
-<span class="n">configure</span> <span class="ss">:test</span> <span class="k">do</span>
-  <span class="no">DB</span> <span class="o">=</span> <span class="no">Sequel</span><span class="o">.</span><span class="n">sqlite</span> <span class="c1"># :memory:</span>
-  <span class="c1"># DB = Sequel.sqlite(&#39;db/test.db&#39;)</span>
-<span class="k">end</span>
+configure :test do
+  DB = Sequel.sqlite # :memory:
+  # DB = Sequel.sqlite(&#39;db/test.db&#39;)
+end
 
- <span class="c1"># 4. Add Global Sequel plugins, each loaded separately</span>
-<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:schema</span><span class="p">)</span>
-<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:validation_helpers</span><span class="p">)</span>
-<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:timestamps</span><span class="p">)</span>
- <span class="c1"># Add JSON output capability to all model instances</span>
-<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:json_serializer</span><span class="p">)</span>
- <span class="c1"># Add XML output capability to all model instances</span>
-<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:xml_serializer</span><span class="p">)</span>
-<span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span><span class="o">.</span><span class="n">plugin</span><span class="p">(</span><span class="ss">:paranoid</span><span class="p">)</span>
+ # 4. Add Global Sequel plugins, each loaded separately
+Sequel::Model.plugin(:schema)
+Sequel::Model.plugin(:validation_helpers)
+Sequel::Model.plugin(:timestamps)
+ # Add JSON output capability to all model instances
+Sequel::Model.plugin(:json_serializer)
+ # Add XML output capability to all model instances
+Sequel::Model.plugin(:xml_serializer)
+Sequel::Model.plugin(:paranoid)
 
- <span class="c1"># 5. Load Model Classes</span>
-<span class="n">require_relative</span> <span class="s1">&#39;app/models&#39;</span></code></pre></div>
-
-<h3>CRUD</h3>
+ # 5. Load Model Classes
+require_relative &#39;app/models&#39;</code></pre></div>
 
 <hr>
 
-<h2>DB Creations</h2>
+<h3 id="crud">CRUD</h3>
+
+<p>TODO: Add contents here</p>
 
 <hr>
 
-<h2>DB Migrations</h2>
+<h3 id="db-creations">DB Creations</h3>
 
 <hr>
 
-<h2>Model</h2>
-
 <hr>
 
-<h2><a href="/ruby/sequel/plugins.html">Plugins</a></h2>
+<h3 id="open-a-database">Open a database</h3>
 
-<h3>Open a database</h3>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">require &#39;rubygems&#39;
+require &#39;sequel&#39;
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;rubygems&#39;</span>
-<span class="nb">require</span> <span class="s1">&#39;sequel&#39;</span>
+DB = Sequel.sqlite(&#39;my_blog.db&#39;)
+DB = Sequel.connect(&#39;postgres://user:password@localhost/my_db&#39;)
+DB = Sequel.postgres(&#39;my_db&#39;, :user =&gt; &#39;user&#39;, :password =&gt; &#39;password&#39;, :host =&gt; &#39;localhost&#39;)
+DB = Sequel.ado(&#39;mydb&#39;)</code></pre></div>
 
-<span class="no">DB</span> <span class="o">=</span> <span class="no">Sequel</span><span class="o">.</span><span class="n">sqlite</span><span class="p">(</span><span class="s1">&#39;my_blog.db&#39;</span><span class="p">)</span>
-<span class="no">DB</span> <span class="o">=</span> <span class="no">Sequel</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;postgres://user:password@localhost/my_db&#39;</span><span class="p">)</span>
-<span class="no">DB</span> <span class="o">=</span> <span class="no">Sequel</span><span class="o">.</span><span class="n">postgres</span><span class="p">(</span><span class="s1">&#39;my_db&#39;</span><span class="p">,</span> <span class="ss">:user</span> <span class="o">=&gt;</span> <span class="s1">&#39;user&#39;</span><span class="p">,</span> <span class="ss">:password</span> <span class="o">=&gt;</span> <span class="s1">&#39;password&#39;</span><span class="p">,</span> <span class="ss">:host</span> <span class="o">=&gt;</span> <span class="s1">&#39;localhost&#39;</span><span class="p">)</span>
-<span class="no">DB</span> <span class="o">=</span> <span class="no">Sequel</span><span class="o">.</span><span class="n">ado</span><span class="p">(</span><span class="s1">&#39;mydb&#39;</span><span class="p">)</span></code></pre></div>
-
-<h3>Open an SQLite memory database</h3>
+<h3 id="open-an-sqlite-memory-database">Open an SQLite memory database</h3>
 
 <p>Without a filename argument, the sqlite adapter will setup a new sqlite database in memory.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span> <span class="o">=</span> <span class="no">Sequel</span><span class="o">.</span><span class="n">sqlite</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB = Sequel.sqlite</code></pre></div>
 
-<h3>Logging SQL statements</h3>
+<h3 id="logging-sql-statements">Logging SQL statements</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">&#39;logger&#39;</span>
-<span class="no">DB</span> <span class="o">=</span> <span class="no">Sequel</span><span class="o">.</span><span class="n">sqlite</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="ss">:loggers</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="no">Logger</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vg">$stdout</span><span class="p">)</span><span class="o">]</span>
- <span class="c1"># or</span>
-<span class="no">DB</span><span class="o">.</span><span class="n">loggers</span> <span class="o">&lt;&lt;</span> <span class="no">Logger</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">require &#39;logger&#39;
+DB = Sequel.sqlite &#39;&#39;, :loggers =&gt; [Logger.new($stdout)]
+ # or
+DB.loggers &lt;&lt; Logger.new(...)</code></pre></div>
 
-<h3>Using raw SQL</h3>
+<h3 id="using-raw-sql">Using raw SQL</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">.</span><span class="n">run</span> <span class="s2">&quot;CREATE TABLE users (name VARCHAR(255) NOT NULL, age INT(3) NOT NULL)&quot;</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="no">DB</span><span class="o">[</span><span class="s2">&quot;SELECT age FROM users WHERE name = ?&quot;</span><span class="p">,</span> <span class="nb">name</span><span class="o">]</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="ss">:age</span><span class="p">)</span>
-<span class="no">DB</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="s2">&quot;SELECT name FROM users&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">row</span><span class="o">|</span>
-  <span class="nb">p</span> <span class="n">row</span><span class="o">[</span><span class="ss">:name</span><span class="o">]</span>
-<span class="k">end</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB.run &quot;CREATE TABLE users (name VARCHAR(255) NOT NULL, age INT(3) NOT NULL)&quot;
+dataset = DB[&quot;SELECT age FROM users WHERE name = ?&quot;, name]
+dataset.map(:age)
+DB.fetch(&quot;SELECT name FROM users&quot;) do |row|
+  p row[:name]
+end</code></pre></div>
 
-<h3>Create a dataset</h3>
+<h3 id="create-a-dataset">Create a dataset</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dataset</span> <span class="o">=</span> <span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">]</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="no">DB</span><span class="o">.</span><span class="n">from</span><span class="p">(</span><span class="ss">:items</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset = DB[:items]
+dataset = DB.from(:items)</code></pre></div>
 
-<h3>Most dataset methods are chainable</h3>
+<h3 id="most-dataset-methods-are-chain-able">Most dataset methods are chain-able</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dataset</span> <span class="o">=</span> <span class="no">DB</span><span class="o">[</span><span class="ss">:managers</span><span class="o">].</span><span class="n">where</span><span class="p">(</span><span class="ss">:salary</span> <span class="o">=&gt;</span> <span class="mi">5000</span><span class="o">.</span><span class="n">.</span><span class="mi">10000</span><span class="p">)</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="ss">:name</span><span class="p">,</span> <span class="ss">:department</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset = DB[:managers].where(:salary =&gt; 5000..10000).order(:name, :department)</code></pre></div>
 
-<h3>Insert rows</h3>
+<h3 id="insert-rows">Insert rows</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dataset</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Sharon&#39;</span><span class="p">,</span> <span class="ss">:grade</span> <span class="o">=&gt;</span> <span class="mi">50</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset.insert(:name =&gt; &#39;Sharon&#39;, :grade =&gt; 50)</code></pre></div>
 
-<h3>Retrieve rows</h3>
+<h3 id="retrieve-rows">Retrieve rows</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dataset</span><span class="o">.</span><span class="n">each</span><span class="p">{</span><span class="o">|</span><span class="n">r</span><span class="o">|</span> <span class="nb">p</span> <span class="n">r</span><span class="p">}</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">all</span> <span class="c1"># =&gt; [{...}, {...}, ...]</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">first</span> <span class="c1"># =&gt; {...}</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset.each{|r| p r}
+dataset.all # =&gt; [{...}, {...}, ...]
+dataset.first # =&gt; {...}</code></pre></div>
 
-<h3>Update/Delete rows</h3>
+<h3 id="update-delete-rows">Update/Delete rows</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="o">~</span><span class="ss">:active</span><span class="p">)</span><span class="o">.</span><span class="n">delete</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="s1">&#39;price &lt; ?&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="ss">:active</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset.filter(~:active).delete
+dataset.filter(&#39;price &lt; ?&#39;, 100).update(:active =&gt; true)</code></pre></div>
 
-<h3>Datasets are Enumerable</h3>
+<h3 id="datasets-are-enumerable">Datasets are Enumerable</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">r</span><span class="o">|</span> <span class="n">r</span><span class="o">[</span><span class="ss">:name</span><span class="o">]</span><span class="p">}</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="ss">:name</span><span class="p">)</span> <span class="c1"># same as above</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset.map{|r| r[:name]}
+dataset.map(:name) # same as above
 
-<span class="n">dataset</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="mi">0</span><span class="p">){</span><span class="o">|</span><span class="n">sum</span><span class="p">,</span> <span class="n">r</span><span class="o">|</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">r</span><span class="o">[</span><span class="ss">:value</span><span class="o">]</span><span class="p">}</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="ss">:value</span><span class="p">)</span> <span class="c1"># same as above</span></code></pre></div>
+dataset.inject(0){|sum, r| sum + r[:value]}
+dataset.sum(:value) # same as above</code></pre></div>
 
-<h3>Filtering (see also doc/dataset_filtering.rdoc)</h3>
+<h3 id="filtering-see-also-doc-dataset_filtering-rdoc">Filtering (see also doc/dataset_filtering.rdoc)</h3>
 
-<h4>Equality</h4>
+<h4 id="equality">Equality</h4>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;abc&#39;</span><span class="p">)</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="s1">&#39;name = ?&#39;</span><span class="p">,</span> <span class="s1">&#39;abc&#39;</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset.filter(:name =&gt; &#39;abc&#39;)
+dataset.filter(&#39;name = ?&#39;, &#39;abc&#39;)</code></pre></div>
 
-<h4>Inequality</h4>
+<h4 id="inequality">Inequality</h4>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">{</span><span class="n">value</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">}</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">exclude</span><span class="p">{</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">}</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset.filter{value &gt; 100}
+dataset.exclude{value &lt;= 100}</code></pre></div>
 
-<h4>Inclusion</h4>
+<h4 id="inclusion">Inclusion</h4>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="ss">:value</span> <span class="o">=&gt;</span> <span class="mi">50</span><span class="o">.</span><span class="n">.</span><span class="mi">100</span><span class="p">)</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">where</span><span class="p">{(</span><span class="n">value</span> <span class="o">&gt;=</span> <span class="mi">50</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">)}</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset.filter(:value =&gt; 50..100)
+dataset.where{(value &gt;= 50) &amp; (value &lt;= 100)}
 
-<span class="n">dataset</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s1">&#39;value IN ?&#39;</span><span class="p">,</span> <span class="o">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">75</span><span class="p">,</span><span class="mi">100</span><span class="o">]</span><span class="p">)</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">:value</span><span class="o">=&gt;[</span><span class="mi">50</span><span class="p">,</span><span class="mi">75</span><span class="p">,</span><span class="mi">100</span><span class="o">]</span><span class="p">)</span>
+dataset.where(&#39;value IN ?&#39;, [50,75,100])
+dataset.where(:value=&gt;[50,75,100])
 
-<span class="n">dataset</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">:id</span><span class="o">=&gt;</span><span class="n">other_dataset</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="ss">:other_id</span><span class="p">))</span></code></pre></div>
+dataset.where(:id=&gt;other_dataset.select(:other_id))</code></pre></div>
 
-<h4>Subselects as scalar values</h4>
+<h4 id="subselects-as-scalar-values">Subselects as scalar values</h4>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dataset</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="s1">&#39;price &gt; (SELECT avg(price) + 100 FROM table)&#39;</span><span class="p">)</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">filter</span><span class="p">{</span><span class="n">price</span> <span class="o">&gt;</span> <span class="n">dataset</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">avg</span><span class="p">(</span><span class="n">price</span><span class="p">)</span> <span class="o">+</span> <span class="mi">100</span><span class="p">)}</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset.where(&#39;price &gt; (SELECT avg(price) + 100 FROM table)&#39;)
+dataset.filter{price &gt; dataset.select(avg(price) + 100)}</code></pre></div>
 
-<h4>LIKE/Regexp</h4>
+<h4 id="like-regexp">LIKE/Regexp</h4>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">filter</span><span class="p">(</span><span class="ss">:name</span><span class="o">.</span><span class="n">like</span><span class="p">(</span><span class="s1">&#39;AL%&#39;</span><span class="p">))</span>
-<span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">filter</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="sr">/^AL/</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].filter(:name.like(&#39;AL%&#39;))
+DB[:items].filter(:name =&gt; /^AL/)</code></pre></div>
 
-<h4>AND/OR/NOT</h4>
+<h4 id="and-or-not">AND/OR/NOT</h4>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">filter</span><span class="p">{(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">y</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">)}</span><span class="o">.</span><span class="n">sql</span> 
-  <span class="c1"># SELECT * FROM items WHERE ((x &gt; 5) AND (y &gt; 10))</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].filter{(x &gt; 5) &amp; (y &gt; 10)}.sql
+  # SELECT * FROM items WHERE ((x &gt; 5) AND (y &gt; 10))
 
-<span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">filter</span><span class="p">({</span><span class="ss">:x</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="ss">:y</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">}</span><span class="o">.</span><span class="n">sql_or</span> <span class="o">&amp;</span> <span class="o">~</span><span class="p">{</span><span class="ss">:z</span> <span class="o">=&gt;</span> <span class="mi">3</span><span class="p">})</span><span class="o">.</span><span class="n">sql</span> 
-  <span class="c1"># SELECT * FROM items WHERE (((x = 1) OR (y = 2)) AND (z != 3))</span></code></pre></div>
+DB[:items].filter({:x =&gt; 1, :y =&gt; 2}.sql_or &amp; ~{:z =&gt; 3}).sql
+  # SELECT * FROM items WHERE (((x = 1) OR (y = 2)) AND (z != 3))</code></pre></div>
 
-<h4>Mathematical operators</h4>
+<h4 id="mathematical-operators">Mathematical operators</h4>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">filter</span><span class="p">((</span><span class="ss">:x</span> <span class="o">+</span> <span class="ss">:y</span><span class="p">)</span> <span class="o">&gt;</span> <span class="ss">:z</span><span class="p">)</span><span class="o">.</span><span class="n">sql</span> 
-  <span class="c1"># SELECT * FROM items WHERE ((x + y) &gt; z)</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].filter((:x + :y) &gt; :z).sql
+  # SELECT * FROM items WHERE ((x + y) &gt; z)
 
-<span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">filter</span><span class="p">{</span><span class="n">price</span> <span class="o">-</span> <span class="mi">100</span> <span class="o">&lt;</span> <span class="n">avg</span><span class="p">(</span><span class="n">price</span><span class="p">)}</span><span class="o">.</span><span class="n">sql</span> 
-  <span class="c1"># SELECT * FROM items WHERE ((price - 100) &lt; avg(price))</span></code></pre></div>
+DB[:items].filter{price - 100 &lt; avg(price)}.sql
+  # SELECT * FROM items WHERE ((price - 100) &lt; avg(price))</code></pre></div>
 
-<h3>Ordering</h3>
+<h3 id="ordering">Ordering</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dataset</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="ss">:kind</span><span class="p">)</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">reverse_order</span><span class="p">(</span><span class="ss">:kind</span><span class="p">)</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">order</span><span class="p">(</span><span class="ss">:kind</span><span class="o">.</span><span class="n">desc</span><span class="p">,</span> <span class="ss">:name</span><span class="p">)</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset.order(:kind)
+dataset.reverse_order(:kind)
+dataset.order(:kind.desc, :name)</code></pre></div>
 
-<h3>Limit/Offset</h3>
+<h3 id="limit-offset">Limit/Offset</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dataset</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="c1"># LIMIT 30</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="c1"># LIMIT 30 OFFSET 10</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset.limit(30) # LIMIT 30
+dataset.limit(30, 10) # LIMIT 30 OFFSET 10</code></pre></div>
 
-<h3>Joins</h3>
+<h3 id="joins">Joins</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">left_outer_join</span><span class="p">(</span><span class="ss">:categories</span><span class="p">,</span> <span class="ss">:id</span> <span class="o">=&gt;</span> <span class="ss">:category_id</span><span class="p">)</span><span class="o">.</span><span class="n">sql</span> 
-  <span class="c1"># SELECT * FROM items LEFT OUTER JOIN categories ON categories.id = items.category_id</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].left_outer_join(:categories, :id =&gt; :category_id).sql
+  # SELECT * FROM items LEFT OUTER JOIN categories ON categories.id = items.category_id
 
-<span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">join</span><span class="p">(</span><span class="ss">:categories</span><span class="p">,</span> <span class="ss">:id</span> <span class="o">=&gt;</span> <span class="ss">:category_id</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="ss">:groups</span><span class="p">,</span> <span class="ss">:id</span> <span class="o">=&gt;</span> <span class="ss">:items__group_id</span><span class="p">)</span> 
-  <span class="c1"># SELECT * FROM items INNER JOIN categories ON categories.id = items.category_id INNER JOIN groups ON groups.id = items.group_id</span></code></pre></div>
+DB[:items].join(:categories, :id =&gt; :category_id).join(:groups, :id =&gt; :items__group_id)
+  # SELECT * FROM items INNER JOIN categories ON categories.id = items.category_id INNER JOIN groups ON groups.id = items.group_id</code></pre></div>
 
-<h3>Aggregate functions methods</h3>
+<h3 id="aggregate-functions-methods">Aggregate functions methods</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dataset</span><span class="o">.</span><span class="n">count</span> <span class="c1">#=&gt; record count</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="ss">:price</span><span class="p">)</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="ss">:price</span><span class="p">)</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">avg</span><span class="p">(</span><span class="ss">:price</span><span class="p">)</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="ss">:stock</span><span class="p">)</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset.count #=&gt; record count
+dataset.max(:price)
+dataset.min(:price)
+dataset.avg(:price)
+dataset.sum(:stock)
 
-<span class="n">dataset</span><span class="o">.</span><span class="n">group_and_count</span><span class="p">(</span><span class="ss">:category</span><span class="p">)</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="ss">:category</span><span class="p">)</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="ss">:category</span><span class="p">,</span> <span class="ss">:AVG</span><span class="o">.</span><span class="n">sql_function</span><span class="p">(</span><span class="ss">:price</span><span class="p">))</span></code></pre></div>
+dataset.group_and_count(:category)
+dataset.group(:category).select(:category, :AVG.sql_function(:price))</code></pre></div>
 
-<h3>SQL Functions / Literals</h3>
+<h3 id="sql-functions-literals">SQL Functions / Literals</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dataset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="ss">:updated_at</span> <span class="o">=&gt;</span> <span class="ss">:NOW</span><span class="o">.</span><span class="n">sql_function</span><span class="p">)</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="ss">:updated_at</span> <span class="o">=&gt;</span> <span class="s1">&#39;NOW()&#39;</span><span class="o">.</span><span class="n">lit</span><span class="p">)</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset.update(:updated_at =&gt; :NOW.sql_function)
+dataset.update(:updated_at =&gt; &#39;NOW()&#39;.lit)
 
-<span class="n">dataset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="ss">:updated_at</span> <span class="o">=&gt;</span> <span class="s2">&quot;DateValue(&#39;1/1/2001&#39;)&quot;</span><span class="o">.</span><span class="n">lit</span><span class="p">)</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="ss">:updated_at</span> <span class="o">=&gt;</span> <span class="ss">:DateValue</span><span class="o">.</span><span class="n">sql_function</span><span class="p">(</span><span class="s1">&#39;1/1/2001&#39;</span><span class="p">))</span></code></pre></div>
+dataset.update(:updated_at =&gt; &quot;DateValue(&#39;1/1/2001&#39;)&quot;.lit)
+dataset.update(:updated_at =&gt; :DateValue.sql_function(&#39;1/1/2001&#39;))</code></pre></div>
 
-<h3>Schema Manipulation</h3>
+<h3 id="schema-manipulation">Schema Manipulation</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">.</span><span class="n">create_table</span> <span class="ss">:items</span> <span class="k">do</span>
-  <span class="n">primary_key</span> <span class="ss">:id</span>
-  <span class="nb">String</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:unique</span> <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">:null</span> <span class="o">=&gt;</span> <span class="kp">false</span>
-  <span class="no">TrueClass</span> <span class="ss">:active</span><span class="p">,</span> <span class="ss">:default</span> <span class="o">=&gt;</span> <span class="kp">true</span>
-  <span class="n">foreign_key</span> <span class="ss">:category_id</span><span class="p">,</span> <span class="ss">:categories</span>
-  <span class="no">DateTime</span> <span class="ss">:created_at</span>
-  
-  <span class="n">index</span> <span class="ss">:created_at</span>
-<span class="k">end</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB.create_table :items do
+  primary_key :id
+  String :name, :unique =&gt; true, :null =&gt; false
+  TrueClass :active, :default =&gt; true
+  foreign_key :category_id, :categories
+  DateTime :created_at
 
-<span class="no">DB</span><span class="o">.</span><span class="n">drop_table</span> <span class="ss">:items</span>
+  index :created_at
+end
 
-<span class="no">DB</span><span class="o">.</span><span class="n">create_table</span> <span class="ss">:test</span> <span class="k">do</span>
-  <span class="nb">String</span> <span class="ss">:zipcode</span>
-  <span class="n">enum</span> <span class="ss">:system</span><span class="p">,</span> <span class="ss">:elements</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s1">&#39;mac&#39;</span><span class="p">,</span> <span class="s1">&#39;linux&#39;</span><span class="p">,</span> <span class="s1">&#39;windows&#39;</span><span class="o">]</span>
-<span class="k">end</span></code></pre></div>
+DB.drop_table :items
 
-<h3>Aliasing</h3>
+DB.create_table :test do
+  String :zipcode
+  enum :system, :elements =&gt; [&#39;mac&#39;, &#39;linux&#39;, &#39;windows&#39;]
+end</code></pre></div>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">select</span><span class="p">(</span><span class="ss">:name</span><span class="o">.</span><span class="n">as</span><span class="p">(</span><span class="ss">:item_name</span><span class="p">))</span>
-<span class="no">DB</span><span class="o">[</span><span class="ss">:items</span><span class="o">].</span><span class="n">select</span><span class="p">(</span><span class="ss">:name___item_name</span><span class="p">)</span>
-<span class="no">DB</span><span class="o">[</span><span class="ss">:items__items_table</span><span class="o">].</span><span class="n">select</span><span class="p">(</span><span class="ss">:items_table__name___item_name</span><span class="p">)</span>
-  <span class="c1"># SELECT items_table.name AS item_name FROM items AS items_table</span></code></pre></div>
+<h3 id="aliasing">Aliasing</h3>
 
-<h2>Transactions</h2>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].select(:name.as(:item_name))
+DB[:items].select(:name___item_name)
+DB[:items__items_table].select(:items_table__name___item_name)
+  # SELECT items_table.name AS item_name FROM items AS items_table</code></pre></div>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">.</span><span class="n">transaction</span> <span class="k">do</span>
-  <span class="n">dataset</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="ss">:first_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Inigo&#39;</span><span class="p">,</span> <span class="ss">:last_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Montoya&#39;</span><span class="p">)</span>
-  <span class="n">dataset</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="ss">:first_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Farm&#39;</span><span class="p">,</span> <span class="ss">:last_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Boy&#39;</span><span class="p">)</span>
-<span class="k">end</span> <span class="c1"># Either both are inserted or neither are inserted</span></code></pre></div>
+<h2 id="transactions">Transactions</h2>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB.transaction do
+  dataset.insert(:first_name =&gt; &#39;Inigo&#39;, :last_name =&gt; &#39;Montoya&#39;)
+  dataset.insert(:first_name =&gt; &#39;Farm&#39;, :last_name =&gt; &#39;Boy&#39;)
+end # Either both are inserted or neither are inserted</code></pre></div>
 
 <p>Database#transaction is re-entrant:</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">.</span><span class="n">transaction</span> <span class="k">do</span> <span class="c1"># BEGIN issued only here</span>
-  <span class="no">DB</span><span class="o">.</span><span class="n">transaction</span>
-    <span class="n">dataset</span> <span class="o">&lt;&lt;</span> <span class="p">{</span><span class="ss">:first_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Inigo&#39;</span><span class="p">,</span> <span class="ss">:last_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Montoya&#39;</span><span class="p">}</span>
-  <span class="k">end</span>
-<span class="k">end</span> <span class="c1"># COMMIT issued only here</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB.transaction do # BEGIN issued only here
+  DB.transaction
+    dataset &lt;&lt; {:first_name =&gt; &#39;Inigo&#39;, :last_name =&gt; &#39;Montoya&#39;}
+  end
+end # COMMIT issued only here</code></pre></div>
 
 <p>Transactions are aborted if an error is raised:</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">.</span><span class="n">transaction</span> <span class="k">do</span>
-  <span class="k">raise</span> <span class="s2">&quot;some error occurred&quot;</span>
-<span class="k">end</span> <span class="c1"># ROLLBACK issued and the error is re-raised</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB.transaction do
+  raise &quot;some error occurred&quot;
+end # ROLLBACK issued and the error is re-raised</code></pre></div>
 
 <p>Transactions can also be aborted by raising Sequel::Rollback:</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">.</span><span class="n">transaction</span> <span class="k">do</span>
-  <span class="k">raise</span><span class="p">(</span><span class="no">Sequel</span><span class="o">::</span><span class="no">Rollback</span><span class="p">)</span> <span class="k">if</span> <span class="n">something_bad_happened</span>
-<span class="k">end</span> <span class="c1"># ROLLBACK issued and no error raised</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB.transaction do
+  raise(Sequel::Rollback) if something_bad_happened
+end # ROLLBACK issued and no error raised</code></pre></div>
 
 <p>Savepoints can be used if the database supports it:</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">DB</span><span class="o">.</span><span class="n">transaction</span> <span class="k">do</span>
-  <span class="n">dataset</span> <span class="o">&lt;&lt;</span> <span class="p">{</span><span class="ss">:first_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Farm&#39;</span><span class="p">,</span> <span class="ss">:last_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Boy&#39;</span><span class="p">}</span> <span class="c1"># Inserted</span>
-  <span class="no">DB</span><span class="o">.</span><span class="n">transaction</span><span class="p">(</span><span class="ss">:savepoint</span><span class="o">=&gt;</span><span class="kp">true</span><span class="p">)</span> <span class="c1"># This savepoint is rolled back</span>
-    <span class="n">dataset</span> <span class="o">&lt;&lt;</span> <span class="p">{</span><span class="ss">:first_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Inigo&#39;</span><span class="p">,</span> <span class="ss">:last_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Montoya&#39;</span><span class="p">}</span> <span class="c1"># Not inserted</span>
-    <span class="k">raise</span><span class="p">(</span><span class="no">Sequel</span><span class="o">::</span><span class="no">Rollback</span><span class="p">)</span> <span class="k">if</span> <span class="n">something_bad_happened</span>
-  <span class="k">end</span>
-  <span class="n">dataset</span> <span class="o">&lt;&lt;</span> <span class="p">{</span><span class="ss">:first_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Prince&#39;</span><span class="p">,</span> <span class="ss">:last_name</span> <span class="o">=&gt;</span> <span class="s1">&#39;Humperdink&#39;</span><span class="p">}</span> <span class="c1"># Inserted</span>
-<span class="k">end</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB.transaction do
+  dataset &lt;&lt; {:first_name =&gt; &#39;Farm&#39;, :last_name =&gt; &#39;Boy&#39;} # Inserted
+  DB.transaction(:savepoint=&gt;true) # This savepoint is rolled back
+    dataset &lt;&lt; {:first_name =&gt; &#39;Inigo&#39;, :last_name =&gt; &#39;Montoya&#39;} # Not inserted
+    raise(Sequel::Rollback) if something_bad_happened
+  end
+  dataset &lt;&lt; {:first_name =&gt; &#39;Prince&#39;, :last_name =&gt; &#39;Humperdink&#39;} # Inserted
+end</code></pre></div>
 
-<h3>Miscellaneous:</h3>
+<h3 id="miscellaneous">Miscellaneous:</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dataset</span><span class="o">.</span><span class="n">sql</span> <span class="c1"># &quot;SELECT * FROM items&quot;</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">delete_sql</span> <span class="c1"># &quot;DELETE FROM items&quot;</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">:name</span> <span class="o">=&gt;</span> <span class="s1">&#39;sequel&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span> <span class="c1"># &quot;EXISTS ( SELECT * FROM items WHERE name = &#39;sequel&#39; )&quot;</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">columns</span> <span class="c1">#=&gt; array of columns in the result set, does a SELECT</span>
-<span class="no">DB</span><span class="o">.</span><span class="n">schema</span><span class="p">(</span><span class="ss">:items</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="o">[[</span><span class="ss">:id</span><span class="p">,</span> <span class="p">{</span><span class="ss">:type</span><span class="o">=&gt;</span><span class="ss">:integer</span><span class="p">,</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="p">}</span><span class="o">]</span><span class="p">,</span> <span class="o">[</span><span class="ss">:name</span><span class="p">,</span> <span class="p">{</span><span class="ss">:type</span><span class="o">=&gt;</span><span class="ss">:string</span><span class="p">,</span> <span class="o">.</span><span class="n">.</span><span class="o">.</span><span class="p">}</span><span class="o">]</span><span class="p">,</span> <span class="o">.</span><span class="n">.</span><span class="o">.]</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset.sql # &quot;SELECT * FROM items&quot;
+dataset.delete_sql # &quot;DELETE FROM items&quot;
+dataset.where(:name =&gt; &#39;sequel&#39;).exists # &quot;EXISTS ( SELECT * FROM items WHERE name = &#39;sequel&#39; )&quot;
+dataset.columns #=&gt; array of columns in the result set, does a SELECT
+DB.schema(:items) =&gt; [[:id, {:type=&gt;:integer, ...}], [:name, {:type=&gt;:string, ...}], ...]</code></pre></div>
 
 <hr>
 
-<h3>Documents</h3>
+<h3 id="documents">Documents</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="ss">http</span><span class="p">:</span><span class="sr">//se</span><span class="n">quel</span><span class="o">.</span><span class="n">rubyforge</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">rdoc</span><span class="o">/</span><span class="n">files</span><span class="o">/</span><span class="n">doc</span><span class="o">/</span><span class="n">association_basics_rdoc</span><span class="o">.</span><span class="n">html</span>
-<span class="ss">http</span><span class="p">:</span><span class="sr">//se</span><span class="n">quel</span><span class="o">.</span><span class="n">rubyforge</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">rdoc</span><span class="o">/</span><span class="n">classes</span><span class="o">/</span><span class="no">Sequel</span><span class="o">/</span><span class="no">Schema</span><span class="o">/</span><span class="no">Generator</span><span class="o">.</span><span class="n">html</span>
-<span class="ss">http</span><span class="p">:</span><span class="sr">//se</span><span class="n">quel</span><span class="o">.</span><span class="n">rubyforge</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">rdoc</span><span class="o">/</span><span class="n">files</span><span class="o">/</span><span class="n">doc</span><span class="o">/</span><span class="n">validations_rdoc</span><span class="o">.</span><span class="n">html</span>
-<span class="ss">http</span><span class="p">:</span><span class="sr">//se</span><span class="n">quel</span><span class="o">.</span><span class="n">rubyforge</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">rdoc</span><span class="o">/</span><span class="n">classes</span><span class="o">/</span><span class="no">Sequel</span><span class="o">/</span><span class="no">Model</span><span class="o">.</span><span class="n">html</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">http://sequel.rubyforge.org/rdoc/files/doc/association_basics_rdoc.html
+http://sequel.rubyforge.org/rdoc/classes/Sequel/Schema/Generator.html
+http://sequel.rubyforge.org/rdoc/files/doc/validations_rdoc.html
+http://sequel.rubyforge.org/rdoc/classes/Sequel/Model.html</code></pre></div>
 
-<h3>Alter table</h3>
+<h3 id="alter-table">Alter table</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">database</span><span class="o">.</span><span class="n">alter_table</span> <span class="ss">:deals</span> <span class="k">do</span>
-  <span class="n">add_column</span> <span class="ss">:name</span><span class="p">,</span> <span class="nb">String</span>
-  <span class="n">drop_column</span> <span class="ss">:column_name</span>
-  <span class="n">rename_column</span> <span class="ss">:from</span><span class="p">,</span> <span class="ss">:to</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">database.alter_table :deals do
+  add_column :name, String
+  drop_column :column_name
+  rename_column :from, :to
 
-  <span class="n">add_constraint</span> <span class="ss">:valid_name</span><span class="p">,</span> <span class="ss">:name</span><span class="o">.</span><span class="n">like</span><span class="p">(</span><span class="s1">&#39;A%&#39;</span><span class="p">)</span>
-  <span class="n">drop_constraint</span> <span class="ss">:constraint</span>
+  add_constraint :valid_name, :name.like(&#39;A%&#39;)
+  drop_constraint :constraint
 
-  <span class="n">add_full_text_index</span> <span class="ss">:body</span>
-  <span class="n">add_spacial_index</span> <span class="o">[</span><span class="n">columns</span><span class="o">]</span>
+  add_full_text_index :body
+  add_spacial_index [columns]
 
-  <span class="n">add_index</span> <span class="ss">:price</span>
-  <span class="n">drop_index</span> <span class="ss">:index</span>
+  add_index :price
+  drop_index :index
 
-  <span class="n">add_foreign_key</span> <span class="ss">:artist_id</span><span class="p">,</span> <span class="ss">:table</span>
-  <span class="n">add_primary_key</span> <span class="ss">:id</span>
-  <span class="n">add_unique_constraint</span> <span class="o">[</span><span class="n">columns</span><span class="o">]</span>
-  <span class="n">set_column_allow_null</span> <span class="ss">:foo</span><span class="p">,</span> <span class="kp">false</span>
-  <span class="n">set_column_default</span> <span class="ss">:title</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+  add_foreign_key :artist_id, :table
+  add_primary_key :id
+  add_unique_constraint [columns]
+  set_column_allow_null :foo, false
+  set_column_default :title, &#39;&#39;
 
-  <span class="n">set_column_type</span> <span class="ss">:price</span><span class="p">,</span> <span class="s1">&#39;char(10)&#39;</span>
-<span class="k">end</span></code></pre></div>
+  set_column_type :price, &#39;char(10)&#39;
+end</code></pre></div>
 
-<h3>Model associations</h3>
+<h3 id="model-stuff">Model stuff</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Deal</span> <span class="o">&lt;</span> <span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span>
-
-  <span class="c1"># Us (left) &lt;=&gt; Them (right)</span>
-  <span class="n">many_to_many</span>  <span class="ss">:images</span><span class="p">,</span>
-    <span class="ss">left_id</span><span class="p">:</span>    <span class="ss">:deal_id</span><span class="p">,</span>
-    <span class="ss">right_id</span><span class="p">:</span>   <span class="ss">:image_id</span><span class="p">,</span>
-    <span class="ss">join_table</span><span class="p">:</span> <span class="ss">:image_links</span>
-
-  <span class="n">one_to_many</span>   <span class="ss">:files</span><span class="p">,</span>
-    <span class="ss">key</span><span class="p">:</span>        <span class="ss">:deal_id</span><span class="p">,</span>
-    <span class="ss">class</span><span class="p">:</span>      <span class="ss">:DataFile</span><span class="p">,</span>
-
-  <span class="n">many_to_one</span>   <span class="ss">:parent</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="nb">self</span>
-  <span class="n">one_to_many</span>   <span class="ss">:children</span><span class="p">,</span> <span class="ss">key</span><span class="p">:</span> <span class="ss">:parent_id</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="nb">self</span>
-
-  <span class="n">one_to_many</span> <span class="ss">:gold_albums</span><span class="p">,</span> <span class="ss">class</span><span class="p">:</span> <span class="ss">:Album</span> <span class="k">do</span> <span class="o">|</span><span class="n">ds</span><span class="o">|</span>
-    <span class="n">ds</span><span class="o">.</span><span class="n">filter</span> <span class="p">{</span> <span class="n">copies_sold</span> <span class="o">&gt;</span> <span class="mi">50000</span> <span class="p">}</span>
-  <span class="k">end</span></code></pre></div>
-
-<p>Provided by many_to_many</p>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Deal</span><span class="o">[</span><span class="mi">1</span><span class="o">].</span><span class="n">images</span>
-<span class="no">Deal</span><span class="o">[</span><span class="mi">1</span><span class="o">].</span><span class="n">add_image</span>
-<span class="no">Deal</span><span class="o">[</span><span class="mi">1</span><span class="o">].</span><span class="n">remove_image</span>
-<span class="no">Deal</span><span class="o">[</span><span class="mi">1</span><span class="o">].</span><span class="n">remove_all_images</span></code></pre></div>
-
-<h3>Validations</h3>
-
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">validate</span>
-    <span class="k">super</span>
-    <span class="n">errors</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="ss">:name</span><span class="p">,</span> <span class="s1">&#39;cannot be empty&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="o">!</span><span class="nb">name</span> <span class="o">||</span> <span class="nb">name</span><span class="o">.</span><span class="n">empty?</span>
-    
-    <span class="n">validates_presence</span> <span class="o">[</span><span class="ss">:title</span><span class="p">,</span> <span class="ss">:site</span><span class="o">]</span>
-    <span class="n">validates_unique</span> <span class="ss">:name</span>
-    <span class="n">validates_format</span> <span class="sr">/\Ahttps?:\/\//</span><span class="p">,</span> <span class="ss">:website</span><span class="p">,</span> <span class="ss">:message</span><span class="o">=&gt;</span><span class="s1">&#39;is not a valid URL&#39;</span>
-    <span class="n">validates_includes</span> <span class="sx">%w(a b c)</span><span class="p">,</span> <span class="ss">:type</span>
-    <span class="n">validates_integer</span> <span class="ss">:rating</span>
-    <span class="n">validates_numeric</span> <span class="ss">:number</span>
-    <span class="n">validates_type</span> <span class="nb">String</span><span class="p">,</span> <span class="o">[</span><span class="ss">:title</span><span class="p">,</span> <span class="ss">:description</span><span class="o">]</span>
-    
-    <span class="n">validates_integer</span> <span class="ss">:rating</span>  <span class="k">if</span> <span class="kp">new</span><span class="p">?</span>
-    
-    <span class="c1"># options: :message =&gt;, :allow_nil =&gt;, :allow_blank =&gt;,</span>
-    <span class="c1">#          :allow_missing =&gt;,</span>
-    
-    <span class="n">validates_exact_length</span> <span class="mi">17</span><span class="p">,</span> <span class="ss">:isbn</span>
-    <span class="n">validates_min_length</span> <span class="mi">3</span><span class="p">,</span> <span class="ss">:name</span>
-    <span class="n">validates_max_length</span> <span class="mi">100</span><span class="p">,</span> <span class="ss">:name</span>
-    <span class="n">validates_length_range</span> <span class="mi">3</span><span class="o">.</span><span class="n">.</span><span class="mi">100</span><span class="p">,</span> <span class="ss">:name</span>
-    
-    <span class="c1"># Setter override</span>
-    <span class="k">def</span> <span class="nf">filename</span><span class="o">=</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
-      <span class="vi">@values</span><span class="o">[</span><span class="ss">:filename</span><span class="o">]</span> <span class="o">=</span> <span class="nb">name</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-<span class="k">end</span>
-
-<span class="n">deal</span><span class="o">.</span><span class="n">errors</span></code></pre></div>
-
-<h3>Model stuff</h3>
-
-<h4>instance.delete</h4>
+<h4 id="instance-delete">instance.delete</h4>
 
 <p>Deletes and returns <code>self</code>. <strong>Does not run destroy hooks</strong>. Look into using destroy instead.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Artist</span><span class="o">[</span><span class="mi">1</span><span class="o">].</span><span class="n">delete</span> <span class="c1"># DELETE FROM artists WHERE (id = 1)</span>
- <span class="c1"># =&gt; #&lt;Artist {:id=&gt;1, ...}&gt;</span></code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist[1].delete # DELETE FROM artists WHERE (id = 1)
+ # =&gt; #&lt;Artist {:id=&gt;1, ...}&gt;</code></pre></div>
   
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">deal</span> <span class="o">=</span> <span class="no">Deal</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">deal = Deal[1]
 
-<span class="n">deal</span><span class="o">.</span><span class="n">changed_columns</span>
+deal.changed_columns
 
-<span class="n">deal</span><span class="o">.</span><span class="n">destroy</span>  <span class="c1"># Calls hooks</span>
-<span class="n">deal</span><span class="o">.</span><span class="n">delete</span>   <span class="c1"># No hooks</span>
+deal.destroy  # Calls hooks
+deal.delete   # No hooks
 
-<span class="n">deal</span><span class="o">.</span><span class="n">exists?</span>
+deal.exists?
 
-<span class="n">deal</span><span class="o">.</span><span class="n">new?</span>  <span class="c1"># returns true if new</span>
+deal.new?  # returns true if new
 
-<span class="n">deal</span><span class="o">.</span><span class="n">hash</span>  <span class="c1"># Only uniques</span>
+deal.hash  # Only uniques
 
-<span class="n">deal</span><span class="o">.</span><span class="n">keys</span>  <span class="c1">#=&gt; [:id, :name]</span>
+deal.keys  #=&gt; [:id, :name]
 
-<span class="n">deal</span><span class="o">.</span><span class="n">modified!</span>  <span class="c1"># set modified? to true, even if no changes</span>
-<span class="n">deal</span><span class="o">.</span><span class="n">modified?</span>  <span class="c1"># true if modified</span>
+deal.modified!  # set modified? to true, even if no changes
+deal.modified?  # true if modified
 
-<span class="n">deal</span><span class="o">.</span><span class="n">lock!</span></code></pre></div>
+deal.lock!</code></pre></div>
 
-<h3>Callbacks</h3>
+<h3 id="callbacks">Callbacks</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">before_create</span>
-<span class="n">after_create</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">before_create
+after_create
 
-<span class="n">before_validation</span>
-<span class="n">after_validation</span>
+before_validation
+after_validation
 
-<span class="n">before_save</span>
-<span class="n">before_update</span>
-  <span class="no">UPDATE</span> <span class="no">QUERY</span>
-<span class="n">after_update</span>
-<span class="n">after_save</span>
+before_save
+before_update
+  UPDATE QUERY
+after_update
+after_save
 
-<span class="n">before_destroy</span>
-  <span class="no">DELETE</span> <span class="no">QUERY</span>
-<span class="n">after_destroy</span></code></pre></div>
+before_destroy
+  DELETE QUERY
+after_destroy</code></pre></div>
 
-<h3>Schema</h3>
+<h3 id="schema">Schema</h3>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="nc">Deal</span> <span class="o">&lt;</span> <span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span>
-  <span class="n">set_schema</span> <span class="k">do</span>
-    <span class="n">primary_key</span> <span class="ss">:id</span>
-    <span class="n">primary_key</span> <span class="o">[</span><span class="ss">:id</span><span class="p">,</span> <span class="ss">:title</span><span class="o">]</span>  <span class="c1"># composite primary key</span>
-    <span class="nb">String</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">primary_key</span><span class="p">:</span> <span class="kp">true</span>
-    
-    <span class="nb">String</span>  <span class="ss">:title</span>
-    <span class="no">Numeric</span> <span class="ss">:price</span>
-    <span class="no">DateTime</span> <span class="ss">:expires</span>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">class Deal &lt; Sequel::Model
+  set_schema do
+    primary_key :id
+    primary_key [:id, :title]  # composite primary key
+    String :name, primary_key: true
 
-    <span class="n">unique</span> <span class="ss">:whatever</span>
-    <span class="n">check</span><span class="p">(</span><span class="ss">:price</span><span class="p">)</span> <span class="p">{</span> <span class="n">num</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">}</span>
+    String  :title
+    Numeric :price
+    DateTime :expires
 
-    <span class="n">foreign_key</span> <span class="ss">:artist_id</span>
-    <span class="nb">String</span> <span class="ss">:artist_name</span><span class="p">,</span> <span class="ss">key</span><span class="p">:</span> <span class="ss">:id</span>
+    unique :whatever
+    check(:price) { num &gt; 0 }
 
-    <span class="n">index</span> <span class="ss">:title</span>
-    <span class="n">index</span> <span class="o">[</span><span class="ss">:artist_id</span><span class="p">,</span> <span class="ss">:name</span><span class="o">]</span>
-    <span class="n">full_text_index</span> <span class="ss">:title</span>
+    foreign_key :artist_id
+    String :artist_name, key: :id
 
-    <span class="c1"># String, Integer, Fixnum, Bignum, Float, Numeric, BigDecimal,</span>
-    <span class="c1"># Date, DateTime, Time, File, TrueClass, FalseClass</span>
-  <span class="k">end</span>
-<span class="k">end</span></code></pre></div>
+    index :title
+    index [:artist_id, :name]
+    full_text_index :title
 
-<h3>Unrestrict primary key</h3>
+    # String, Integer, Fixnum, Bignum, Float, Numeric, BigDecimal,
+    # Date, DateTime, Time, File, TrueClass, FalseClass
+  end
+end</code></pre></div>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="no">Category</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="s1">&#39;travel&#39;</span><span class="p">)</span>   <span class="c1"># error</span>
-<span class="no">Category</span><span class="o">.</span><span class="n">unrestrict_primary_key</span>
-<span class="no">Category</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="s1">&#39;travel&#39;</span><span class="p">)</span>   <span class="c1"># ok</span></code></pre></div>
+<h3 id="unrestrict-primary-key">Unrestrict primary key</h3>
 
-      </section>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Category.create(id: &#39;travel&#39;)   # error
+Category.unrestrict_primary_key
+Category.create(id: &#39;travel&#39;)   # ok</code></pre></div>
+
+        </div>
+
+      </div>
+
+      <div id="footer" class="row">
+  <div class="col-md-12">
+    <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+    <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+  </div>
+</div>
+
       
     </div>
-    
-    
-    
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->    
+
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="../../assets/js/jquery-2.1.3.min.js"></script>
+    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/highlight.pack.js"></script>
+    <script src="../../assets/js/toc.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
   </body>
 </html>

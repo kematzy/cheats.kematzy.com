@@ -1,0 +1,1917 @@
+  <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Datasets - Sequel ORM - Ruby | Cheats by Kematzy</title>
+
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+    <!-- <link rel="stylesheet" href="../../assets/css/-pygment_trac.css"> -->
+    <script src="../../assets/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+
+  <body>
+    <div id="page" class="container">
+
+      <nav id="header" class="navbar navbar-default">
+  <div class="container-fluid row">
+
+    <div class="navbar-header col-md-6">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <h1><a href="/">Cheats by Kematzy</a></h1>
+        <p>A personal collection of Cheatsheets</p>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse col-md-6" id="header-nav">
+      <ul class="nav navbar-nav">
+      
+        
+          
+        <li class="">
+          <a href="/index.html" title="back to the homepage">Home</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/toc.html" title="full table of contents for this website">Table of Contents</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/about.html" title="find out more information about this website">About</a>
+        </li>
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+      
+
+
+<div id="breadcrumbs" class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      
+        
+        <li><a href="/ruby/">Ruby</a></li>
+      
+        
+        <li><a href="/ruby/sequel/">Sequel</a></li>
+      
+        
+        <li><a href="/ruby/sequel/datasets.html">Datasets</a></li>
+      
+    </ol>
+  </div>
+</div>
+
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          <h1 id="ruby-sequel-orm-datasets">Ruby / Sequel ORM / Datasets</h1>
+
+<hr>
+
+<div id="toc"></div>
+
+<hr>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>Datasets are the primary way Sequel uses to access the database. </p>
+
+<p>While most database libraries have specific support for updating all records or only a single record, Sequel&#39;s ability to represent SQL queries themselves as objects is what gives Sequel most of its power. </p>
+
+<p>However, if you haven&#39;t been exposed to the dataset concept before, it can be a little disorienting. This document aims to give a basic introduction to datasets and how to use them.</p>
+
+<h3 id="what-a-dataset-represents">What a Dataset Represents</h3>
+
+<p>A Dataset can be thought of representing one of two concepts:</p>
+
+<ul>
+<li><p>An SQL query</p></li>
+<li><p>An abstract set of rows and some related behaviour</p></li>
+</ul>
+
+<p>The first concept is more easily understood, so you should probably start with that assumption.</p>
+
+<h2 id="basics">Basics</h2>
+
+<p>The most basic dataset is the simple selection of all columns in a table:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">ds = DB[:posts]   # SELECT * FROM posts</code></pre></div>
+
+<p>Here, DB represents your <code>Sequel::Database</code> object, and <code>ds</code> is your dataset, with the SQL query it represents below it.</p>
+
+<p>One of the core dataset ideas that should be understood is that datasets use a functional style of modification, in which methods called on the dataset return modified copies of the dataset, they don&#39;t modify the dataset themselves:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">ds2 = ds.where(:id=&gt;1)
+
+ds2  #=&gt; SELECT * FROM posts WHERE id = 1
+ds #=&gt; SELECT * FROM posts</code></pre></div>
+
+<p>Note how <code>ds</code> itself <strong>is not modified</strong>. This is because <code>ds.where</code> <strong>returns a modified copy of <code>ds</code></strong>, instead of modifying <code>ds</code> itself. This makes <strong>using datasets both thread safe and easy to chain</strong>:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># Thread safe:
+100.times do |i|
+  Thread.new do
+    ds.where(:id=&gt;i).first
+  end
+end
+
+ # Easy to chain:
+ds3 = ds.select(:id, :name).order(:name).where{id &lt; 100}   #=&gt; SELECT id, name FROM posts WHERE id &lt; 100 ORDER BY name</code></pre></div>
+
+<p>Thread safety you don&#39;t really need to worry about, but chainability is core to how Sequel is generally used. Almost all dataset methods that affect the SQL produced return modified copies of the receiving dataset.</p>
+
+<p>Another important thing to realise is that dataset methods that return modified datasets do not execute the dataset&#39;s code on the database. </p>
+
+<p><strong>Only dataset methods that return or yield results will execute the code on the database</strong>:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># No SQL queries sent:
+ds3 = ds.select(:id, :name).order(:name).filter{id &lt; 100}
+
+ # Until you call a method that returns results
+results = ds3.all</code></pre></div>
+
+<p>One important consequence of this API style is that if you use a method chain that includes both methods that return modified copies and a method that executes the SQL, <strong>the method that executes the SQL should generally be the last method in the chain</strong>:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># Good
+ds.select(:id, :name).order(:name).filter{id &lt; 100}.all
+
+ # Bad
+ds.all.select(:id, :name).order(:name).filter{id &lt; 100}</code></pre></div>
+
+<p>This is because all will return an array of hashes, and select, order, and filter are dataset methods, not array methods.</p>
+
+<p>A dataset represents an SQL query, or more generally, an abstract set of rows in the database. Datasets can be used to create, retrieve, update and delete records.</p>
+
+<p>Query results are always retrieved on demand, so a dataset can be kept around and reused indefinitely (datasets never cache results):</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">my_posts = DB[:posts].filter(:author =&gt; &#39;david&#39;) #=&gt; no records are retrieved
+my_posts.all                                     #=&gt; records are retrieved
+my_posts.all                                     #=&gt; records are retrieved again</code></pre></div>
+
+<p>Most dataset methods return modified copies of the dataset (functional style), so you can reuse different datasets to access data:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">posts = DB[:posts]
+davids_posts = posts.filter(:author =&gt; &#39;david&#39;)
+old_posts = posts.filter(&#39;stamp &lt; ?&#39;, Date.today - 7)
+davids_old_posts = davids_posts.filter(&#39;stamp &lt; ?&#39;, Date.today - 7)</code></pre></div>
+
+<p>Datasets are Enumerable objects, so they can be manipulated using any of the Enumerable methods, such as map, inject, etc.</p>
+
+<h2 id="overview-of-methods">Overview of Methods</h2>
+
+<p>Most Dataset methods that users will use can be broken down into two types:</p>
+
+<ul>
+<li>Methods that return modified datasets</li>
+<li>Methods that execute code on the database</li>
+</ul>
+
+<h3 id="methods-that-return-modified-datasets">Methods that return modified datasets</h3>
+
+<p>Most dataset methods fall into this category, which can be further broken down by the clause they affect:</p>
+
+<table><thead>
+<tr>
+<th>SQL</th>
+<th>Methods</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>SELECT</td>
+<td>select, select_all, select_append, select_group, select_more</td>
+</tr>
+<tr>
+<td>FROM</td>
+<td>from, from_self</td>
+</tr>
+<tr>
+<td>JOIN</td>
+<td>join, left_join, right_join, full_join, natural_join, natural_left_join, natural_right_join, natural_full_join, cross_join, inner_join, left_outer_join, right_outer_join, full_outer_join, join_table</td>
+</tr>
+<tr>
+<td>WHERE</td>
+<td>where, filter, exclude, exclude_where, and, or, grep, invert, unfiltered</td>
+</tr>
+<tr>
+<td>GROUP</td>
+<td>group, group_by, group_and_count, select_group, ungrouped</td>
+</tr>
+<tr>
+<td>HAVING</td>
+<td>having, exclude_having, invert, unfiltered</td>
+</tr>
+<tr>
+<td>ORDER</td>
+<td>order, order_by, order_append, order_prepend, order_more, reverse, reverse_order, unordered</td>
+</tr>
+<tr>
+<td>LIMIT/OFFSET</td>
+<td>limit, offset, unlimited</td>
+</tr>
+<tr>
+<td>compounds</td>
+<td>union, intersect, except</td>
+</tr>
+<tr>
+<td>locking</td>
+<td>for_update, lock_style</td>
+</tr>
+<tr>
+<td>common table expressions</td>
+<td>with, with_recursive</td>
+</tr>
+<tr>
+<td>other</td>
+<td>clone, distinct, naked, qualify, server, with_sql</td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<h2 id="public-instance-methods">PUBLIC INSTANCE METHODS</h2>
+
+<h3 id="and-cond-amp-block">and (*cond, &amp;block)</h3>
+
+<p>Alias for <code>where</code>.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="clone-opts-nil">clone (opts = nil)</h3>
+
+<p>Returns a new clone of the dataset with the given options merged. If the options changed include options in <code>COLUMN_CHANGE_OPTS</code>, the cached columns are deleted. </p>
+
+<p><strong>This method should generally not be called directly by user code.</strong></p>
+
+<p><hr class="divider"></p>
+
+<h3 id="distinct-args-amp-block">distinct (*args, &amp;block)</h3>
+
+<p>Returns a copy of the dataset with the SQL <code>DISTINCT</code> clause. The <code>DISTINCT</code> clause is used to remove duplicate rows from the output. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].distinct #=&gt; SQL: SELECT DISTINCT * FROM items</code></pre></div>
+
+<p>If arguments are provided, uses a <code>DISTINCT ON</code> clause, in which case it will only be distinct on those columns, instead of all returned columns. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].order(:id).distinct(:id) #=&gt; SQL: SELECT DISTINCT ON (id) * FROM items ORDER BY id</code></pre></div>
+
+<p>If a block is given, it is treated as a virtual row block, similar to where. Raises an error if arguments are given and <code>DISTINCT ON</code> is not supported.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].order(:id).distinct { func(:id) } #=&gt; SQL: SELECT DISTINCT ON (func(id)) * FROM items ORDER BY id</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="except-dataset-opts-opts">except (dataset, opts=OPTS)</h3>
+
+<p>Adds an <code>EXCEPT</code> clause using a second dataset object. An <code>EXCEPT</code> compound dataset returns all rows in the current dataset that are not in the given dataset. Raises an InvalidOperation if the operation is not supported. </p>
+
+<p><strong>Options:</strong></p>
+
+<table><thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:alias</td>
+<td>Use the given value as the #from_self alias</td>
+</tr>
+<tr>
+<td>:all</td>
+<td>Set to true to use EXCEPT ALL instead of EXCEPT, so duplicate rows can occur</td>
+</tr>
+<tr>
+<td>:from_self</td>
+<td>Set to false to not wrap the returned dataset in a #from_self, use with care</td>
+</tr>
+</tbody></table>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].except(DB[:other_items])
+ #=&gt; SELECT * FROM (SELECT * FROM items EXCEPT SELECT * FROM other_items) AS t1
+
+DB[:items].except(DB[:other_items], :all=&gt;true, :from_self=&gt;false)
+ #=&gt; SELECT * FROM items EXCEPT ALL SELECT * FROM other_items
+
+DB[:items].except(DB[:other_items], :alias=&gt;:i)
+ #=&gt; SELECT * FROM (SELECT * FROM items EXCEPT SELECT * FROM other_items) AS i</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="exclude-cond-amp-block">exclude (*cond, &amp;block)</h3>
+
+<p>Performs the inverse of #where. Note that if you have multiple filter conditions, this is not the same as a negation of all conditions.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].exclude(:category =&gt; &#39;software&#39;)   #=&gt; SELECT * FROM items WHERE (category != &#39;software&#39;)
+
+DB[:items].exclude(:category =&gt; &#39;software&#39;, :id=&gt;3)  #=&gt; SELECT * FROM items WHERE ((category != &#39;software&#39;) OR (id != 3))</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="exclude_having-cond-amp-block">exclude_having (*cond, &amp;block)</h3>
+
+<p>Inverts the given conditions and adds them to the HAVING clause.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].select_group(:name).exclude_having { count(name) &lt; 2 }
+ #=&gt; SELECT name FROM items GROUP BY name HAVING (count(name) &gt;= 2)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="exclude_where-cond-amp-block">exclude_where (*cond, &amp;block)</h3>
+
+<p>Alias for <code>exclude</code>.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="extension-exts">extension (*exts)</h3>
+
+<p>Return a clone of the dataset loaded with the extensions, see <code>extension!</code>.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="filter-cond-amp-block">filter (*cond, &amp;block)</h3>
+
+<p>Alias for where.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="for_update">for_update ()</h3>
+
+<p>Returns a cloned dataset with a <code>:update</code> lock style.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].for_update  #=&gt; SELECT * FROM table FOR UPDATE</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="from-source-amp-block">from (*source, &amp;block)</h3>
+
+<p>Returns a copy of the dataset with the source changed. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].from(:blah) #=&gt; SQL: SELECT * FROM blah</code></pre></div>
+
+<p>If no source is given, removes all tables. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].from    #=&gt; SQL: SELECT *</code></pre></div>
+
+<p>If multiple sources are given, it is the same as using a <code>CROSS JOIN</code> (cartesian product) between all tables. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].from(:blah, :foo) #=&gt; SQL: SELECT * FROM blah, foo</code></pre></div>
+
+<p>If a block is given, it is treated as a virtual row block, similar to where.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].from { fun(arg) } #=&gt; SQL: SELECT * FROM fun(arg)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="from_self-opts-opts">from_self (opts=OPTS)</h3>
+
+<p>Returns a dataset selecting from the current dataset. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">ds = DB[:items].order(:name).select(:id, :name)
+ #=&gt; SELECT id,name FROM items ORDER BY name
+
+ds.from_self  #=&gt; SELECT * FROM (SELECT id, name FROM items ORDER BY name) AS t1</code></pre></div>
+
+<p>Supplying the <code>:alias</code> option controls the alias of the result.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">ds.from_self(:alias=&gt;:foo)
+ #=&gt; SELECT * FROM (SELECT id, name FROM items ORDER BY name) AS foo
+
+ds.from_self(:alias=&gt;:foo, :column_aliases=&gt;[:c1, :c2])
+ #=&gt; SELECT * FROM (SELECT id, name FROM items ORDER BY name) AS foo(c1, c2)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="grep-columns-patterns-opts-opts">grep (columns, patterns, opts=OPTS)</h3>
+
+<p>Match any of the columns to any of the patterns. </p>
+
+<p>The terms can be strings (which use LIKE) or regular expressions (which are only supported on MySQL and PostgreSQL). Note that the total number of pattern matches will be Array(columns).length * Array(terms).length, which could cause performance issues.</p>
+
+<p><strong>Options (all are boolean):</strong></p>
+
+<table><thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:all_columns</td>
+<td>All columns must be matched to any of the given patterns.</td>
+</tr>
+<tr>
+<td>:all_patterns</td>
+<td>All patterns must match at least one of the columns.</td>
+</tr>
+<tr>
+<td>:case_insensitive</td>
+<td>Use a case insensitive pattern match (the default is case sensitive if the database supports it).</td>
+</tr>
+</tbody></table>
+
+<p>If both <code>:all_columns</code> and <code>:all_patterns</code> are <strong>true</strong>, all columns must match all patterns.</p>
+
+<p><strong>Examples:</strong></p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">dataset.grep(:a, &#39;%test%&#39;)    #=&gt; SELECT * FROM items WHERE (a LIKE &#39;%test%&#39; ESCAPE &#39;\&#39;)
+
+dataset.grep([:a, :b], %w&#39;%test% foo&#39;)  
+ #=&gt; SELECT * FROM items WHERE ((a LIKE &#39;%test%&#39; ESCAPE &#39;\&#39;) OR (a LIKE &#39;foo&#39; ESCAPE &#39;\&#39;)
+ #=&gt;   OR (b LIKE &#39;%test%&#39; ESCAPE &#39;\&#39;) OR (b LIKE &#39;foo&#39; ESCAPE &#39;\&#39;))
+
+dataset.grep([:a, :b], %w&#39;%foo% %bar%&#39;, :all_patterns=&gt;true)
+ #=&gt; SELECT * FROM a WHERE (((a LIKE &#39;%foo%&#39; ESCAPE &#39;\&#39;) OR (b LIKE &#39;%foo%&#39; ESCAPE &#39;\&#39;))
+ #=&gt;   AND ((a LIKE &#39;%bar%&#39; ESCAPE &#39;\&#39;) OR (b LIKE &#39;%bar%&#39; ESCAPE &#39;\&#39;)))
+
+dataset.grep([:a, :b], %w&#39;%foo% %bar%&#39;, :all_columns=&gt;true)
+ #=&gt; SELECT * FROM a WHERE (((a LIKE &#39;%foo%&#39; ESCAPE &#39;\&#39;) OR (a LIKE &#39;%bar%&#39; ESCAPE &#39;\&#39;))
+ #=&gt;   AND ((b LIKE &#39;%foo%&#39; ESCAPE &#39;\&#39;) OR (b LIKE &#39;%bar%&#39; ESCAPE &#39;\&#39;)))
+
+dataset.grep([:a, :b], %w&#39;%foo% %bar%&#39;, :all_patterns=&gt;true, :all_columns=&gt;true)
+  #=&gt; SELECT * FROM a WHERE ((a LIKE &#39;%foo%&#39; ESCAPE &#39;\&#39;) AND (b LIKE &#39;%foo%&#39; ESCAPE &#39;\&#39;)
+  #=&gt;   AND (a LIKE &#39;%bar%&#39; ESCAPE &#39;\&#39;) AND (b LIKE &#39;%bar%&#39; ESCAPE &#39;\&#39;))</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="group-columns-amp-block">group (*columns, &amp;block)</h3>
+
+<p>Returns a copy of the dataset with the results grouped by the value of the given columns. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].group(:id)         #=&gt; SELECT * FROM items GROUP BY id
+DB[:items].group(:id, :name)  #=&gt; SELECT * FROM items GROUP BY id, name</code></pre></div>
+
+<p>If a block is given, it is treated as a virtual row block, similar to where.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].group { [a, sum(b)] }   #=&gt; SELECT * FROM items GROUP BY a, sum(b)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="group_and_count-columns-amp-block">group_and_count (*columns, &amp;block)</h3>
+
+<p>Returns a dataset grouped by the given column with count by group. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].group_and_count(:name).all   #=&gt; SELECT name, count(*) AS count FROM items GROUP BY name 
+   # =&gt; [{:name=&gt;&#39;a&#39;, :count=&gt;1}, ...]
+
+DB[:items].group_and_count(:first_name, :last_name).all
+ #=&gt; SELECT first_name, last_name, count(*) AS count FROM items GROUP BY first_name, last_name
+  # =&gt; [{:first_name=&gt;&#39;a&#39;, :last_name=&gt;&#39;b&#39;, :count=&gt;1}, ...]</code></pre></div>
+
+<p>Column aliases may be supplied, and will be included in the select clause. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].group_and_count(:first_name___name).all  #=&gt; SELECT first_name AS name, count(*) AS count FROM items GROUP BY first_name
+  # =&gt; [{:name=&gt;&#39;a&#39;, :count=&gt;1}, ...]</code></pre></div>
+
+<p>If a block is given, it is treated as a virtual row block, similar to where.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].group_and_count { substr(first_name, 1, 1).as(initial) }.all   #=&gt; SELECT substr(first_name, 1, 1) AS initial, count(*) AS count FROM items GROUP BY substr(first_name, 1, 1)
+  # =&gt; [{:initial=&gt;&#39;a&#39;, :count=&gt;1}, ...]</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="group_by-columns-amp-block">group_by (*columns, &amp;block)</h3>
+
+<p>Alias of group</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="group_cube">group_cube ()</h3>
+
+<p>Adds the appropriate <code>CUBE</code> syntax to <code>GROUP BY</code>.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="group_rollup">group_rollup ()</h3>
+
+<p>Adds the appropriate <code>ROLLUP</code> syntax to <code>GROUP BY</code>.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="having-cond-amp-block">having (*cond, &amp;block)</h3>
+
+<p>Returns a copy of the dataset with the <code>HAVING</code> conditions changed. See where for argument types.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].group(:sum).having(:sum=&gt;10)   #=&gt; SELECT * FROM items GROUP BY sum HAVING (sum = 10)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="intersect-dataset-opts-opts">intersect (dataset, opts=OPTS)</h3>
+
+<p>Adds an <code>INTERSECT</code> clause using a second dataset object. An <code>INTERSECT</code> compound dataset returns all rows in both the current dataset and the given dataset. </p>
+
+<p>Raises an <code>InvalidOperation</code> if the operation is not supported. </p>
+
+<p><strong>Options:</strong></p>
+
+<table><thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:alias</td>
+<td>Use the given value as the #from_self alias</td>
+</tr>
+<tr>
+<td>:all</td>
+<td>Set to true to use INTERSECT ALL instead of INTERSECT, so duplicate rows can occur</td>
+</tr>
+<tr>
+<td>:from_self</td>
+<td>Set to false to not wrap the returned dataset in a #from_self, use with care.</td>
+</tr>
+</tbody></table>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].intersect(DB[:other_items])
+ #=&gt; SELECT * FROM (SELECT * FROM items INTERSECT SELECT * FROM other_items) AS t1
+
+DB[:items].intersect(DB[:other_items], :all =&gt; true, :from_self =&gt; false)
+ #=&gt; SELECT * FROM items INTERSECT ALL SELECT * FROM other_items
+
+DB[:items].intersect(DB[:other_items], :alias =&gt; :i)
+ #=&gt; SELECT * FROM (SELECT * FROM items INTERSECT SELECT * FROM other_items) AS i</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="invert">invert ()</h3>
+
+<p>Inverts the current <code>WHERE</code> and <code>HAVING</code> clauses. </p>
+
+<p>If there is neither a <code>WHERE</code> or <code>HAVING</code> clause, adds a <code>WHERE</code> clause that is always false.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].where(:category =&gt; &#39;software&#39;).invert
+ #=&gt; SELECT * FROM items WHERE (category != &#39;software&#39;)
+
+DB[:items].where(:category =&gt; &#39;software&#39;, :id =&gt; 3).invert
+ #=&gt; SELECT * FROM items WHERE ((category != &#39;software&#39;) OR (id != 3))</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="join-args-amp-block">join (*args, &amp;block)</h3>
+
+<p>Alias of inner_join</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="join_table-type-table-expr-nil-options-opts-amp-block">join_table (type, table, expr=nil, options=OPTS, &amp;block)</h3>
+
+<p>Returns a joined dataset. Not usually called directly, users should use the appropriate join method (e.g. join, left_join, natural_join, cross_join) which fills in the type argument.</p>
+
+<p>Takes the following arguments:</p>
+
+<table><thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>type</td>
+<td>The type of join to do (e.g. :inner)</td>
+</tr>
+<tr>
+<td>table</td>
+<td>table to join into the current dataset. Generally one of the <strong>Table types</strong> (below):</td>
+</tr>
+<tr>
+<td>expr</td>
+<td>conditions used when joining, depends on type. See <strong>Expression Condition types</strong> (below):</td>
+</tr>
+<tr>
+<td>options</td>
+<td>a hash of options, with the following Supported Option Keys (below):</td>
+</tr>
+<tr>
+<td>block</td>
+<td>The block argument should only be given if a JOIN with an ON clause is used, in which case it yields the table alias/name for the table currently being joined, the table alias/name for the last joined (or first table), and an array of previous SQL::JoinClause. Unlike where, this block is not treated as a virtual row block.</td>
+</tr>
+</tbody></table>
+
+<table><thead>
+<tr>
+<th>Table types</th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>String, Symbol</td>
+<td>identifier used as table or view name</td>
+</tr>
+<tr>
+<td>Dataset</td>
+<td>a subselect is performed with an alias of tN for some value of N</td>
+</tr>
+<tr>
+<td>SQL::Function</td>
+<td>set returning function</td>
+</tr>
+<tr>
+<td>SQL::AliasedExpression</td>
+<td>already aliased expression. Uses given alias unless overridden by the <code>:table_alias</code> option.</td>
+</tr>
+</tbody></table>
+
+<table><thead>
+<tr>
+<th>Expression Condition types</th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>Hash, Array of pairs</td>
+<td>Assumes key (1st arg) is column of joined table (unless already qualified), and value (2nd arg) is column of the last joined or primary table (or the :implicit_qualifier option). To specify multiple conditions on a single joined table column, you must use an array. Uses a JOIN with an ON clause.</td>
+</tr>
+<tr>
+<td>Array</td>
+<td>If all members of the array are symbols, considers them as columns and uses a JOIN with a USING clause. Most databases will remove duplicate columns from the result set if this is used.</td>
+</tr>
+<tr>
+<td>nil</td>
+<td>If a block is not given, doesn&#39;t use ON or USING, so the JOIN should be a NATURAL or CROSS join. If a block is given, uses an ON clause based on the block, see below.</td>
+</tr>
+<tr>
+<td>otherwise</td>
+<td>Treats the argument as a filter expression, so strings are considered literal, symbols specify boolean columns, and Sequel expressions can be used. Uses a JOIN with an ON clause.</td>
+</tr>
+</tbody></table>
+
+<table><thead>
+<tr>
+<th>Supported Option Keys</th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:table_alias</td>
+<td>Override the table alias used when joining. In general you shouldn&#39;t use this option, you should provide the appropriate SQL::AliasedExpression as the table argument.</td>
+</tr>
+<tr>
+<td>:implicit_qualifier</td>
+<td>The name to use for qualifying implicit conditions. By default, the last joined or primary table is used.</td>
+</tr>
+<tr>
+<td>:reset_implicit_qualifier</td>
+<td>Can set to false to ignore this join when future joins determine qualifier for implicit conditions.</td>
+</tr>
+<tr>
+<td>:qualify</td>
+<td>Can be set to false to not do any implicit qualification. Can be set to :deep to use the Qualifier AST Transformer, which will attempt to qualify subexpressions of the expression tree. Can be set to :symbol to only qualify symbols. Defaults to the value of default_join_table_qualification.</td>
+</tr>
+</tbody></table>
+
+<p><strong>Examples:</strong></p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:a].join_table(:cross, :b)             #=&gt; SELECT * FROM a CROSS JOIN b
+
+DB[:a].join_table(:inner, DB[:b], :c=&gt;d)  #=&gt; SELECT * FROM a INNER JOIN (SELECT * FROM b) AS t1 ON (t1.c = a.d)
+
+DB[:a].join_table(:left, :b___c, [:d])    #=&gt; SELECT * FROM a LEFT JOIN b AS c USING (d)
+
+DB[:a].natural_join(:b).join_table(:inner, :c) do |ta, jta, js|
+  (Sequel.qualify(ta, :d) &gt; Sequel.qualify(jta, :e)) &amp; {Sequel.qualify(ta, :f)=&gt;DB.from(js.first.table).select(:g)}
+end
+ #=&gt; SELECT * FROM a NATURAL JOIN b INNER JOIN c ON ((c.d &gt; b.e) AND (c.f IN (SELECT g FROM b)))</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="lateral">lateral ()</h3>
+
+<p>Marks this dataset as a lateral dataset. If used in another dataset&#39;s FROM or JOIN clauses, it will surround the subquery with LATERAL to enable it to deal with previous tables in the query:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB.from(:a, DB[:b].where(:a__c=&gt;:b__d).lateral)   #=&gt; SELECT * FROM a, LATERAL (SELECT * FROM b WHERE (a.c = b.d))</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="limit-l-o-no_offset-true-nil">limit (l, o = (no_offset = true; nil))</h3>
+
+<p>If given an integer, the dataset will contain only the first n results. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].limit(10)          #=&gt; SELECT * FROM items LIMIT 10</code></pre></div>
+
+<p>If a second argument is given, it is used as an offset. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].limit(10, 20)      #=&gt; SELECT * FROM items LIMIT 10 OFFSET 20</code></pre></div>
+
+<p>If given a range, it will contain only those at offsets within that range. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># NOTE! three (3) dots 
+DB[:items].limit(10...20)     #=&gt; SELECT * FROM items LIMIT 10 OFFSET 10
+
+ # NOTE! two (2) dots only
+DB[:items].limit(10..20)      #=&gt; SELECT * FROM items LIMIT 11 OFFSET 10</code></pre></div>
+
+<p>To use an offset without a limit, pass nil as the first argument.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].limit(nil, 20)     #=&gt; SELECT * FROM items OFFSET 20</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="lock_style-style">lock_style (style)</h3>
+
+<p>Returns a cloned dataset with the given lock style. If style is a string, it will be used directly. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].lock_style(&#39;FOR SHARE NOWAIT&#39;)  #=&gt; SELECT * FROM items FOR SHARE NOWAIT</code></pre></div>
+
+<p><strong>NOTE!!! You should never pass a string to this method that is derived from user input, as that can lead to SQL injection.</strong></p>
+
+<p>A symbol may be used for database independent locking behaviour, but all supported symbols have separate methods (e.g. #for_update).</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="naked">naked ()</h3>
+
+<p>Returns a cloned dataset without a row_proc.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">ds = DB[:items]
+ds.row_proc = proc { |r| r.invert }
+ds.all # =&gt; [{2=&gt;:id}]
+ds.naked.all # =&gt; [ {:id=&gt;2} ]</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="offset-o">offset (o)</h3>
+
+<p>Returns a copy of the dataset with a specified order. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].offset(10)  #=&gt; SELECT * FROM items OFFSET 10</code></pre></div>
+
+<p>Can be safely combined with limit, however the <code>limit()</code> offset overrides the <code>offset()</code> if you&#39;ve called <code>offset()</code> first.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].offset(10).limit(10,20)  #=&gt; SELECT * FROM items LIMIT 10 OFFSET 20
+
+ # NOTE! order of limit().offset()
+DB[:items].limit(10,20).offset(10)  #=&gt; SELECT * FROM items LIMIT 10 OFFSET 10</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="or-cond-amp-block">or (*cond, &amp;block)</h3>
+
+<p>Adds an alternate filter to an existing filter using OR. If no filter exists an Error is raised.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].where(:a).or(:b)  #=&gt; SELECT * FROM items WHERE a OR b</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="order-columns-amp-block">order (*columns, &amp;block)</h3>
+
+<p>Returns a copy of the dataset with the order changed. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].order(:name)     #=&gt; SELECT * FROM items ORDER BY name
+DB[:items].order(:a, :b)    #=&gt; SELECT * FROM items ORDER BY a, b</code></pre></div>
+
+<p>If the dataset has an existing order, it is ignored and overwritten with this order. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].order(Sequel.lit(&#39;a + b&#39;))   #=&gt; SELECT * FROM items ORDER BY a + b
+DB[:items].order(:a + :b)               #=&gt; SELECT * FROM items ORDER BY (a + b)</code></pre></div>
+
+<p>If a nil is given the returned dataset has no order. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].order(nil)   #=&gt; SELECT * FROM items</code></pre></div>
+
+<p>This can accept multiple arguments of varying kinds, such as SQL functions. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].order( Sequel.desc(:name) )                #=&gt; SELECT * FROM items ORDER BY name DESC
+DB[:items].order( Sequel.asc(:name, :nulls=&gt;:last) )  #=&gt; SELECT * FROM items ORDER BY name ASC NULLS LAST</code></pre></div>
+
+<p>If a block is given, it is treated as a virtual row block, similar to where.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].order{sum(name).desc}    #=&gt; SELECT * FROM items ORDER BY sum(name) DESC</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="order_append-columns-amp-block">order_append (*columns, &amp;block)</h3>
+
+<p>Alias of <code>#order_more</code>, for naming consistency with <code>order_prepend</code>.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="order_by-columns-amp-block">order_by (*columns, &amp;block)</h3>
+
+<p>Alias of <code>order</code></p>
+
+<p><hr class="divider"></p>
+
+<h3 id="order_more-columns-amp-block">order_more (*columns, &amp;block)</h3>
+
+<p>Returns a copy of the dataset with the order columns added to the end of the existing order.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].order(:a).order(:b)        #=&gt; SELECT * FROM items ORDER BY b
+DB[:items].order(:a).order_more(:b)   #=&gt; SELECT * FROM items ORDER BY a, b</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="order_prepend-columns-amp-block">order_prepend (*columns, &amp;block)</h3>
+
+<p>Returns a copy of the dataset with the order columns added to the beginning of the existing order.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].order(:a).order(:b)            #=&gt; SELECT * FROM items ORDER BY b
+DB[:items].order(:a).order_prepend(:b)    #=&gt; SELECT * FROM items ORDER BY b, a</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="qualify-table-first_source">qualify (table=first_source)</h3>
+
+<p>Qualify to the given table, or first source if no table is given.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].where(:id=&gt;1).qualify        #=&gt; SELECT items.* FROM items WHERE (items.id = 1)
+
+DB[:items].where(:id=&gt;1).qualify(:i)    #=&gt; SELECT i.* FROM items WHERE (i.id = 1)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="returning-values">returning (*values)</h3>
+
+<p>Modify the RETURNING clause, only supported on a few databases. If returning is used, instead of insert returning the autogenerated primary key or update/delete returning the number of modified rows, results are returned using fetch_rows.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].returning              #=&gt; RETURNING *
+DB[:items].returning(nil)         #=&gt; RETURNING NULL
+DB[:items].returning(:id, :name)  #=&gt; RETURNING id, name</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="reverse-order-amp-block">reverse (*order, &amp;block)</h3>
+
+<p>Returns a copy of the dataset with the order reversed. If no order is given, the existing order is inverted.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].reverse(:id)                             #=&gt; SELECT * FROM items ORDER BY id DESC
+DB[:items].reverse{foo(bar)}                        #=&gt; SELECT * FROM items ORDER BY foo(bar) DESC
+DB[:items].order(:id).reverse                       #=&gt; SELECT * FROM items ORDER BY id DESC
+DB[:items].order(:id).reverse(Sequel.desc(:name))   #=&gt; SELECT * FROM items ORDER BY name ASC</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="reverse_order-order-amp-block">reverse_order (*order, &amp;block)</h3>
+
+<p>Alias of <code>reverse</code></p>
+
+<p><hr class="divider"></p>
+
+<h3 id="select-columns-amp-block">select (*columns, &amp;block)</h3>
+
+<p>Returns a copy of the dataset with the columns selected changed to the given columns. This also takes a virtual row block, similar to <code>where</code>.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].select(:a)                #=&gt; SELECT a FROM items
+DB[:items].select(:a, :b)            #=&gt; SELECT a, b FROM items
+DB[:items].select { [a, sum(b)] }    #=&gt; SELECT a, sum(b) FROM items</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="select_all-tables">select_all (*tables)</h3>
+
+<p>Returns a copy of the dataset selecting the wildcard if no arguments are given. If arguments are given, treat them as tables and select all columns (using the wildcard) from each table.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].select(:a).select_all        #=&gt; SELECT * FROM items
+DB[:items].select_all(:items)           #=&gt; SELECT items.* FROM items
+DB[:items].select_all(:items, :foo)     #=&gt; SELECT items.*, foo.* FROM items</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="select_append-columns-amp-block">select_append (*columns, &amp;block)</h3>
+
+<p>Returns a copy of the dataset with the given columns added to the existing selected columns. If no columns are currently selected, it will select the columns given in addition to *.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].select(:a).select(:b)            #=&gt; SELECT b FROM items
+DB[:items].select(:a).select_append(:b)     #=&gt; SELECT a, b FROM items
+DB[:items].select_append(:b)                #=&gt; SELECT *, b FROM items</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="select_group-columns-amp-block">select_group (*columns, &amp;block)</h3>
+
+<p>Set both the select and group clauses with the given columns. Column aliases may be supplied, and will be included in the select clause. This also takes a virtual row block similar to where.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].select_group(:a, :b)            #=&gt; SELECT a, b FROM items GROUP BY a, b
+
+DB[:items].select_group(:c___a) { f(c2) }  #=&gt; SELECT c AS a, f(c2) FROM items GROUP BY c, f(c2)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="select_more-columns-amp-block">select_more (*columns, &amp;block)</h3>
+
+<p>Alias for <code>select_append</code>.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="server-servr">server (servr)</h3>
+
+<p>Set the server for this dataset to use. Used to pick a specific database shard to run a query against, or to override the default (where SELECT uses :read_only database and all other queries use the :default database). </p>
+
+<p>This method is always available but is only useful when database sharding is being used.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].all                      #=&gt; Uses the :read_only or :default server 
+DB[:items].delete                   #=&gt; Uses the :default server
+DB[:items].server(:blah).delete     #=&gt; Uses the :blah server</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="server-server">server? (server)</h3>
+
+<p>If the database uses sharding and the current dataset has not had a server set, return a cloned dataset that uses the given server. Otherwise, return the receiver directly instead of returning a clone.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="unbind">unbind ()</h3>
+
+<p>Unbind bound variables from this dataset&#39;s filter and return an array of two objects. The first object is a modified dataset where the filter has been replaced with one that uses bound variable placeholders. The second object is the hash of unbound variables. You can then prepare and execute (or just call) the dataset with the bound variables to get results.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">ds, bv = DB[:items].where(:a=&gt;1).unbind
+ds  #=&gt; SELECT * FROM items WHERE (a = $a)
+bv  #=&gt;  {:a =&gt; 1}
+ds.call(:select, bv)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="unfiltered">unfiltered ()</h3>
+
+<p>Returns a copy of the dataset with no filters (HAVING or WHERE clause) applied.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].group(:a).having(:a=&gt;1).where(:b).unfiltered  #=&gt; SELECT * FROM items GROUP BY a</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="ungrouped">ungrouped ()</h3>
+
+<p>Returns a copy of the dataset with no grouping (GROUP or HAVING clause) applied.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].group(:a).having(:a=&gt;1).where(:b).ungrouped
+ #=&gt; SELECT * FROM items WHERE b</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="union-dataset-opts-opts">union (dataset, opts=OPTS)</h3>
+
+<p>Adds a UNION clause using a second dataset object. A UNION compound dataset returns all rows in either the current dataset or the given dataset. </p>
+
+<p><strong>Options:</strong></p>
+
+<table><thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:alias</td>
+<td>Use the given value as the #from_self alias</td>
+</tr>
+<tr>
+<td>:all</td>
+<td>Set to true to use UNION ALL instead of UNION, so duplicate rows can occur</td>
+</tr>
+<tr>
+<td>:from_self</td>
+<td>Set to false to not wrap the returned dataset in a #from_self, use with care.</td>
+</tr>
+</tbody></table>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].union(DB[:other_items])
+ #=&gt; SELECT * FROM (SELECT * FROM items UNION SELECT * FROM other_items) AS t1
+
+DB[:items].union(DB[:other_items], :all=&gt;true, :from_self=&gt;false)
+ #=&gt; SELECT * FROM items UNION ALL SELECT * FROM other_items
+
+DB[:items].union(DB[:other_items], :alias=&gt;:i)
+ #=&gt; SELECT * FROM (SELECT * FROM items UNION SELECT * FROM other_items) AS i</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="unlimited">unlimited ()</h3>
+
+<p>Returns a copy of the dataset with no limit or offset.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].limit(10, 20).unlimited     #=&gt; SELECT * FROM items</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="unordered">unordered ()</h3>
+
+<p>Returns a copy of the dataset with no order.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].order(:a).unordered # SELECT * FROM items</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="where-cond-amp-block">where (*cond, &amp;block)</h3>
+
+<p>Returns a copy of the dataset with the given <code>WHERE</code> conditions imposed upon it.</p>
+
+<p>Accepts the following argument types:</p>
+
+<table><thead>
+<tr>
+<th>Description</th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td><strong>Hash</strong></td>
+<td>list of equality/inclusion expressions</td>
+</tr>
+<tr>
+<td><strong>Array</strong></td>
+<td>depends: <hr class="divider"></td>
+</tr>
+</tbody></table>
+
+<ul><li>If first member is a string, assumes the rest of the arguments are parameters and interpolates them into the string.</li><li>If all members are arrays of length two, treats the same way as a hash, except it allows for duplicate keys to be specified.</li><li>Otherwise, treats each argument as a separate condition.</li></ul>
+
+<p>| <strong>String</strong> | taken literally
+| <strong>Symbol</strong> | taken as a boolean column argument (e.g. WHERE active)
+| <strong>Sequel::SQL::BooleanExpression</strong> | an existing condition expression, probably created using the Sequel expression filter DSL.</p>
+
+<p><code>where</code> also accepts a block, which should return one of the above argument types, and is treated the same way. This block yields a virtual row object, which is easy to use to create identifiers and functions. For more details on the virtual row support, see the “Virtual Rows” guide</p>
+
+<p>If both a block and regular argument are provided, they get ANDed together.</p>
+
+<p><strong>Examples:</strong></p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].where(:id =&gt; 3)          #=&gt; SELECT * FROM items WHERE (id = 3)
+
+DB[:items].where(&#39;price &lt; ?&#39;, 100)  #=&gt; SELECT * FROM items WHERE price &lt; 100
+
+DB[:items].where([[:id, [1,2,3]], [:id, 0..10]])
+ #=&gt; SELECT * FROM items WHERE ((id IN (1, 2, 3)) AND ((id &gt;= 0) AND (id &lt;= 10)))
+
+DB[:items].where(&#39;price &lt; 100&#39;)     #=&gt; SELECT * FROM items WHERE price &lt; 100
+
+DB[:items].where(:active)           #=&gt; SELECT * FROM items WHERE :active
+
+DB[:items].where { price &lt; 100 }    #=&gt; SELECT * FROM items WHERE (price &lt; 100)</code></pre></div>
+
+<p>Multiple where calls can be chained for scoping:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">software = dataset.where(:category =&gt; &#39;software&#39;).where { price &lt; 100 }
+ #=&gt; SELECT * FROM items WHERE ((category = &#39;software&#39;) AND (price &lt; 100))</code></pre></div>
+
+<p>See the “Dataset Filtering” guide for more examples and details.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="with-name-dataset-opts-opts">with (name, dataset, opts=OPTS)</h3>
+
+<p>Add a common table expression (CTE) with the given name and a dataset that defines the CTE. A common table expression acts as an inline view for the query. </p>
+
+<p><strong>Options:</strong></p>
+
+<table><thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:args</td>
+<td>Specify the arguments/columns for the CTE, should be an array of symbols.</td>
+</tr>
+<tr>
+<td>:recursive</td>
+<td>Specify that this is a recursive CTE</td>
+</tr>
+</tbody></table>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].with(:items, DB[:syx].where(:name.like(&#39;A%&#39;)))
+  #=&gt; WITH items AS (SELECT * FROM syx WHERE (name LIKE &#39;A%&#39; ESCAPE &#39;\&#39;)) SELECT * FROM items</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="with_recursive-name-nonrecursive-recursive-opts-opts">with_recursive (name, nonrecursive, recursive, opts=OPTS)</h3>
+
+<p>Add a recursive common table expression (CTE) with the given name, a dataset that defines the nonrecursive part of the CTE, and a dataset that defines the recursive part of the CTE. </p>
+
+<p><strong>Options:</strong></p>
+
+<table><thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:args</td>
+<td>Specify the arguments/columns for the CTE, should be an array of symbols.</td>
+</tr>
+<tr>
+<td>:union_all</td>
+<td>Set to false to use UNION instead of UNION ALL combining the nonrecursive and recursive parts.</td>
+</tr>
+</tbody></table>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:t].with_recursive(:t,
+  DB[:i1].select(:id, :parent_id).where(:parent_id=&gt;nil),
+  DB[:i1].join(:t, :id=&gt;:parent_id).select(:i1__id, :i1__parent_id),
+  :args=&gt;[:id, :parent_id])
+
+  # WITH RECURSIVE &quot;t&quot;(&quot;id&quot;, &quot;parent_id&quot;) AS (
+  #   SELECT &quot;id&quot;, &quot;parent_id&quot; FROM &quot;i1&quot; WHERE (&quot;parent_id&quot; IS NULL)
+  #   UNION ALL
+  #   SELECT &quot;i1&quot;.&quot;id&quot;, &quot;i1&quot;.&quot;parent_id&quot; FROM &quot;i1&quot; INNER JOIN &quot;t&quot; ON (&quot;t&quot;.&quot;id&quot; = &quot;i1&quot;.&quot;parent_id&quot;)
+  # ) SELECT * FROM &quot;t&quot;</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="with_sql-sql-args">with_sql (sql, *args)</h3>
+
+<p>Returns a copy of the dataset with the static SQL used. This is useful if you want to keep the same row_proc/graph, but change the SQL used to custom SQL.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].with_sql(&#39;SELECT * FROM foo&#39;) #=&gt; SELECT * FROM foo</code></pre></div>
+
+<p>You can use placeholders in your SQL and provide arguments for those placeholders:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].with_sql(&#39;SELECT ? FROM foo&#39;, 1) #=&gt; SELECT 1 FROM foo</code></pre></div>
+
+<p>You can also provide a method name and arguments to call to get the SQL:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].with_sql(:insert_sql, :b=&gt;1) #=&gt; INSERT INTO items (b) VALUES (1)</code></pre></div>
+
+<hr>
+
+<h2 id="protected-instance-methods">Protected Instance methods</h2>
+
+<h3 id="compound_clone-type-dataset-opts">compound_clone (type, dataset, opts)</h3>
+
+<p>Add the dataset to the list of compounds</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="options_overlap-opts">options_overlap (opts)</h3>
+
+<p>Return true if the dataset has a non-nil value for any key in opts.</p>
+
+<p><br></p>
+
+<h3 id="simple_select_all">simple_select_all? ()</h3>
+
+<p>Whether this dataset is a simple select from an underlying table, such as:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">SELECT * FROM table
+SELECT table.* FROM table</code></pre></div>
+
+<hr>
+
+<h3 id="methods-that-execute-code-on-the-database">Methods that execute code on the database</h3>
+
+<p>Most other dataset methods commonly used will execute the dataset&#39;s SQL on the database:</p>
+
+<table><thead>
+<tr>
+<th>SQL</th>
+<th>Methods</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>SELECT (All Records)</td>
+<td>all, each, map, to_hash, to_hash_groups, select_map, select_order_map, select_hash, select_hash_groups</td>
+</tr>
+<tr>
+<td>SELECT (First Record)</td>
+<td>first, last, [], single_record</td>
+</tr>
+<tr>
+<td>SELECT (Single Value)</td>
+<td>get, single_value</td>
+</tr>
+<tr>
+<td>SELECT (Aggregates)</td>
+<td>count, avg, max, min, sum, range, interval</td>
+</tr>
+<tr>
+<td>INSERT</td>
+<td>insert, &lt;&lt;, import, multi_insert</td>
+</tr>
+<tr>
+<td>UPDATE</td>
+<td>update</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>delete</td>
+</tr>
+<tr>
+<td>other</td>
+<td>columns, columns!, truncate</td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<h2 id="public-instance-methods">Public Instance methods</h2>
+
+<h3 id="lt-lt-arg">&lt;&lt; (arg)</h3>
+
+<p>Inserts the given argument into the database. Returns self so it can be used safely when chaining:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items] &lt;&lt; {:id=&gt;0, :name=&gt;&#39;Zero&#39;} &lt;&lt; DB[:old_items].select(:id, name)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id=""><a href="*conditions"></a></h3>
+
+<p>Returns the first record matching the conditions. Examples:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table][:id=&gt;1] # SELECT * FROM table WHERE (id = 1) LIMIT 1
+ # =&gt; {:id=1}</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="all-amp-block">all (&amp;block)</h3>
+
+<p>Returns an array with all records in the dataset. If a block is given, the array is iterated over after all items have been loaded.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].all # SELECT * FROM table
+ # =&gt; [{:id=&gt;1, ...}, {:id=&gt;2, ...}, ...]
+
+ # Iterate over all rows in the table
+DB[:table].all{|row| p row}</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="avg-column-sequel-virtual_row-amp-proc-new">avg (column=Sequel.virtual_row(&amp;Proc.new))</h3>
+
+<p>Returns the average value for the given column/expression. Uses a virtual row block if no argument is given.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].avg(:number)           #=&gt; SELECT avg(number) FROM table LIMIT 1
+ # =&gt; 3
+DB[:table].avg{function(column)}  #=&gt; SELECT avg(function(column)) FROM table LIMIT 1
+ # =&gt; 1</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="columns">columns ()</h3>
+
+<p>Returns the columns in the result set in order as an array of symbols. If the columns are currently cached, returns the cached value. Otherwise, a SELECT query is performed to retrieve a single row in order to get the columns.</p>
+
+<p>If you are looking for all columns for a single table and maybe some information about each column (e.g. database type), see Database#schema.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].columns   # =&gt; [:id, :name]</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="columns">columns! ()</h3>
+
+<p>Ignore any cached column information and perform a query to retrieve a row in order to get the columns.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].columns!  # =&gt; [:id, :name]</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="count-arg-no_arg-true-amp-block">count (arg=(no_arg=true), &amp;block)</h3>
+
+<p>Returns the number of records in the dataset. If an argument is provided, it is used as the argument to count. If a block is provided, it is treated as a virtual row, and the result is used as the argument to count.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].count                    #=&gt; SELECT count(*) AS count FROM table LIMIT 1
+ # =&gt; 3
+DB[:table].count(:column)           #=&gt; SELECT count(column) AS count FROM table LIMIT 1
+ # =&gt; 2
+DB[:table].count{foo(column)}       #=&gt; SELECT count(foo(column)) AS count FROM table LIMIT 1
+ # =&gt; 1</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="delete-amp-block">delete (&amp;block)</h3>
+
+<p>Deletes the records in the dataset. The returned value should be number of records deleted, but that is adapter dependent.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].delete     #=&gt; DELETE * FROM table
+  # =&gt; 3</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="each">each ()</h3>
+
+<p>Iterates over the records in the dataset as they are yielded from the database adapter, and returns self.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].each{|row| p row}      #=&gt; SELECT * FROM table</code></pre></div>
+
+<p>Note that this method is not safe to use on many adapters if you are running additional queries inside the provided block. If you are running queries inside the block, you should use all instead of each for the outer queries, or use a separate thread or shard inside each.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="empty">empty? ()</h3>
+
+<p>Returns true if no records exist in the dataset, false otherwise</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].empty?       #=&gt; SELECT 1 AS one FROM table LIMIT 1
+ # =&gt; false</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="first-args-amp-block">first (*args, &amp;block)</h3>
+
+<p>If a integer argument is given, it is interpreted as a limit, and then returns all matching records up to that limit. If no argument is passed, it returns the first matching record. If any other type of argument(s) is passed, it is given to filter and the first matching record is returned. If a block is given, it is used to filter the dataset before returning anything.</p>
+
+<p>If there are no records in the dataset, returns nil (or an empty array if an integer argument is given).</p>
+
+<p><strong>Examples:</strong></p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].first                        #=&gt; SELECT * FROM table LIMIT 1
+ # =&gt; {:id=&gt;7}
+
+DB[:table].first(2)                     #=&gt; SELECT * FROM table LIMIT 2
+ # =&gt; [{:id=&gt;6}, {:id=&gt;4}]
+
+DB[:table].first(:id=&gt;2)                #=&gt; SELECT * FROM table WHERE (id = 2) LIMIT 1
+ # =&gt; {:id=&gt;2}
+
+DB[:table].first(&quot;id = 3&quot;)              #=&gt; SELECT * FROM table WHERE (id = 3) LIMIT 1
+ # =&gt; {:id=&gt;3}
+
+DB[:table].first(&quot;id = ?&quot;, 4)           #=&gt; SELECT * FROM table WHERE (id = 4) LIMIT 1
+ # =&gt; {:id=&gt;4}
+
+DB[:table].first{id &gt; 2}                #=&gt; SELECT * FROM table WHERE (id &gt; 2) LIMIT 1
+ # =&gt; {:id=&gt;5}
+
+DB[:table].first(&quot;id &gt; ?&quot;, 4){id &lt; 6}   #=&gt; SELECT * FROM table WHERE ((id &gt; 4) AND (id &lt; 6)) LIMIT 1
+ # =&gt; {:id=&gt;5}
+
+DB[:table].first(2){id &lt; 2}             #=&gt; SELECT * FROM table WHERE (id &lt; 2) LIMIT 2
+ # =&gt; [{:id=&gt;1}]</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="first-args-amp-block">first! (*args, &amp;block)</h3>
+
+<p>Calls first. If first returns nil (signaling that no row matches), raise a Sequel::NoMatchingRow exception.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="get-column-no_arg-true-nil-amp-block">get (column=(no_arg=true; nil), &amp;block)</h3>
+
+<p>Return the column value for the first matching record in the dataset. Raises an error if both an argument and block is given.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].get(:id)         #=&gt; SELECT id FROM table LIMIT 1
+ # =&gt; 3
+
+ds.get{sum(id)}             #=&gt; SELECT sum(id) AS v FROM table LIMIT 1
+ # =&gt; 6</code></pre></div>
+
+<p>You can pass an array of arguments to return multiple arguments, but you must make sure each element in the array has an alias that Sequel can determine:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].get([:id, :name])              #=&gt; SELECT id, name FROM table LIMIT 1
+ # =&gt; [3, &#39;foo&#39;]
+DB[:table].get{[sum(id).as(sum), name]}   #=&gt; SELECT sum(id) AS sum, name FROM table LIMIT 1
+ # =&gt; [6, &#39;foo&#39;]</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="import-columns-values-opts-opts">import (columns, values, opts=OPTS)</h3>
+
+<p>Inserts multiple records into the associated table. This method can be used to efficiently insert a large number of records into a table in a single query if the database supports it. Inserts are automatically wrapped in a transaction.</p>
+
+<p>This method is called with a columns array and an array of value arrays:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].import([:x, :y], [[1, 2], [3, 4]])
+ # INSERT INTO table (x, y) VALUES (1, 2) 
+ # INSERT INTO table (x, y) VALUES (3, 4)</code></pre></div>
+
+<p>This method also accepts a dataset instead of an array of value arrays:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].import([:x, :y], DB[:table2].select(:a, :b))     #=&gt; INSERT INTO table (x, y) SELECT a, b FROM table2</code></pre></div>
+
+<table><thead>
+<tr>
+<th><strong>Options:</strong></th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:commit_every</td>
+<td>Open a new transaction for every given number of records. For example, if you provide a value of 50, will commit after every 50 records.</td>
+</tr>
+<tr>
+<td>:return</td>
+<td>When the :value is :primary_key, returns an array of autoincremented primary key values for the rows inserted.</td>
+</tr>
+<tr>
+<td>:server</td>
+<td>Set the server/shard to use for the transaction and insert queries.</td>
+</tr>
+<tr>
+<td>:slice</td>
+<td>Same as :commit_every, :commit_every takes precedence.</td>
+</tr>
+</tbody></table>
+
+<p><hr class="divider"></p>
+
+<h3 id="insert-values-amp-block">insert (*values, &amp;block)</h3>
+
+<p>Inserts values into the associated table. The returned value is generally the value of the primary key for the inserted row, but that is adapter dependent.</p>
+
+<table><thead>
+<tr>
+<th>insert handles a number of different argument formats:</th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>no arguments or single empty hash</td>
+<td>Uses DEFAULT VALUES</td>
+</tr>
+<tr>
+<td>single hash</td>
+<td>Most common format, treats keys as columns an values as values</td>
+</tr>
+<tr>
+<td>single array</td>
+<td>Treats entries as values, with no columns</td>
+</tr>
+<tr>
+<td>two arrays</td>
+<td>Treats first array as columns, second array as values</td>
+</tr>
+<tr>
+<td>single Dataset</td>
+<td>Treats as an insert based on a selection from the dataset given, with no columns</td>
+</tr>
+<tr>
+<td>array and dataset</td>
+<td>Treats as an insert based on a selection from the dataset given, with the columns given by the array.</td>
+</tr>
+</tbody></table>
+
+<p><strong>Examples:</strong></p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].insert                             #=&gt; INSERT INTO items DEFAULT VALUES
+
+DB[:items].insert({})                         #=&gt; INSERT INTO items DEFAULT VALUES
+
+DB[:items].insert([1,2,3])                    #=&gt; INSERT INTO items VALUES (1, 2, 3)
+
+DB[:items].insert([:a, :b], [1,2])            #=&gt; INSERT INTO items (a, b) VALUES (1, 2)
+
+DB[:items].insert(:a =&gt; 1, :b =&gt; 2)           #=&gt; INSERT INTO items (a, b) VALUES (1, 2)
+
+DB[:items].insert(DB[:old_items])             #=&gt; INSERT INTO items SELECT * FROM old_items
+
+DB[:items].insert([:a, :b], DB[:old_items])   #=&gt; INSERT INTO items (a, b) SELECT * FROM old_items</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="interval-column-sequel-virtual_row-amp-proc-new">interval (column=Sequel.virtual_row(&amp;Proc.new))</h3>
+
+<p>Returns the interval between minimum and maximum values for the given column/expression. Uses a virtual row block if no argument is given.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].interval(:id) # SELECT (max(id) - min(id)) FROM table LIMIT 1
+ # =&gt; 6
+DB[:table].interval{function(column)} # SELECT (max(function(column)) - min(function(column))) FROM table LIMIT 1
+ # =&gt; 7</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="last-args-amp-block">last (*args, &amp;block)</h3>
+
+<p>Reverses the order and then runs first with the given arguments and block. Note that this will not necessarily give you the last record in the dataset, unless you have an unambiguous order. If there is not currently an order for this dataset, raises an Error.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].order(:id).last # SELECT * FROM table ORDER BY id DESC LIMIT 1
+ # =&gt; {:id=&gt;10}
+
+DB[:table].order(Sequel.desc(:id)).last(2) # SELECT * FROM table ORDER BY id ASC LIMIT 2
+ # =&gt; [{:id=&gt;1}, {:id=&gt;2}]</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="map-column-nil-amp-block">map (column=nil, &amp;block)</h3>
+
+<p>Maps column values for each record in the dataset (if a column name is given), or performs the stock mapping functionality of Enumerable otherwise. Raises an Error if both an argument and block are given.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].map(:id) # SELECT * FROM table
+ # =&gt; [1, 2, 3, ...]
+
+DB[:table].map{|r| r[:id] * 2} # SELECT * FROM table
+ # =&gt; [2, 4, 6, ...]</code></pre></div>
+
+<p>You can also provide an array of column names:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].map([:id, :name])   #=&gt; SELECT * FROM table
+ # =&gt; [[1, &#39;A&#39;], [2, &#39;B&#39;], [3, &#39;C&#39;], ...]</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="max-column-sequel-virtual_row-amp-proc-new">max (column=Sequel.virtual_row(&amp;Proc.new))</h3>
+
+<p>Returns the maximum value for the given column/expression. Uses a virtual row block if no argument is given.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].max(:id) # SELECT max(id) FROM table LIMIT 1
+ # =&gt; 10
+DB[:table].max{function(column)} # SELECT max(function(column)) FROM table LIMIT 1
+ # =&gt; 7</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="min-column-sequel-virtual_row-amp-proc-new">min (column=Sequel.virtual_row(&amp;Proc.new))</h3>
+
+<p>Returns the minimum value for the given column/expression. Uses a virtual row block if no argument is given.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].min(:id) # SELECT min(id) FROM table LIMIT 1
+ # =&gt; 1
+DB[:table].min{function(column)} # SELECT min(function(column)) FROM table LIMIT 1
+ # =&gt; 0</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="multi_insert-hashes-opts-opts">multi_insert (hashes, opts=OPTS)</h3>
+
+<p>This is a front end for import that allows you to submit an array of hashes instead of arrays of columns and values:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].multi_insert([{:x =&gt; 1}, {:x =&gt; 2}])
+ # INSERT INTO table (x) VALUES (1)
+ # INSERT INTO table (x) VALUES (2)</code></pre></div>
+
+<p>Be aware that all hashes should have the same keys if you use this calling method, otherwise some columns could be missed or set to null instead of to default values.</p>
+
+<p>This respects the same options as import.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="paged_each-opts-opts">paged_each (opts=OPTS)</h3>
+
+<p>Yields each row in the dataset, but interally uses multiple queries as needed to process the entire result set without keeping all rows in the dataset in memory, even if the underlying driver buffers all query results in memory.</p>
+
+<p>Because this uses multiple queries internally, in order to remain consistent, it also uses a transaction internally. Additionally, to work correctly, the dataset must have unambiguous order. Using an ambiguous order can result in an infinite loop, as well as subtler bugs such as yielding duplicate rows or rows being skipped.</p>
+
+<p>Sequel checks that the datasets using this method have an order, but it cannot ensure that the order is unambiguous.</p>
+
+<table><thead>
+<tr>
+<th><strong>Options:</strong></th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:rows_per_fetch</td>
+<td>The number of rows to fetch per query. Defaults to 1000.</td>
+</tr>
+<tr>
+<td>:strategy</td>
+<td>The strategy to use for paging of results. By default this is :offset, for using an approach with a limit and offset for every page. This can be set to :filter, which uses a limit and a filter that excludes rows from previous pages. In order for this strategy to work, you must be selecting the columns you are ordering by, and non of the columns can contain NULLs. Note that some Sequel adapters have optimised implementations that will use cursors or streaming regardless of the :strategy option used.</td>
+</tr>
+<tr>
+<td>:filter_values</td>
+<td>If the :strategy=&gt;:filter option is used, this option should be a proc that accepts the last retrieved row for the previous page and an array of ORDER BY expressions, and returns an array of values relating to those expressions for the last retrieved row. You will need to use this option if your ORDER BY expressions are not simple columns, if they contain qualified identifiers that would be ambiguous unqualified, if they contain any identifiers that are aliased in SELECT, and potentially other cases.</td>
+</tr>
+</tbody></table>
+
+<p><strong>Examples:</strong></p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].order(:id).paged_each{|row| }
+ # SELECT * FROM table ORDER BY id LIMIT 1000
+ # SELECT * FROM table ORDER BY id LIMIT 1000 OFFSET 1000
+ # ...
+
+DB[:table].order(:id).paged_each(:rows_per_fetch=&gt;100){|row| }
+ # SELECT * FROM table ORDER BY id LIMIT 100
+ # SELECT * FROM table ORDER BY id LIMIT 100 OFFSET 100
+ # ...
+
+DB[:table].order(:id).paged_each(:strategy=&gt;:filter){|row| }
+ # SELECT * FROM table ORDER BY id LIMIT 1000
+ # SELECT * FROM table WHERE id &gt; 1001 ORDER BY id LIMIT 1000
+ # ...
+
+DB[:table].order(:table__id).paged_each(:strategy=&gt;:filter,
+  :filter_values=&gt;proc{|row, exprs| [row[:id]]}){|row| }
+ # SELECT * FROM table ORDER BY id LIMIT 1000
+ # SELECT * FROM table WHERE id &gt; 1001 ORDER BY id LIMIT 1000
+ # ...</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="range-column-sequel-virtual_row-amp-proc-new">range (column=Sequel.virtual_row(&amp;Proc.new))</h3>
+
+<p>Returns a Range instance made from the minimum and maximum values for the given column/expression. Uses a virtual row block if no argument is given.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].range(:id) # SELECT max(id) AS v1, min(id) AS v2 FROM table LIMIT 1
+ # =&gt; 1..10
+DB[:table].interval{function(column)} # SELECT max(function(column)) AS v1, min(function(column)) AS v2 FROM table LIMIT 1
+ # =&gt; 0..7</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="select_hash-key_column-value_column">select_hash (key_column, value_column)</h3>
+
+<p>Returns a hash with key_column values as keys and value_column values as values. Similar to #to_hash, but only selects the columns given.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].select_hash(:id, :name) # SELECT id, name FROM table
+ # =&gt; {1=&gt;&#39;a&#39;, 2=&gt;&#39;b&#39;, ...}</code></pre></div>
+
+<p>You can also provide an array of column names for either the key_column, the value column, or both:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].select_hash([:id, :foo], [:name, :bar]) # SELECT * FROM table
+ # {[1, 3]=&gt;[&#39;a&#39;, &#39;c&#39;], [2, 4]=&gt;[&#39;b&#39;, &#39;d&#39;], ...}</code></pre></div>
+
+<p>When using this method, you must be sure that each expression has an alias that Sequel can determine. Usually you can do this by calling the as method on the expression and providing an alias.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="select_hash_groups-key_column-value_column">select_hash_groups (key_column, value_column)</h3>
+
+<p>Returns a hash with key_column values as keys and an array of value_column values. Similar to #to_hash_groups, but only selects the columns given.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].select_hash_groups(:name, :id) # SELECT id, name FROM table
+ # =&gt; {&#39;a&#39;=&gt;[1, 4, ...], &#39;b&#39;=&gt;[2, ...], ...}</code></pre></div>
+
+<p>You can also provide an array of column names for either the key_column, the value column, or both:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].select_hash_groups([:first, :middle], [:last, :id]) # SELECT * FROM table
+ # {[&#39;a&#39;, &#39;b&#39;]=&gt;[[&#39;c&#39;, 1], [&#39;d&#39;, 2], ...], ...}</code></pre></div>
+
+<p>When using this method, you must be sure that each expression has an alias that Sequel can determine. Usually you can do this by calling the as method on the expression and providing an alias.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="select_map-column-nil-amp-block">select_map (column=nil, &amp;block)</h3>
+
+<p>Selects the column given (either as an argument or as a block), and returns an array of all values of that column in the dataset. If you give a block argument that returns an array with multiple entries, the contents of the resulting array are undefined. Raises an Error if called with both an argument and a block.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].select_map(:id) # SELECT id FROM table
+ # =&gt; [3, 5, 8, 1, ...]
+
+DB[:table].select_map{id * 2} # SELECT (id * 2) FROM table
+ # =&gt; [6, 10, 16, 2, ...]</code></pre></div>
+
+<p>You can also provide an array of column names:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].select_map([:id, :name]) # SELECT id, name FROM table
+ # =&gt; [[1, &#39;A&#39;], [2, &#39;B&#39;], [3, &#39;C&#39;], ...]</code></pre></div>
+
+<p>If you provide an array of expressions, you must be sure that each entry in the array has an alias that Sequel can determine. Usually you can do this by calling the as method on the expression and providing an alias.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="select_order_map-column-nil-amp-block">select_order_map (column=nil, &amp;block)</h3>
+
+<p>The same as #select_map, but in addition orders the array by the column.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].select_order_map(:id) # SELECT id FROM table ORDER BY id
+ # =&gt; [1, 2, 3, 4, ...]
+
+DB[:table].select_order_map{id * 2} # SELECT (id * 2) FROM table ORDER BY (id * 2)
+ # =&gt; [2, 4, 6, 8, ...]</code></pre></div>
+
+<p>You can also provide an array of column names:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].select_order_map([:id, :name]) # SELECT id, name FROM table ORDER BY id, name
+ # =&gt; [[1, &#39;A&#39;], [2, &#39;B&#39;], [3, &#39;C&#39;], ...]</code></pre></div>
+
+<p>If you provide an array of expressions, you must be sure that each entry in the array has an alias that Sequel can determine. Usually you can do this by calling the as method on the expression and providing an alias.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="single_record">single_record ()</h3>
+
+<p>Returns the first record in the dataset, or nil if the dataset has no records. Users should probably use first instead of this method.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="single_value">single_value ()</h3>
+
+<p>Returns the first value of the first record in the dataset. Returns nil if dataset is empty. Users should generally use get instead of this method.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="sum-column-sequel-virtual_row-amp-proc-new">sum (column=Sequel.virtual_row(&amp;Proc.new))</h3>
+
+<p>Returns the sum for the given column/expression. Uses a virtual row block if no column is given.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].sum(:id)  #=&gt; SELECT sum(id) FROM table LIMIT 1
+ # =&gt; 55
+DB[:table].sum{function(column)}   #=&gt; SELECT sum(function(column)) FROM table LIMIT 1
+ # =&gt; 10</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="to_hash-key_column-value_column-nil">to_hash (key_column, value_column = nil)</h3>
+
+<p>Returns a hash with one column used as key and another used as value. If rows have duplicate values for the key column, the latter row(s) will overwrite the value of the previous row(s). If the value_column is not given or nil, uses the entire hash as the value.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].to_hash(:id, :name) # SELECT * FROM table
+ # {1=&gt;&#39;Jim&#39;, 2=&gt;&#39;Bob&#39;, ...}
+
+DB[:table].to_hash(:id) # SELECT * FROM table
+ # {1=&gt;{:id=&gt;1, :name=&gt;&#39;Jim&#39;}, 2=&gt;{:id=&gt;2, :name=&gt;&#39;Bob&#39;}, ...}</code></pre></div>
+
+<p>You can also provide an array of column names for either the key_column, the value column, or both:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].to_hash([:id, :foo], [:name, :bar]) # SELECT * FROM table
+ # {[1, 3]=&gt;[&#39;Jim&#39;, &#39;bo&#39;], [2, 4]=&gt;[&#39;Bob&#39;, &#39;be&#39;], ...}
+
+DB[:table].to_hash([:id, :name]) # SELECT * FROM table
+ # {[1, &#39;Jim&#39;]=&gt;{:id=&gt;1, :name=&gt;&#39;Jim&#39;}, [2, &#39;Bob&#39;=&gt;{:id=&gt;2, :name=&gt;&#39;Bob&#39;}, ...}</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="to_hash_groups-key_column-value_column-nil">to_hash_groups (key_column, value_column = nil)</h3>
+
+<p>Returns a hash with one column used as key and the values being an array of column values. If the value_column is not given or nil, uses the entire hash as the value.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].to_hash_groups(:name, :id) # SELECT * FROM table
+ # {&#39;Jim&#39;=&gt;[1, 4, 16, ...], &#39;Bob&#39;=&gt;[2], ...}
+
+DB[:table].to_hash_groups(:name) # SELECT * FROM table
+ # {&#39;Jim&#39;=&gt;[{:id=&gt;1, :name=&gt;&#39;Jim&#39;}, {:id=&gt;4, :name=&gt;&#39;Jim&#39;}, ...], &#39;Bob&#39;=&gt;[{:id=&gt;2, :name=&gt;&#39;Bob&#39;}], ...}</code></pre></div>
+
+<p>You can also provide an array of column names for either the key_column, the value column, or both:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].to_hash_groups([:first, :middle], [:last, :id]) # SELECT * FROM table
+ # {[&#39;Jim&#39;, &#39;Bob&#39;]=&gt;[[&#39;Smith&#39;, 1], [&#39;Jackson&#39;, 4], ...], ...}
+
+DB[:table].to_hash_groups([:first, :middle]) # SELECT * FROM table
+ # {[&#39;Jim&#39;, &#39;Bob&#39;]=&gt;[{:id=&gt;1, :first=&gt;&#39;Jim&#39;, :middle=&gt;&#39;Bob&#39;, :last=&gt;&#39;Smith&#39;}, ...], ...}</code></pre></div>
+
+<h3 id="truncate">truncate ()</h3>
+
+<p>Truncates the dataset. Returns nil.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].truncate # TRUNCATE table # =&gt; nil</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="update-values-opts-amp-block">update (values=OPTS, &amp;block)</h3>
+
+<p>Updates values for the dataset. The returned value is generally the number of rows updated, but that is adapter dependent. values should a hash where the keys are columns to set and values are the values to which to set the columns.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:table].update(:x=&gt;nil) # UPDATE table SET x = NULL
+ # =&gt; 10
+
+DB[:table].update(:x=&gt;:x+1, :y=&gt;0) # UPDATE table SET x = (x + 1), y = 0
+ # =&gt; 10</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="with_sql_all-sql-amp-block">with_sql_all (sql, &amp;block)</h3>
+
+<p>Run the given SQL and return an array of all rows. If a block is given, each row is yielded to the block after all rows are loaded. See with_sql_each.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="with_sql_delete-sql">with_sql_delete (sql)</h3>
+
+<p>Execute the given SQL and return the number of rows deleted. This exists solely as an optimization, replacing #with_sql(sql).delete. It&#39;s significantly faster as it does not require cloning the current dataset.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="with_sql_each-sql">with_sql_each (sql)</h3>
+
+<p>Run the given SQL and yield each returned row to the block.</p>
+
+<p>This method should not be called on a shared dataset if the columns selected in the given SQL do not match the columns in the receiver.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="with_sql_first-sql">with_sql_first (sql)</h3>
+
+<p>Run the given SQL and return the first row, or nil if no rows were returned. See with_sql_each.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="with_sql_insert-sql">with_sql_insert (sql)</h3>
+
+<p>Execute the given SQL and (on most databases) return the primary key of the inserted row.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="with_sql_single_value-sql">with_sql_single_value (sql)</h3>
+
+<p>Run the given SQL and return the first value in the first row, or nil if no rows were returned. For this to make sense, the SQL given should select only a single value. See with_sql_each.</p>
+
+<h2 id="protected-instance-methods">Protected Instance methods</h2>
+
+<h3 id="_import-columns-values-opts">_import (columns, values, opts)</h3>
+
+<p>Internals of import. If primary key values are requested, use separate insert commands for each row. Otherwise, call multi_insert_sql and execute each statement it gives separately.</p>
+
+<h3 id="select_map_multiple-retcols"><em>select_map_multiple (ret</em>cols)</h3>
+
+<p>Return an array of arrays of values given by the symbols in ret_cols.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="select_mapsingle"><em>select_map</em>single ()</h3>
+
+<p>Returns an array of the first value in each row.</p>
+
+<hr>
+
+<h2 id="user-methods-relating-to-sql-creation">User Methods relating to SQL Creation</h2>
+
+<h2 id="public-instance-methods">Public Instance methods</h2>
+
+<p><hr class="divider"></p>
+
+<h3 id="exists">exists ()</h3>
+
+<p>Returns an EXISTS clause for the dataset as an SQL::PlaceholderLiteralString.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB.select(1).where(DB[:items].exists)
+ # SELECT 1 WHERE (EXISTS (SELECT * FROM items))</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="insert_sql-values">insert_sql (*values)</h3>
+
+<p>Returns an INSERT SQL query string. See insert.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].insert_sql(:a=&gt;1)
+ # =&gt; &quot;INSERT INTO items (a) VALUES (1)&quot;</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="literal_append-sql-v">literal_append (sql, v)</h3>
+
+<p>Append a literal representation of a value to the given SQL string.</p>
+
+<p>If an unsupported object is given, an Error is raised.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="multi_insert_sql-columns-values">multi_insert_sql (columns, values)</h3>
+
+<p>Returns an array of insert statements for inserting multiple records. This method is used by multi_insert to format insert statements and expects a keys array and and an array of value arrays.</p>
+
+<p>This method should be overridden by descendants if the support inserting multiple records in a single SQL statement.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="sql">sql ()</h3>
+
+<p>Same as <code>select_sql</code>, not aliased directly to make subclassing simpler.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="truncate_sql">truncate_sql ()</h3>
+
+<p>Returns a TRUNCATE SQL query string. See truncate</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].truncate_sql     # =&gt; &#39;TRUNCATE items&#39;</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="update_sql-values-opts">update_sql (values = OPTS)</h3>
+
+<p>Formats an <code>UPDATE</code> statement using the given values. See update.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">DB[:items].update_sql(:price =&gt; 100, :category =&gt; &#39;software&#39;)
+ # =&gt; &quot;UPDATE items SET price = 100, category = &#39;software&#39;</code></pre></div>
+
+<p>Raises an Error if the dataset is grouped or includes more than one table.</p>
+
+<hr>
+
+<p>/EOF</p>
+
+        </div>
+
+      </div>
+
+      <div id="footer" class="row">
+  <div class="col-md-12">
+    <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+    <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+  </div>
+</div>
+
+      
+    </div>
+
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="../../assets/js/jquery-2.1.3.min.js"></script>
+    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/highlight.pack.js"></script>
+    <script src="../../assets/js/toc.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
+  </body>
+</html>

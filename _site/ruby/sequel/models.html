@@ -1,0 +1,1269 @@
+  <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Models - Sequel ORM - Ruby | Cheats by Kematzy</title>
+
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+    <!-- <link rel="stylesheet" href="../../assets/css/-pygment_trac.css"> -->
+    <script src="../../assets/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+
+  <body>
+    <div id="page" class="container">
+
+      <nav id="header" class="navbar navbar-default">
+  <div class="container-fluid row">
+
+    <div class="navbar-header col-md-6">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <h1><a href="/">Cheats by Kematzy</a></h1>
+        <p>A personal collection of Cheatsheets</p>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse col-md-6" id="header-nav">
+      <ul class="nav navbar-nav">
+      
+        
+          
+        <li class="">
+          <a href="/index.html" title="back to the homepage">Home</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/toc.html" title="full table of contents for this website">Table of Contents</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/about.html" title="find out more information about this website">About</a>
+        </li>
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+      
+
+
+<div id="breadcrumbs" class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      
+        
+        <li><a href="/ruby/">Ruby</a></li>
+      
+        
+        <li><a href="/ruby/sequel/">Sequel</a></li>
+      
+        
+        <li><a href="/ruby/sequel/models.html">Models</a></li>
+      
+    </ol>
+  </div>
+</div>
+
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          <h1 id="ruby-sequel-orm-models">Ruby / Sequel ORM / Models</h1>
+
+<hr>
+
+<p><code>
+Sequel::Model</code> is an object relational mapper built on top of Sequel core. Each model class is backed by a dataset instance, and many dataset methods can be called directly on the class. Model datasets return rows as model instances, which have fairly standard ORM instance behaviour.</p>
+
+<p><code>Sequel::Model</code> is built completely out of plugins. </p>
+
+<p>Plugins can override any class, instance, or dataset method defined by a previous plugin and call super to get the default behaviour. </p>
+
+<p>By default, <code>Sequel::Model</code> loads two plugins, Sequel::Model (which is itself a plugin) for the base support, and <code>Sequel::Model::Associations</code> for the associations support.</p>
+
+<p>You can set the <code>SEQUEL_NO_ASSOCIATIONS</code> constant or environment variable to make Sequel not load the associations plugin by default.</p>
+
+<h2 id="classes-and-modules">Classes and Modules</h2>
+
+<h2 id="sequel-model-associations">Sequel::Model::Associations</h2>
+
+<h2 id="sequel-model-classmethods">Sequel::Model::ClassMethods</h2>
+
+<h2 id="sequel-model-datasetmethods">Sequel::Model::DatasetMethods</h2>
+
+<h2 id="sequel-model-instancemethods">Sequel::Model::InstanceMethods</h2>
+
+<h2 id="sequel-model-datasetmodule">Sequel::Model::DatasetModule</h2>
+
+<h2 id="sequel-model-errors">Sequel::Model::Errors</h2>
+
+<h3 id="constants">Constants</h3>
+
+<table><thead>
+<tr>
+<th><strong>Sequel::Model Constants</strong></th>
+<th></th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>AFTER_HOOKS</td>
+<td>=   [:after_create, :after_update, :after_save, :after_destroy, :after_validation, :after_commit, :after_rollback, :after_destroy_commit, :after_destroy_rollback]</td>
+<td>Hooks that are called after an action. When overriding these, it is recommended to call super on the first line of your method, so later hooks are called after earlier hooks.</td>
+</tr>
+<tr>
+<td>ANONYMOUS_MODEL_CLASSES</td>
+<td>=   {}</td>
+<td>Map that stores model classes created with Sequel::Model(), to allow the reopening of classes when dealing with code reloading.</td>
+</tr>
+<tr>
+<td>ANONYMOUS_MODEL_CLASSES_MUTEX</td>
+<td>= Mutex.new</td>
+<td>Mutex protecting access to ANONYMOUS_MODEL_CLASSES</td>
+</tr>
+<tr>
+<td>AROUND_HOOKS</td>
+<td>= [:around_create, :around_update, :around_save, :around_destroy, :around_validation]</td>
+<td>Hooks that are called around an action. If overridden, these methods must call super exactly once if the behaviour they wrap is desired. The can be used to rescue exceptions raised by the code they wrap or ensure that some behaviour is executed no matter what.</td>
+</tr>
+<tr>
+<td>BEFORE_HOOKS</td>
+<td>= [:before_create, :before_update, :before_save, :before_destroy, :before_validation]</td>
+<td>Hooks that are called before an action. Can return false to not do the action. When overriding these, it is recommended to call super as the last line of your method, so later hooks are called before earlier hooks.</td>
+</tr>
+<tr>
+<td>BOOLEAN_SETTINGS</td>
+<td>= [:typecast_empty_string_to_nil, :typecast_on_assignment, :strict_param_setting, \ :raise_on_save_failure, :raise_on_typecast_failure, :require_modification, :use_after_commit_rollback, :use_transactions]</td>
+<td>Boolean settings that can be modified at the global, class, or instance level.</td>
+</tr>
+<tr>
+<td>DATASET_METHODS</td>
+<td>= (Dataset::ACTION_METHODS + Dataset::QUERY_METHODS + [:each_server]) - [:and, :or, :[], :columns, :columns!, :delete, :update, :add_graph_aliases, :first, :first!]</td>
+<td>Class methods added to model that call the method of the same name on the dataset</td>
+</tr>
+<tr>
+<td>HOOKS</td>
+<td>= BEFORE_HOOKS + AFTER_HOOKS</td>
+<td>Empty instance methods to create that the user can override to get hook/callback behaviour. Just like any other method defined by Sequel, if you override one of these, you should call super to get the default behaviour (while empty by default, they can also be defined by plugins). See the “Model Hooks” guide for more detail on hooks.</td>
+</tr>
+<tr>
+<td>INHERITED_INSTANCE_VARIABLES</td>
+<td>= {:@allowed_columns=&gt;:dup, :@dataset_method_modules=&gt;:dup, :@primary_key=&gt;nil, :@use_transactions=&gt;nil, :@raise_on_save_failure=&gt;nil, :@require_modification=&gt;nil, :@restricted_columns=&gt;:dup, :@restrict_primary_key=&gt;nil, :@simple_pk=&gt;nil, :@simple_table=&gt;nil, :@strict_param_setting=&gt;nil, :@typecast_empty_string_to_nil=&gt;nil, :@typecast_on_assignment=&gt;nil, :@raise_on_typecast_failure=&gt;nil, :@plugins=&gt;:dup, :@setter_methods=&gt;nil, :@use_after_commit_rollback=&gt;nil, :@fast_pk_lookup_sql=&gt;nil, :@fast_instance_delete_sql=&gt;nil, :@finders=&gt;:dup, :@finder_loaders=&gt;:dup, :@db=&gt;nil, :@default_set_fields_options=&gt;:dup}</td>
+<td>Class instance variables that are inherited in subclasses. If the value is :dup, dup is called on the superclass&#39;s instance variable when creating the instance variable in the subclass. If the value is nil, the superclass&#39;s instance variable is used directly in the subclass.</td>
+</tr>
+<tr>
+<td>NORMAL_METHOD_NAME_REGEXP</td>
+<td>= /\A[A-Za-z_][A-Za-z0-9_]*\z/</td>
+<td>Regular expression that determines if a method name is normal in the sense that it could be used literally in ruby code without using send. Used to avoid problems when using eval with a string to define methods.</td>
+</tr>
+<tr>
+<td>OPTS</td>
+<td>= Sequel::OPTS</td>
+<td>RESTRICTED_SETTER_METHODS =   instance_methods.map{</td>
+</tr>
+<tr>
+<td>SETTER_METHOD_REGEXP</td>
+<td>= /=\z/</td>
+<td>Regular expression that determines if the method is a valid setter name (i.e. it ends with =).</td>
+</tr>
+</tbody></table>
+
+<h2 id="instance-methods">Instance Methods</h2>
+
+<p><code>Sequel::Model</code> instance methods that implement basic model functionality.</p>
+
+<p>All of the methods in <code>HOOKS</code> and <code>AROUND_HOOKS</code> create instance methods that are called by Sequel when the appropriate action occurs. For example, when destroying a model object, Sequel will call <code>around_destroy</code>, which will call <code>before_destroy</code>, do the destroy, and then call <code>after_destroy</code>.</p>
+
+<p>The following instance_methods all call the class method of the same name: <code>columns</code>, <code>db</code>, <code>primary_key</code>, <code>db_schema</code>.</p>
+
+<p>All of the methods in <code>BOOLEAN_SETTINGS</code> create <code>attr_writers</code> allowing you to set values for the attribute. It also creates instance getters returning the value of the setting. If the value has not yet been set, it gets the default value from the class by calling the class method of the same name.</p>
+
+<h3 id="attributes">Attributes</h3>
+
+<table><thead>
+<tr>
+<th><strong>Attributes</strong></th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>to_hash</td>
+<td>[R]</td>
+</tr>
+</tbody></table>
+
+<p>Artist.new(:name=&gt;&#39;Bob&#39;).values # =&gt; {:name=&gt;&#39;Bob&#39;}
+Artist[1].values # =&gt; {:id=&gt;1, :name=&gt;&#39;Jim&#39;, ...}</p>
+
+<p>| values | [R] | The hash of attribute values. Keys are symbols with the names of the underlying database columns.</p>
+
+<p>Artist.new(:name=&gt;&#39;Bob&#39;).values # =&gt; {:name=&gt;&#39;Bob&#39;}
+Artist[1].values # =&gt; {:id=&gt;1, :name=&gt;&#39;Jim&#39;, ...}</p>
+
+<h2 id="public-class-methods">Public Class methods</h2>
+
+<p><hr class="divider"></p>
+
+<h3 id="new-values">new (values = {})</h3>
+
+<p>Creates new instance and passes the given values to set. If a block is given, yield the instance to the block unless from_db is true.</p>
+
+<table><thead>
+<tr>
+<th>Arguments:</th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>values</td>
+<td>should be a hash to pass to set.</td>
+</tr>
+<tr>
+<td>from_db</td>
+<td>only for backwards compatibility, forget it exists.</td>
+</tr>
+</tbody></table>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.new(:name=&gt;&#39;Bob&#39;)
+
+Artist.new do |a|
+  a.name = &#39;Bob&#39;
+end</code></pre></div>
+
+<h2 id="public-instance-methods">Public Instance methods</h2>
+
+<p><hr class="divider"></p>
+
+<h3 id="obj">== (obj)</h3>
+
+<p>Alias of <code>eql?</code></p>
+
+<p><hr class="divider"></p>
+
+<h3 id="obj">=== (obj)</h3>
+
+<p>If <code>pk</code> is not <code>nil</code>, true only if the objects have the same class and pk. If pk is nil, false.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist[1] === Artist[1] # true
+Artist.new === Artist.new # false
+Artist[1].set(:name=&gt;&#39;Bob&#39;) == Artist[1] # =&gt; true</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id=""><a href="column"></a></h3>
+
+<p>Returns value of the column&#39;s attribute.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist[1][:id] #=&gt; 1</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="column-value">[]= (column, value)</h3>
+
+<p>Sets the value for the given column. If typecasting is enabled for this object, typecast the value based on the column&#39;s type. If this is a new record or the typecasted value isn&#39;t the same as the current value for the column, mark the column as changed.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">a = Artist.new
+a[:name] = &#39;Bob&#39;
+a.values              #=&gt; {:name=&gt;&#39;Bob&#39;}</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="autoincrementing_primary_key">autoincrementing_primary_key ()</h3>
+
+<p>The autoincrementing primary key for this model object. Should be overridden if you have a composite primary key with one part of it being autoincrementing.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="changed_columns">changed_columns ()</h3>
+
+<p>The columns that have been updated. This isn&#39;t completely accurate, as it could contain columns whose values have not changed.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">a = Artist[1]
+a.changed_columns # =&gt; []
+a.name = &#39;Bob&#39;
+a.changed_columns # =&gt; [:name]</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="delete">delete ()</h3>
+
+<p>Deletes and returns self. Does not run destroy hooks. Look into using destroy instead.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist[1].delete      #=&gt; DELETE FROM artists WHERE (id = 1)
+ # =&gt; #&lt;Artist {:id=&gt;1, ...}&gt;</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="destroy-opts-opts">destroy (opts = OPTS)</h3>
+
+<p>Like delete but runs hooks before and after delete. If <code>before_destroy</code> returns false, returns false without deleting the object from the database. Otherwise, deletes the item from the database and returns self. Uses a transaction if <code>use_transactions</code> is true or if the <code>:transaction</code> option is given and true.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist[1].destroy         #=&gt; BEGIN; DELETE FROM artists WHERE (id = 1); COMMIT;
+ # =&gt; #&lt;Artist {:id=&gt;1, ...}&gt;</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="each-amp-block">each (&amp;block)</h3>
+
+<p>Iterates through all of the current values using each.</p>
+
+<p>Album[1].each{|k, v| puts &quot;#{k} =&gt; #{v}&quot;}
+ # id =&gt; 1
+ # name =&gt; &#39;Bob&#39;</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="eql-obj">eql? (obj)</h3>
+
+<p>Compares model instances by values.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist[1] == Artist[1]                    # =&gt; true
+Artist.new == Artist.new                  # =&gt; true
+Artist[1].set(:name=&gt;&#39;Bob&#39;) == Artist[1]  # =&gt; false</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="errors">errors ()</h3>
+
+<p>Returns the validation errors associated with this object. See Errors.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="exists">exists? ()</h3>
+
+<p>Returns true when current instance exists, false otherwise. Generally an object that isn&#39;t new will exist unless it has been deleted. Uses a database query to check for existence, unless the model object is new, in which case this is always false.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist[1].exists?       #=&gt; SELECT 1 FROM artists WHERE (id = 1)
+ # =&gt; true
+Artist.new.exists?
+ # =&gt; false</code></pre></div>
+
+<h3 id="extend-mod">extend (mod)</h3>
+
+<p>Ignore the model&#39;s setter method cache when this instances extends a module, as the module may contain setter methods.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="freeze">freeze ()</h3>
+
+<p>Freeze the object in such a way that it is still usable but not modifiable. Once an object is frozen, you cannot modify it&#39;s values, #changed_columns, errors, or dataset.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="hash">hash ()</h3>
+
+<p>Value that should be unique for objects with the same class and pk (if pk is not nil), or the same class and values (if pk is nil).</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist[1].hash == Artist[1].hash # true
+Artist[1].set(:name=&gt;&#39;Bob&#39;).hash == Artist[1].hash # true
+Artist.new.hash == Artist.new.hash # true
+Artist.new(:name=&gt;&#39;Bob&#39;).hash == Artist.new.hash # false</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="id">id ()</h3>
+
+<p>Returns value for the :id attribute, even if the primary key is not id. To get the primary key value, use pk.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist[1].id # =&gt; 1</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="inspect">inspect ()</h3>
+
+<p>Returns a string representation of the model instance including the class name and values.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="keys">keys ()</h3>
+
+<p>Returns the keys in values. May not include all column names.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.new.keys                 # =&gt; []
+Artist.new(:name=&gt;&#39;Bob&#39;).keys   # =&gt; [:name]
+Artist[1].keys                  # =&gt; [:id, :name]</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="lock">lock! ()</h3>
+
+<p>Refresh this record using for_update unless this is a new record. Returns self. This can be used to make sure no other process is updating the record at the same time.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">a = Artist[1]
+Artist.db.transaction do
+  a.lock!
+  a.update(:name=&gt;&#39;A&#39;)
+end</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="marshallable">marshallable! ()</h3>
+
+<p>Remove elements of the model object that make marshalling fail. Returns self.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">a = Artist[1]
+a.marshallable!
+Marshal.dump(a)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="modified-column-nil">modified! (column=nil)</h3>
+
+<p>Explicitly mark the object as modified, so save_changes/update will run callbacks even if no columns have changed.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">a = Artist[1]
+a.save_changes # No callbacks run, as no changes
+a.modified!
+a.save_changes # Callbacks run, even though no changes made</code></pre></div>
+
+<p>If a column is given, specifically marked that column as modified, so that save_changes/update will include that column in the update. This should be used if you plan on mutating the column value instead of assigning a new column value:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">a.modified!(:name)
+a.name.gsub!(/[aeou]/, &#39;i&#39;)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="modified-column-nil">modified? (column=nil)</h3>
+
+<p>Whether this object has been modified since last saved, used by #save_changes to determine whether changes should be saved. New values are always considered modified.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">a = Artist[1]
+a.modified? # =&gt; false
+a.set(:name=&gt;&#39;Jim&#39;)
+a.modified? # =&gt; true</code></pre></div>
+
+<p>If a column is given, specifically check if the given column has been modified:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">a.modified?(:num_albums) # =&gt; false
+a.num_albums = 10
+a.modified?(:num_albums) # =&gt; true</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="new">new? ()</h3>
+
+<p>Returns true if the current instance represents a new record.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.new.new? # =&gt; true
+Artist[1].new? # =&gt; false</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="pk">pk ()</h3>
+
+<p>Returns the primary key value identifying the model instance. Raises an Error if this model does not have a primary key. If the model has a composite primary key, returns an array of values.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist[1].pk # =&gt; 1
+Artist[[1, 2]].pk # =&gt; [1, 2]</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="pk_hash">pk_hash ()</h3>
+
+<p>Returns a hash mapping the receivers primary key column(s) to their values.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist[1].pk_hash           # =&gt; {:id=&gt;1}
+Artist[[1, 2]].pk_hash      # =&gt; {:id1=&gt;1, :id2=&gt;2}</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="qualified_pk_hash-qualifier-model-table_name">qualified_pk_hash (qualifier=model.table_name)</h3>
+
+<p>Returns a hash mapping the receivers primary key column(s) to their values.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist[1].qualified_pk_hash         # =&gt; {Sequel.qualify(:artists, :id)=&gt;1}
+Artist[[1, 2]].qualified_pk_hash    # =&gt; {Sequel.qualify(:artists, :id1)=&gt;1, Sequel.qualify(:artists, :id2)=&gt;2}</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="refresh">refresh ()</h3>
+
+<p>Reloads attributes from database and returns self. Also clears all #changed_columns information. Raises an Error if the record no longer exists in the database.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">a = Artist[1]
+a.name = &#39;Jim&#39;
+a.refresh
+a.name # =&gt; &#39;Bob&#39;</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="reload">reload ()</h3>
+
+<p>Alias of refresh, but not aliased directly to make overriding in a plugin easier.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="save-opts-opts">save (opts=OPTS)</h3>
+
+<p>Creates or updates the record, after making sure the record is valid and before hooks execute successfully. Fails if:</p>
+
+<ul>
+<li><p>the record is not valid, or</p></li>
+<li><p>before_save returns false, or</p></li>
+<li><p>the record is new and before_create returns false, or</p></li>
+<li><p>the record is not new and before_update returns false.</p></li>
+</ul>
+
+<p>If save fails and either <code>raise_on_save_failure</code> or the <code>:raise_on_failure</code> option is true, it raises <code>ValidationFailed</code> or <code>HookFailed</code>. Otherwise it returns <code>nil</code>.</p>
+
+<p>If it succeeds, it returns self.</p>
+
+<p>You can provide an optional list of columns to update, in which case it only updates those columns, or a options hash.</p>
+
+<table><thead>
+<tr>
+<th>Takes the following options:</th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:changed</td>
+<td>save all changed columns, instead of all columns or the columns given</td>
+</tr>
+<tr>
+<td>:columns</td>
+<td>array of specific columns that should be saved.</td>
+</tr>
+<tr>
+<td>:raise_on_failure</td>
+<td>set to true or false to override the current raise_on_save_failure setting</td>
+</tr>
+<tr>
+<td>:server</td>
+<td>set the server/shard on the object before saving, and use that server/shard in any transaction.</td>
+</tr>
+<tr>
+<td>:transaction</td>
+<td>set to true or false to override the current use_transactions setting</td>
+</tr>
+<tr>
+<td>:validate</td>
+<td>set to false to skip validation</td>
+</tr>
+</tbody></table>
+
+<p><hr class="divider"></p>
+
+<h3 id="save_changes-opts-opts">save_changes (opts=OPTS)</h3>
+
+<p>Saves only changed columns if the object has been modified. If the object has not been modified, returns nil. If unable to save, returns false unless raise_on_save_failure is true.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">a = Artist[1]
+a.save_changes # =&gt; nil
+a.name = &#39;Jim&#39;
+a.save_changes # UPDATE artists SET name = &#39;Bob&#39; WHERE (id = 1)
+ # =&gt; #&lt;Artist {:id=&gt;1, :name=&gt;&#39;Jim&#39;, ...}</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="set-hash">set (hash)</h3>
+
+<p>Updates the instance with the supplied values with support for virtual attributes, raising an exception if a value is used that doesn&#39;t have a setter method (or ignoring it if strict_param_setting = false). Does not save the record.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">artist.set(:name=&gt;&#39;Jim&#39;)
+artist.name   # =&gt; &#39;Jim&#39;</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="set_all-hash">set_all (hash)</h3>
+
+<p>Set all values using the entries in the hash, ignoring any setting of allowed_columns in the model.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.set_allowed_columns(:num_albums)
+artist.set_all(:name=&gt;&#39;Jim&#39;)
+artist.name         # =&gt; &#39;Jim&#39;</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="set_fields-hash-fields-opts-nil">set_fields (hash, fields, opts=nil)</h3>
+
+<p>For each of the fields in the given array fields, call the setter method with the value of that hash entry for the field. Returns self.</p>
+
+<table><thead>
+<tr>
+<th>You can provide an options hash, with the following options currently respected:</th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:missing</td>
+<td>Can be set to :skip to skip missing entries or :raise to raise an Error for missing entries. The default behavior is not to check for missing entries, in which case the default value is used. To be friendly with most web frameworks, the missing check will also check for the string version of the argument in the hash if given a symbol.</td>
+</tr>
+</tbody></table>
+
+<p><strong>Examples:</strong></p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">artist.set_fields({:name=&gt;&#39;Jim&#39;}, [:name])
+artist.name # =&gt; &#39;Jim&#39;
+
+artist.set_fields({:hometown=&gt;&#39;LA&#39;}, [:name])
+artist.name # =&gt; nil
+artist.hometown # =&gt; &#39;Sac&#39;
+
+artist.name # =&gt; &#39;Jim&#39;
+artist.set_fields({}, [:name], :missing=&gt;:skip)
+artist.name # =&gt; &#39;Jim&#39;
+
+artist.name # =&gt; &#39;Jim&#39;
+artist.set_fields({}, [:name], :missing=&gt;:raise)
+ # Sequel::Error raised</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="set_only-hash-only">set_only (hash, *only)</h3>
+
+<p>Set the values using the entries in the hash, only if the key is included in only. It may be a better idea to use set_fields instead of this method.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">artist.set_only({:name=&gt;&#39;Jim&#39;}, :name)
+artist.name # =&gt; &#39;Jim&#39;
+
+artist.set_only({:hometown=&gt;&#39;LA&#39;}, :name)     # Raise Error</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="set_server-s">set_server (s)</h3>
+
+<p>Set the shard that this object is tied to. Returns self.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="singleton_method_added-meth">singleton_method_added (meth)</h3>
+
+<p>Clear the setter_methods cache when a method is added</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="this">this ()</h3>
+
+<p>Returns (naked) dataset that should return only this instance.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist[1].this                #=&gt; SELECT * FROM artists WHERE (id = 1) LIMIT 1</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="update-hash">update (hash)</h3>
+
+<p>Runs set with the passed hash and then runs save_changes.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">artist.update(:name=&gt;&#39;Jim&#39;)      #=&gt; UPDATE artists SET name = &#39;Jim&#39; WHERE (id = 1)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="update_all-hash">update_all (hash)</h3>
+
+<p>Update all values using the entries in the hash, ignoring any setting of allowed_columns in the model.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.set_allowed_columns(:num_albums)
+artist.update_all(:name=&gt;&#39;Jim&#39;)           #=&gt; UPDATE artists SET name = &#39;Jim&#39; WHERE (id = 1)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="update_fields-hash-fields-opts-nil">update_fields (hash, fields, opts=nil)</h3>
+
+<p>Update the instances values by calling set_fields with the arguments, then saves any changes to the record. Returns self.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">artist.update_fields({:name=&gt;&#39;Jim&#39;}, [:name])       #=&gt; UPDATE artists SET name = &#39;Jim&#39; WHERE (id = 1)
+
+artist.update_fields({:hometown=&gt;&#39;LA&#39;}, [:name])    #=&gt; UPDATE artists SET name = NULL WHERE (id = 1)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="update_only-hash-only">update_only (hash, *only)</h3>
+
+<p>Update the values using the entries in the hash, only if the key is included in only. It may be a better idea to use update_fields instead of this method.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">artist.update_only({:name=&gt;&#39;Jim&#39;}, :name)   #=&gt; UPDATE artists SET name = &#39;Jim&#39; WHERE (id = 1)
+
+artist.update_only({:hometown=&gt;&#39;LA&#39;}, :name) # Raise Error</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="valid-opts-opts">valid? (opts = OPTS)</h3>
+
+<p>Validates the object and returns true if no errors are reported.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">artist(:name=&gt;&#39;Valid&#39;).valid?       # =&gt; true
+artist(:name=&gt;&#39;Invalid&#39;).valid?     # =&gt; false
+artist.errors.full_messages         # =&gt; [&#39;name cannot be Invalid&#39;]</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="validate">validate ()</h3>
+
+<p>Validates the object. If the object is invalid, errors should be added to the errors attribute. By default, does nothing, as all models are valid by default. See the “Model Validations” guide. for details about validation. Should not be called directly by user code, call valid? instead to check if an object is valid.</p>
+
+<hr>
+
+<h2 id="class-methods">Class Methods</h2>
+
+<p>Class methods for Sequel::Model that implement basic model functionality.</p>
+
+<p>All of the method names in Model::DATASET_METHODS have class methods created that call the Model&#39;s dataset with the method of the same name with the given arguments.</p>
+
+<h3 id="constants">Constants</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">FINDER_TYPES  =  [:first, :all, :each, :get].freeze</code></pre></div>
+
+<table><thead>
+<tr>
+<th><strong>Attributes</strong></th>
+<th></th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>allowed_columns</td>
+<td>[R]</td>
+<td>Which columns should be the only columns allowed in a call to a mass assignment method (e.g. set) (default: not set, so all columns not otherwise restricted are allowed).</td>
+</tr>
+<tr>
+<td>dataset_method_modules</td>
+<td>[R]</td>
+<td>Array of modules that extend this model&#39;s dataset. Stored so that if the model&#39;s dataset is changed, it will be extended with all of these modules.</td>
+</tr>
+<tr>
+<td>default_set_fields_options</td>
+<td>[RW]</td>
+<td>The default options to use for Model#set_fields. These are merged with the options given to set_fields.</td>
+</tr>
+<tr>
+<td>fast_instance_delete_sql</td>
+<td>[R]</td>
+<td>SQL string fragment used for faster DELETE statement creation when deleting/destroying model instances, or nil if the optimization should not be used. For internal use only.</td>
+</tr>
+<tr>
+<td>instance_dataset</td>
+<td>[R]</td>
+<td>The dataset that instance datasets (#this) are based on. Generally a naked version of the model&#39;s dataset limited to one row. For internal use only.</td>
+</tr>
+<tr>
+<td>plugins</td>
+<td>[R]</td>
+<td>Array of plugin modules loaded by this class <br></td>
+</tr>
+</tbody></table>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Sequel::Model.plugins # =&gt; [Sequel::Model, Sequel::Model::Associations]</code></pre></div>
+
+<p>| primary_key | [R] | The primary key for the class. Sequel can determine this automatically for many databases, but not all, so you may need to set it manually. If not determined automatically, the default is :id.
+| raise_on_save_failure | [RW] | Whether to raise an error instead of returning nil on a failure to save/create/save_changes/update/destroy due to a validation failure or a before_* hook returning false (default: true).
+| raise_on_typecast_failure | [RW] | Whether to raise an error when unable to typecast data for a column (default: true). This should be set to false if you want to use validations to display nice error messages to the user (e.g. most web applications). You can use the validates_schema_types validation (from the validation_helpers plugin) in connection with this setting to check for typecast failures during validation.
+| require_modification | [RW] | Whether to raise an error if an UPDATE or DELETE query related to a model instance does not modify exactly 1 row. If set to false, Sequel will not check the number of rows modified (default: true).
+| simple_pk | [R] | Should be the literal primary key column name if this Model&#39;s table has a simple primary key, or nil if the model has a compound primary key or no primary key.
+| simple_table | [R] | Should be the literal table name if this Model&#39;s dataset is a simple table (no select, order, join, etc.), or nil otherwise. This and #simple_pk are used for an optimization in Model.[].
+| strict_param_setting | [RW] | Whether new/set/update and their variants should raise an error if an invalid key is used. A key is invalid if no setter method exists for that key or the access to the setter method is restricted (e.g. due to it being a primary key field). If set to false, silently skip any key where the setter method doesn&#39;t exist or access to it is restricted.
+| typecast_empty_string_to_nil | [RW] | Whether to typecast the empty string (&#39;&#39;) to nil for columns that are not string or blob. In most cases the empty string would be the way to specify a NULL SQL value in string form (nil.to_s == &#39;&#39;), and an empty string would not usually be typecast correctly for other types, so the default is true.
+| typecast_on_assignment | [RW] Whether to typecast attribute values on assignment (default: true). If set to false, no typecasting is done, so it will be left up to the database to typecast the value correctly.
+| use_after_commit_rollback | [RW] | Whether to enable the after_commit and after_rollback hooks when saving/destroying instances. On by default, can be turned off for performance reasons or when using prepared transactions (which aren&#39;t compatible with after commit/rollback).
+| use_transactions | [RW] | Whether to use a transaction by default when saving/deleting records (default: true). If you are sending database queries in before_* or after_* hooks, you shouldn&#39;t change the default setting without a good reason.</p>
+
+<h2 id="public-instance-methods">Public Instance methods</h2>
+
+<p><hr class="divider"></p>
+
+<h3 id=""><a href="*args"></a></h3>
+
+<p>Returns the first record from the database matching the conditions. If a hash is given, it is used as the conditions. If another object is given, it finds the first record whose primary key(s) match the given argument(s). If no object is returned by the dataset, returns nil.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist[1] # SELECT * FROM artists WHERE id = 1
+ # =&gt; #&lt;Artist {:id=&gt;1, ...}&gt;
+
+Artist[:name=&gt;&#39;Bob&#39;] # SELECT * FROM artists WHERE (name = &#39;Bob&#39;) LIMIT 1
+ # =&gt; #&lt;Artist {:name=&gt;&#39;Bob&#39;, ...}&gt;</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="call-values">call (values)</h3>
+
+<p>Initialises a model instance as an existing record. This constructor is used by Sequel to initialise model instances when fetching records. Requires that values be a hash where all keys are symbols. It probably should not be used by external code.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="clear_setter_methods_cache">clear_setter_methods_cache ()</h3>
+
+<p>Clear the #setter_methods cache</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="columns">columns ()</h3>
+
+<p>Returns the columns in the result set in their original order. Generally, this will use the columns determined via the database schema, but in certain cases (e.g. models that are based on a joined dataset) it will use Dataset#columns to find the columns.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.columns  # =&gt; [:id, :name]</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="create-values-amp-block">create (values = {}, &amp;block)</h3>
+
+<p>Creates instance using new with the given values and block, and saves it.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.create(:name=&gt;&#39;Bob&#39;)
+ # INSERT INTO artists (name) VALUES (&#39;Bob&#39;)
+
+Artist.create do |a|
+  a.name = &#39;Jim&#39;
+end # INSERT INTO artists (name) VALUES (&#39;Jim&#39;)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="dataset">dataset ()</h3>
+
+<p>Returns the dataset associated with the Model class. Raises an Error if there is no associated dataset for this class. In most cases, you don&#39;t need to call this directly, as Model proxies many dataset methods to the underlying dataset.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.dataset.all # SELECT * FROM artists</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="dataset-ds">dataset= (ds)</h3>
+
+<p>Alias of <code>#set_dataset</code></p>
+
+<p><hr class="divider"></p>
+
+<h3 id="dataset_module-mod-nil">dataset_module (mod = nil)</h3>
+
+<p>Extend the dataset with a module, similar to adding a plugin with the methods defined in DatasetMethods. This is the recommended way to add methods to model datasets.</p>
+
+<p>If an argument, it should be a module, and is used to extend the underlying dataset. Otherwise an anonymous module is created, and if a block is given, it is module_evaled, allowing you do define dataset methods directly using the standard ruby def syntax. Returns the module given or the anonymous module created.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># Usage with existing module
+Artist.dataset_module Sequel::ColumnsIntrospection
+
+ # Usage with anonymous module
+Artist.dataset_module do
+  def foo
+    :bar
+  end
+end
+Artist.dataset.foo    # =&gt; :bar
+Artist.foo            # =&gt; :bar</code></pre></div>
+
+<p>Any anonymous modules created are actually instances of Sequel::Model::DatasetModule (a Module subclass), which allows you to call the subset method on them:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.dataset_module do
+  subset :released, Sequel.identifier(release_date) &gt; Sequel::CURRENT_DATE
+end</code></pre></div>
+
+<p>Any public methods in the dataset module will have class methods created that call the method on the dataset, assuming that the class method is not already defined.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="db">db ()</h3>
+
+<p>Returns the database associated with the Model class. </p>
+
+<p>If this model doesn&#39;t have a database associated with it, assumes the superclass&#39;s database, or the first object in <code>Sequel::DATABASES</code>. </p>
+
+<p>If no Sequel::Database object has been created, raises an error.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.db.transaction do # BEGIN
+  Artist.create(:name=&gt;&#39;Bob&#39;)     #=&gt; INSERT INTO artists (name) VALUES (&#39;Bob&#39;)
+end # COMMIT</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="db-db">db= (db)</h3>
+
+<p>Sets the database associated with the Model class. </p>
+
+<p>If the model has an associated dataset, sets the model&#39;s dataset to a dataset on the new database with the same options used by the current dataset. </p>
+
+<p>This can be used directly on Sequel::Model to set the default database to be used by subclasses, or to override the database used for specific models:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Sequel::Model.db = DB1
+Artist.db = DB2</code></pre></div>
+
+<p>Note that you should not use this to change the model&#39;s database at runtime. If you have that need, you should look into Sequel&#39;s sharding support.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="db_schema">db_schema ()</h3>
+
+<p>Returns the cached schema information if available or gets it from the database. This is a hash where keys are column symbols and values are hashes of information related to the column. See Database#schema.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.db_schema
+ # {:id =&gt; { :type=&gt;:integer, :primary_key=&gt;true, ... },
+ #  :name =&gt; { :type=&gt;:string, :primary_key=&gt;false, ...} }</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="def_column_alias-meth-column">def_column_alias (meth, column)</h3>
+
+<p>Create a column alias, where the column methods have one name, but the underlying storage uses a different name.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="def_dataset_method-args-amp-block">def_dataset_method (*args, &amp;block)</h3>
+
+<p>If a block is given, define a method on the dataset (if the model currently has an dataset) with the given argument name using the given block. Also define a class method on the model that calls the dataset method. Stores the method name and block so that it can be reapplied if the model&#39;s dataset changes.</p>
+
+<p>If a block is not given, just define a class method on the model for each argument that calls the dataset method of the same argument name.</p>
+
+<p>It is recommended that you define methods inside a block passed to dataset_module instead of using this method, as <code>dataset_module</code> allows you to use normal ruby def syntax.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># Add new dataset method and class method that calls it
+Artist.def_dataset_method(:by_name){order(:name)}
+Artist.filter(:name.like(&#39;A%&#39;)).by_name
+Artist.by_name.filter(:name.like(&#39;A%&#39;))
+
+ # Just add a class method that calls an existing dataset method
+Artist.def_dataset_method(:server!)
+Artist.server!(:server1)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="find-args-amp-block">find (*args, &amp;block)</h3>
+
+<p>Finds a single record according to the supplied filter. You are encouraged to use Model.[] or Model.first instead of this method.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.find(:name=&gt;&#39;Bob&#39;)     #=&gt; SELECT * FROM artists WHERE (name = &#39;Bob&#39;) LIMIT 1
+
+Artist.find { name &gt; &#39;M&#39; }    #=&gt; SELECT * FROM artists WHERE (name &gt; &#39;M&#39;) LIMIT 1</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="find_or_create-cond-amp-block">find_or_create (cond, &amp;block)</h3>
+
+<p>Like find but invokes create with given conditions when record does not exist. Unlike find in that the block used in this method is not passed to find, but instead is passed to create only if find does not return an object.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.find_or_create(:name=&gt;&#39;Bob&#39;)
+ # SELECT * FROM artists WHERE (name = &#39;Bob&#39;) LIMIT 1
+ # INSERT INTO artists (name) VALUES (&#39;Bob&#39;)
+
+Artist.find_or_create(:name=&gt;&#39;Jim&#39;){|a| a.hometown = &#39;Sactown&#39;}
+ # SELECT * FROM artists WHERE (name = &#39;Jim&#39;) LIMIT 1
+ # INSERT INTO artists (name, hometown) VALUES (&#39;Jim&#39;, &#39;Sactown&#39;)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="finder-meth-opts-opts-opts-amp-block">finder (meth=OPTS, opts=OPTS, &amp;block)</h3>
+
+<p>Create an optimised finder method using a dataset placeholder literalizer. This pre-computes the SQL to use for the query, except for given arguments.</p>
+
+<p>There are two ways to use this. The recommended way is to pass a symbol that represents a model class method that returns a dataset:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">def Artist.by_name(name)
+  where(:name=&gt;name)
+end
+
+Artist.finder :by_name</code></pre></div>
+
+<p>This creates an optimised first_by_name method, which you can call normally:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.first_by_name(&quot;Joe&quot;)</code></pre></div>
+
+<p>The alternative way to use this to pass your own block:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.finder(:name=&gt;:first_by_name) { |pl, ds| ds.where(:name=&gt;pl.arg).limit(1) }</code></pre></div>
+
+<p><strong>Note!! if you pass your own block, you are responsible for manually setting limits if necessary (as shown above</strong>).</p>
+
+<table><thead>
+<tr>
+<th><strong>Options:</strong></th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:arity</td>
+<td>When using a symbol method name, this specifies the arity of the method. This should be used if if the method accepts an arbitrary number of arguments, or the method has default argument values. Note that if the method is defined as a dataset method, the class method Sequel creates accepts an arbitrary number of arguments, so you should use this option in that case. If you want to handle multiple possible arities, you need to call the finder method multiple times with unique :arity and :name methods each time.</td>
+</tr>
+<tr>
+<td>:name</td>
+<td>The name of the method to create. This must be given if you pass a block. If you use a symbol, this defaults to the symbol prefixed by the type.</td>
+</tr>
+<tr>
+<td>:mod</td>
+<td>The module in which to create the finder method. Defaults to the singleton class of the model.</td>
+</tr>
+<tr>
+<td>:type</td>
+<td>The type of query to run. Can be :first, :each, :all, or :get, defaults to :first.</td>
+</tr>
+<tr>
+<td>Caveats:</td>
+<td>This doesn&#39;t handle all possible cases. For example, if you have a method such as:</td>
+</tr>
+</tbody></table>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">def Artist.by_name(name)
+  name ? where(:name=&gt;name) : exclude(:name=&gt;nil)
+end</code></pre></div>
+
+<p>Then calling a finder without an argument will not work as you expect.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.finder :by_name
+Artist.by_name(nil).first       #=&gt; WHERE (name IS NOT NULL)
+Artist.first_by_name(nil)       #=&gt; WHERE (name IS NULL)</code></pre></div>
+
+<p>See <code>Dataset::PlaceholderLiteralizer</code> for additional caveats.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="first-args-amp-block">first (*args, &amp;block)</h3>
+
+<p>An alias for calling first on the model&#39;s dataset, but with optimized handling of the single argument case.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="first-args-amp-block">first! (*args, &amp;block)</h3>
+
+<p>An alias for calling first! on the model&#39;s dataset, but with optimized handling of the single argument case.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="implicit_table_name">implicit_table_name ()</h3>
+
+<p>Returns the implicit table name for the model class, which is the demodulized, underscored, pluralized name of the class.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.implicit_table_name              # =&gt; :artists
+Foo::ArtistAlias.implicit_table_name    # =&gt; :artist_aliases</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="include-mods">include (*mods)</h3>
+
+<p>Clear the #setter_methods cache when a module is included, as it may contain setter methods.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="inherited-subclass">inherited (subclass)</h3>
+
+<p>If possible, set the dataset for the model subclass as soon as it is created. Also, make sure the inherited class instance variables are copied into the subclass.</p>
+
+<p>Sequel queries the database to get schema information as soon as a model class is created:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">class Artist &lt; Sequel::Model # Causes schema query
+end</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="load-values">load (values)</h3>
+
+<p>Calls call with the values hash. Only for backwards compatibility.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="method_added-meth">method_added (meth)</h3>
+
+<p>Clear the #setter_methods cache when a setter method is added</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="no_primary_key">no_primary_key ()</h3>
+
+<p>Mark the model as not having a primary key. Not having a primary key can cause issues, among which is that you won&#39;t be able to update records.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.primary_key        # =&gt; :id
+Artist.no_primary_key
+Artist.primary_key        # =&gt; nil</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="plugin-plugin-args-amp-block">plugin (plugin, *args, &amp;block)</h3>
+
+<p>Loads a plugin for use with the model class, passing optional arguments to the plugin. </p>
+
+<p>If the plugin is a module, load it directly. Otherwise, require the plugin from either sequel/plugins/#{plugin} or sequel_#{plugin}, and then attempt to load the module using a the camelized plugin name under Sequel::Plugins.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="prepared_finder-meth-opts-opts-opts-amp-block">prepared_finder (meth=OPTS, opts=OPTS, &amp;block)</h3>
+
+<p>Similar to finder, but uses a prepared statement instead of a placeholder literalizer. This makes the SQL used static (cannot vary per call), but allows binding argument values instead of literalizing them into the SQL query string.</p>
+
+<p>If a block is used with this method, it is <code>instance_execed</code> by the model, and should accept the desired number of placeholder arguments.</p>
+
+<p>The options are the same as the options for finder, with the following exception: </p>
+
+<table><thead>
+<tr>
+<th>** OPTS:**</th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:type</td>
+<td>Specifies the type of prepared statement to create</td>
+</tr>
+</tbody></table>
+
+<p><hr class="divider"></p>
+
+<h3 id="primary_key_hash-value">primary_key_hash (value)</h3>
+
+<p>Returns primary key attribute hash. If using a composite primary key value such be an array with values for each primary key in the correct order. For a standard primary key, value should be an object with a compatible type for the key. If the model does not have a primary key, raises an Error.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.primary_key_hash(1) # =&gt; {:id=&gt;1}
+Artist.primary_key_hash([1, 2]) # =&gt; {:id1=&gt;1, :id2=&gt;2}</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="qualified_primary_key_hash-value-qualifier-table_name">qualified_primary_key_hash (value, qualifier=table_name)</h3>
+
+<p>Return a hash where the keys are qualified column references. Uses the given qualifier if provided, or the #table_name otherwise. This is useful if you plan to join other tables to this table and you want the column references to be qualified.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.filter(Artist.qualified_primary_key_hash(1))
+ # SELECT * FROM artists WHERE (artists.id = 1)</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="restrict_primary_key">restrict_primary_key ()</h3>
+
+<p>Restrict the setting of the primary key(s) when using mass assignment (e.g. set). Because this is the default, this only make sense to use in a subclass where the parent class has used <code>unrestrict_primary_key</code>.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="restrict_primary_key">restrict_primary_key? ()</h3>
+
+<p>Whether or not setting the primary key(s) when using mass assignment (e.g. set) is restricted, true by default.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="set_allowed_columns-cols">set_allowed_columns (*cols)</h3>
+
+<p>Set the columns to allow when using mass assignment (e.g. set). Using this means that any columns not listed here will not be modified. If you have any virtual setter methods (methods that end in =) that you want to be used during mass assignment, they need to be listed here as well (without the =).</p>
+
+<p>It may be better to use a method such as set_only or set_fields that lets you specify the allowed fields per call.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.set_allowed_columns(:name, :hometown)
+Artist.set(:name=&gt;&#39;Bob&#39;, :hometown=&gt;&#39;Sactown&#39;) # No Error
+Artist.set(:name=&gt;&#39;Bob&#39;, :records_sold=&gt;30000) # Error</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="set_dataset-ds-opts-opts">set_dataset (ds, opts=OPTS)</h3>
+
+<p>Sets the dataset associated with the Model class. ds can be a <code>Symbol</code>, <code>LiteralString</code>, <code>SQL::Identifier</code>, <code>SQL::QualifiedIdentifier</code>, <code>SQL::AliasedExpression</code> (all specifying a table name in the current database), or a Dataset. If a dataset is used, the model&#39;s database is changed to the database of the given dataset. If a dataset is not used, a dataset is created from the current database with the table name given. Other arguments raise an Error. Returns self.</p>
+
+<p>This changes the row_proc of the dataset to return model objects and extends the dataset with the dataset_method_modules. It also attempts to determine the database schema for the model, based on the given dataset.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.set_dataset(:tbl_artists)
+Artist.set_dataset(DB[:artists])</code></pre></div>
+
+<p>Note that you should not use this to change the model&#39;s dataset at runtime. If you have that need, you should look into Sequel&#39;s sharding support.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="set_primary_key-key">set_primary_key (key)</h3>
+
+<p>Sets the primary key for this model. You can use either a regular or a composite primary key. To not use a primary key, set to nil or use no_primary_key. On most adapters, Sequel can automatically determine the primary key to use, so this method is not needed often.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">class Person &lt; Sequel::Model
+  # regular key
+  set_primary_key :person_id
+end
+
+class Tagging &lt; Sequel::Model
+  # composite key
+  set_primary_key [:taggable_id, :tag_id]
+end</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="setter_methods">setter_methods ()</h3>
+
+<p>Cache of setter methods to allow by default, in order to speed up new/set/update instance methods.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="subset-name-args-amp-block">subset (name, *args, &amp;block)</h3>
+
+<p>Sets up a dataset method that returns a filtered dataset. Sometimes thought of as a scope, and like most dataset methods, they can be chained. For example:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Topic.subset(:joes, :username.like(&#39;%joe%&#39;))
+Topic.subset(:popular){num_posts &gt; 100}
+Topic.subset(:recent){created_on &gt; Date.today - 7}</code></pre></div>
+
+<p>Allows you to do:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Topic.joes.recent.popular</code></pre></div>
+
+<p>to get topics with a username that includes joe that have more than 100 posts and were created less than 7 days ago.</p>
+
+<p>Both the args given and the block are passed to <code>Dataset#filter</code>.</p>
+
+<p>This method creates dataset methods that do not accept arguments. To create dataset methods that accept arguments, you should use define a method directly inside a dataset_module block.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="table_name">table_name ()</h3>
+
+<p>Returns name of primary table for the dataset. If the table for the dataset is aliased, returns the aliased name.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.table_name                     # =&gt; :artists
+Sequel::Model(:foo).table_name        # =&gt; :foo
+Sequel::Model(:foo___bar).table_name  # =&gt; :bar</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="unrestrict_primary_key">unrestrict_primary_key ()</h3>
+
+<p>Allow the setting of the primary key(s) when using the mass assignment methods. Using this method can open up security issues, be very careful before using it.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Artist.set(:id=&gt;1)      # Error
+Artist.unrestrict_primary_key
+Artist.set(:id=&gt;1)      # No Error</code></pre></div>
+
+<p><hr class="divider"></p>
+
+<h3 id="with_pk-pk">with_pk (pk)</h3>
+
+<p>Return the model instance with the primary key, or nil if there is no matching record.</p>
+
+<p><hr class="divider"></p>
+
+<h3 id="with_pk-pk">with_pk! (pk)</h3>
+
+<p>Return the model instance with the primary key, or raise <code>NoMatchingRow</code> if there is no matching record.</p>
+
+        </div>
+
+      </div>
+
+      <div id="footer" class="row">
+  <div class="col-md-12">
+    <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+    <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+  </div>
+</div>
+
+      
+    </div>
+
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="../../assets/js/jquery-2.1.3.min.js"></script>
+    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/highlight.pack.js"></script>
+    <script src="../../assets/js/toc.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
+  </body>
+</html>

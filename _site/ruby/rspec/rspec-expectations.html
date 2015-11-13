@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>RSpec::Expectations - RSpec - Ruby | Cheats by Kematzy</title>
-    
+
     <link rel="stylesheet" href="../../assets/css/styles.css">
-    <link rel="stylesheet" href="../../assets/css/-pygment_trac.css">
+    <!-- <link rel="stylesheet" href="../../assets/css/-pygment_trac.css"> -->
     <script src="../../assets/js/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
@@ -15,13 +15,13 @@
     <![endif]-->
   </head>
 
-  
+
   <body>
-    <div class="container">
-            
-      <nav class="navbar navbar-default">
+    <div id="page" class="container">
+
+      <nav id="header" class="navbar navbar-default">
   <div class="container-fluid row">
-    
+
     <div class="navbar-header col-md-6">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
         <span class="sr-only">Toggle navigation</span>
@@ -34,23 +34,39 @@
         <p>A personal collection of Cheatsheets</p>
       </div>
     </div>
-    
+
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse col-md-6" id="header-nav">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="/">HOME <span class="sr-only">(current)</span></a></li>
-        <li><a href="/toc.html">Table of Contents</a></li>
-        <li><a href="/about.html">About</a></li>
+      
+        
+          
+        <li class="">
+          <a href="/index.html" title="back to the homepage">Home</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/toc.html" title="full table of contents for this website">Table of Contents</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/about.html" title="find out more information about this website">About</a>
+        </li>
+        
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
 
-      
+
       
 
 
-<div class="row">
+<div id="breadcrumbs" class="row">
   <div class="col-md-12">
     <ol class="breadcrumb">
       <li><a href="/">Home</a></li>
@@ -68,9 +84,11 @@
   </div>
 </div>
 
-      
-      <section>
-        <h1 id="ruby-/-rspec-/-rspec::expectations">Ruby / RSpec / RSpec::Expectations</h1>
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          <h1 id="ruby-rspec-rspec-expectations">Ruby / RSpec / RSpec::Expectations</h1>
 
 <hr>
 
@@ -144,7 +162,7 @@ expect(actual).to be_within(delta).of(expected)
 </code></pre></div>
 <p>Note: The new <code>expect</code> syntax no longer supports the <code>=~</code> matcher.</p>
 
-<h4 id="types/classes">Types/classes</h4>
+<h4 id="types-classes">Types/classes</h4>
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(actual).to be_an_instance_of(expected) # passes if actual.class == expected
 expect(actual).to be_a(expected)              # passes if actual.kind_of?(expected)
 expect(actual).to be_an(expected)             # an alias for be_a
@@ -185,7 +203,7 @@ expect { |b| { :a =&gt; 1, :b =&gt; 2 }.each(&amp;b) }.to yield_successive_args(
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(actual).to be_xxx         # passes if actual.xxx?
 expect(actual).to have_xxx(:arg) # passes if actual.has_xxx?(:arg)
 </code></pre></div>
-<h4 id="ranges-(ruby-&gt;=-1.9-only)">Ranges (Ruby &gt;= 1.9 only)</h4>
+<h4 id="ranges-ruby-gt-1-9-only">Ranges (Ruby &gt;= 1.9 only)</h4>
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby">expect(1..10).to cover(3)
 </code></pre></div>
 <h4 id="collection-membership">Collection membership</h4>
@@ -300,17 +318,20 @@ end
 <li><a href="/ruby/rspec/rspec-html-matchers.html">RSpec::HMTMLMatchers</a> or <a href="https://github.com/kucaahbe/rspec-html-matchers">https://github.com/kucaahbe/rspec-html-matchers</a></li>
 </ul>
 
-      </section>
+        </div>
+
+      </div>
+
+      <div id="footer" class="row">
+  <div class="col-md-12">
+    <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+    <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+  </div>
+</div>
+
       
     </div>
-    
-    
-    <footer>
-  <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
-  <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
-</footer>
 
-    
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
     <script src="../../assets/js/jquery-2.1.3.min.js"></script>
     <script src="../../assets/js/bootstrap.min.js"></script>
