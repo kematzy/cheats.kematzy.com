@@ -295,8 +295,9 @@ h1 {
 // make H2's the dividing separator
 h2 {
   color: $docs_colors_headers_h2_color;
-  font-size: 25px;
+  font-size: 24px;
   padding-top: 10px;
+  margin-bottom: 10px;
 
   .divider {
     border-top: 3px solid #ccc;
@@ -367,23 +368,13 @@ pre {
   overflow-x: auto;
 
   // compensate margin for col-md-12 padding
-  // margin: 0 -31px 20px;
   margin: 0px -26px 20px -31px;
-  // margin: 0px -15px 20px -31px;
   // add some space via padding with greater indent on left side.
-  // padding: 15px 15px 15px 30px;
   padding: 15px 15px 15px 30px;
-
-  // margin: 0 -15px 20px;
-  // padding: 0 0px 15px 15px;
-  // margin: 0 -20px 20px;
-  // padding: 20px;
-  // width: 100%;
 
   // fix twbs wrapping pre's
   word-break: normal;
   word-wrap: normal;
-
 
   code {
     color: #f8f8f2;
@@ -391,7 +382,6 @@ pre {
   }
 
 }
-
 
 li pre {
   margin-left: -60px;
@@ -411,6 +401,13 @@ td {
   padding: 5px 10px;
   text-align: left;
 }
+
+table td h4 {
+  font-size: 18px;
+  margin: 4px 0;
+  // padding: 0;
+}
+
 
 dt {
   color: #222;
@@ -623,7 +620,7 @@ hr.divider {
 }
 
 .top-level-header {
-  display: inline;
+  // display: inline;
 }
 
 .back-to-top {
@@ -640,6 +637,6 @@ hr.divider {
 .hljs-comment,
 .hljs-shebang {
   // color: #bc9458;
-  color: #777;
-  font-style: italic;
+  // color: #777;
+  // font-style: italic;
 }
