@@ -1,0 +1,289 @@
+  <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Nokogiri - Gems - Ruby | Cheats by Kematzy</title>
+
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- <link rel="stylesheet" href="../../assets/css/-pygment_trac.css"> -->
+    <script src="/assets/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+
+  <body>
+    <div id="page" class="container">
+
+      <nav id="header" class="navbar navbar-default">
+  <div class="container-fluid row">
+
+    <div class="navbar-header col-md-6">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <h1><a href="/">Cheats by Kematzy</a></h1>
+        <p>A personal collection of Cheatsheets</p>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse col-md-6" id="header-nav">
+      <ul class="nav navbar-nav">
+      
+        
+          
+        <li class="">
+          <a href="/index.html" title="back to the homepage">Home</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/toc.html" title="full table of contents for this website">Table of Contents</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/about.html" title="find out more information about this website">About</a>
+        </li>
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+      
+
+
+<div id="breadcrumbs" class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      
+        
+        <li><a href="/ruby/">Ruby</a></li>
+      
+        
+        <li><a href="/ruby/gems/">Gems</a></li>
+      
+        
+        <li><a href="/ruby/gems/nokogiri.html">Nokogiri</a></li>
+      
+    </ol>
+  </div>
+</div>
+
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          <h1 id="ruby-gems-nokogiri">Ruby / Gems / Nokogiri</h1>
+
+<hr>
+
+<div id="toc"></div>
+
+<hr>
+
+<h2 id="introduction">Introduction</h2>
+
+<ul>
+<li><a href="http://nokogiri.org">http://nokogiri.org</a></li>
+<li>Installation: <a href="http://nokogiri.org/tutorials/installing_nokogiri.html">http://nokogiri.org/tutorials/installing_nokogiri.html</a></li>
+<li>Tutorials:    <a href="http://nokogiri.org">http://nokogiri.org</a></li>
+<li>README:       <a href="https://github.com/sparklemotion/nokogiri">https://github.com/sparklemotion/nokogiri</a></li>
+<li>Mailing List: <a href="https://groups.google.com/group/nokogiri-talk">https://groups.google.com/group/nokogiri-talk</a></li>
+<li>Bug Reports:  <a href="https://github.com/sparklemotion/nokogiri/issues">https://github.com/sparklemotion/nokogiri/issues</a></li>
+</ul>
+
+<p>Nokogiri (鋸) is an HTML, XML, SAX, and Reader parser.  Among Nokogiri&#39;s many features is the ability 
+to search documents via XPath or CSS3 selectors.</p>
+
+<p>XML is like violence - if it doesn’t solve your problems, you are not using enough of it.</p>
+
+<h2 id="features">Features</h2>
+
+<ul>
+<li>XML/HTML DOM parser which handles broken HTML</li>
+<li>XML/HTML SAX parser</li>
+<li>XML/HTML Push parser</li>
+<li>XPath 1.0 support for document searching</li>
+<li>CSS3 selector support for document searching</li>
+<li>XML/HTML builder</li>
+<li>XSLT transformer</li>
+</ul>
+
+<p>Nokogiri parses and searches XML/HTML using native libraries (either C or Java, depending on your Ruby), 
+which means it&#39;s fast and standards-compliant.</p>
+
+<h2 id="installation">Installation</h2>
+
+<p>If this doesn&#39;t work:</p>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">gem install nokogiri</code></pre></div>
+
+<p>then please start troubleshooting here:</p>
+
+<blockquote>
+<p><a href="http://www.nokogiri.org/tutorials/installing_nokogiri.html">http://www.nokogiri.org/tutorials/installing_nokogiri.html</a></p>
+</blockquote>
+
+<p>There are currently 1,237 Stack Overflow questions about Nokogiri
+installation. The vast majority of them are out of date and therefore
+incorrect. <strong>Please do not use Stack Overflow.</strong></p>
+
+<p>Instead, <a href="http://nokogiri.org/tutorials/getting_help.html">tell us</a>
+when the above instructions don&#39;t work for you. This allows us to both
+help you directly and improve the documentation.</p>
+
+<h3 id="binary-packages">Binary packages</h3>
+
+<p>Binary packages are available for some distributions.</p>
+
+<ul>
+<li>Debian: <a href="https://packages.debian.org/sid/ruby-nokogiri">https://packages.debian.org/sid/ruby-nokogiri</a></li>
+<li>SuSE: <a href="https://download.opensuse.org/repositories/devel:/languages:/ruby:/extensions/">https://download.opensuse.org/repositories/devel:/languages:/ruby:/extensions/</a></li>
+<li>Fedora: <a href="http://s390.koji.fedoraproject.org/koji/packageinfo?packageID=6756">http://s390.koji.fedoraproject.org/koji/packageinfo?packageID=6756</a></li>
+</ul>
+
+<h2 id="support">Support</h2>
+
+<p>There are open-source tutorials (to which we invite contributions!) here: <a href="http://nokogiri.org/tutorials">http://nokogiri.org/tutorials</a></p>
+
+<ul>
+<li>The Nokogiri mailing list is active: <a href="https://groups.google.com/group/nokogiri-talk">https://groups.google.com/group/nokogiri-talk</a></li>
+<li>The Nokogiri bug tracker is here: <a href="https://github.com/sparklemotion/nokogiri/issues">https://github.com/sparklemotion/nokogiri/issues</a></li>
+<li>Before filing a bug report, please read our submission guidelines: <a href="http://nokogiri.org/tutorials/getting_help.html">http://nokogiri.org/tutorials/getting_help.html</a></li>
+<li>The IRC channel is #nokogiri on freenode.</li>
+</ul>
+
+<h2 id="synopsis">Synopsis</h2>
+
+<p>Nokogiri is a large library, but here is example usage for parsing and examining a document:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">require &#39;nokogiri&#39;
+  require &#39;open-uri&#39;
+
+  # Fetch and parse HTML document
+  doc = Nokogiri::HTML(open(&#39;http://www.nokogiri.org/tutorials/installing_nokogiri.html&#39;))
+
+  ####
+  # Search for nodes by css
+  doc.css(&#39;nav ul.menu li a&#39;).each do |link|
+    puts link.content
+  end
+
+  ####
+  # Search for nodes by xpath
+  doc.xpath(&#39;//h2 | //h3&#39;).each do |link|
+    puts link.content
+  end
+
+  ####
+  # Or mix and match.
+  doc.search(&#39;code.sh&#39;, &#39;//h2&#39;).each do |link|
+    puts link.content
+  end</code></pre></div>
+
+<h2 id="requirements">Requirements</h2>
+
+<ul>
+<li><p>Ruby 1.9.3 or higher, including any development packages necessary
+to compile native extensions.</p></li>
+<li><p>In Nokogiri 1.6.0 and later libxml2 and libxslt are bundled with the
+gem, but if you want to use the system versions:</p>
+
+<ul>
+<li>at install time, set the environment variable
+<code>USING_SYSTEM_ALLOCATOR_LIBRARY</code> or else use the
+<code>--use-system-libraries</code> argument. (See
+<a href="http://nokogiri.org/tutorials/installing_nokogiri.html#using_your_system_libraries">http://nokogiri.org/tutorials/installing_nokogiri.html#using_your_system_libraries</a>
+for specifics.)</li>
+<li>libxml2 &gt;=2.6.21 with iconv support
+(libxml2-dev/-devel is also required)</li>
+<li>libxslt, built with and supported by the given libxml2
+(libxslt-dev/-devel is also required)</li>
+</ul></li>
+</ul>
+
+<h2 id="encoding">Encoding</h2>
+
+<p>Strings are always stored as UTF-8 internally.  Methods that return
+text values will always return UTF-8 encoded strings.  Methods that
+return a string containing markup (like <code>to_xml</code>, <code>to_html</code> and
+<code>inner_html</code>) will return a string encoded like the source document.</p>
+
+<p><strong>WARNING</strong></p>
+
+<p>Some documents declare one encoding, but actually use a different
+one. In these cases, which encoding should the parser choose?</p>
+
+<p>Data is just a stream of bytes. Humans add meaning to that stream. Any
+particular set of bytes could be valid characters in multiple
+encodings, so detecting encoding with 100% accuracy is not
+possible. <code>libxml2</code> does its best, but it can&#39;t be right all the time.</p>
+
+<p>If you want Nokogiri to handle the document encoding properly, your
+best bet is to explicitly set the encoding.  Here is an example of
+explicitly setting the encoding to EUC-JP on the parser:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">doc = Nokogiri.XML(&#39;&lt;foo&gt;&lt;bar /&gt;&lt;foo&gt;&#39;, nil, &#39;EUC-JP&#39;)</code></pre></div>
+
+<h2 id="development">Development</h2>
+
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">bundle install
+  bundle exec rake</code></pre></div>
+
+<h2 id="license">License</h2>
+
+<p>MIT. See the <code>LICENSE.txt</code> file.</p>
+
+        </div>
+
+      </div>
+
+      <div id="footer" class="row">
+  <div class="col-md-12">
+    <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+    <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+  </div>
+</div>
+
+
+    </div>
+
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="../../assets/js/jquery-2.1.3.min.js"></script>
+    <script src="../../assets/js/bootstrap.min.js"></script>
+    <script src="../../assets/js/highlight.pack.js"></script>
+    <script src="../../assets/js/toc.js"></script>
+    <script src="../../assets/js/anchor.min.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        
+        // style the tables a bit better
+        $('table').addClass('table table-bordered table-hover');
+        // create a TOC
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // add anchors & permalinks
+        anchors.add('h1, h2, h3, h4');
+        
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
+  </body>
+</html>

@@ -107,15 +107,17 @@
 <h2 id="quick-demo">Quick Demo</h2>
 
 <p><code>i18n/en.yml</code>:</p>
+
 <div class="highlight"><pre><code class="language-yaml" data-lang="yaml">user:
   edit: Edit user
   name: User name is %1
   count: !!pl
     1: There is 1 user
-    n: There are %1 users
-</code></pre></div>
+    n: There are %1 users</code></pre></div>
+
 <p><code>example.rb</code>:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"> # Setup R18n (or just use out-of-box `r18n-rails` or `sinatra-r18n` gem)
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># Setup R18n (or just use out-of-box `r18n-rails` or `sinatra-r18n` gem)
 R18n.default_places = &#39;./i18n/&#39;
 R18n.set(&#39;en&#39;)
 
@@ -131,14 +133,18 @@ t.not.exists.translated? #=&gt; false
 
 l Time.now         #=&gt; &quot;03/01/2010 18:54&quot;
 l Time.now, :human #=&gt; &quot;now&quot;
-l Time.now, :full  #=&gt; &quot;3rd of January, 2010 18:54&quot;
-</code></pre></div>
-<h3 id="examples">Examples</h3>
+l Time.now, :full  #=&gt; &quot;3rd of January, 2010 18:54&quot;</code></pre></div>
+
+<hr>
+
+<h3 id="example-apps">Example Apps</h3>
 
 <p>For Rails, Sinatra or desktop examples, see plugins documentations:
 * <a href="https://github.com/ai/r18n/tree/master/r18n-rails">r18n-rails</a> for Ruby on Rails,
 * <a href="https://github.com/ai/r18n/tree/master/sinatra-r18n">sinatra-r18n</a> for Sinatra,
 * <a href="https://github.com/ai/r18n/tree/master/r18n-desktop">r18n-desktop</a> for shell/desktop applications.</p>
+
+<hr>
 
 <h2 id="r18n-features">R18n Features</h2>
 
@@ -151,61 +157,75 @@ l Time.now, :full  #=&gt; &quot;3rd of January, 2010 18:54&quot;
 <li>Total flexibility.</li>
 </ul>
 
+<hr>
+
 <h3 id="ruby-style-syntax">Ruby-style Syntax</h3>
 
 <p>R18n use compact, explicit and ruby-style syntax.</p>
 
 <p>Translations store in YAML with types:</p>
+
 <div class="highlight"><pre><code class="language-yaml" data-lang="yaml">user:
   edit: Edit user
   name: User name is %1
   count: !!pl
     1: There is 1 user
-    n: There are %1 users
-</code></pre></div>
+    n: There are %1 users</code></pre></div>
+
 <p><em>Please note R18n files need to be lowercase <code>en-us.yml</code> and not <code>en-US.yml</code>.</em></p>
 
 <p>To access translation you can call methods with the same names:</p>
+
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby">t.user.edit         #=&gt; &quot;Edit user&quot;
 t.user.name(&#39;John&#39;) #=&gt; &quot;User name is John&quot;
 t.user.count(5)     #=&gt; &quot;There are 5 users&quot;
 
 t.not.exists | &#39;default&#39; #=&gt; &quot;default&quot;
-t.not.exists.translated? #=&gt; false
-</code></pre></div>
+t.not.exists.translated? #=&gt; false</code></pre></div>
+
 <p>If the translation key is the name of an Object method you can access it via hash index or use Rails I18n API in <code>r18n-rails</code>:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">t[:methods] #=&gt; &quot;Methods&quot;
-</code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">t[:methods] #=&gt; &quot;Methods&quot;</code></pre></div>
+
 <p>If you use <code>r18n-rails</code> plugin, you will have full compatibility with Rails I18n syntax.</p>
+
+<hr>
 
 <h3 id="filters">Filters</h3>
 
 <p>You can add filters for some YAML type. For example, we add custom filter to return different translation depend on user gender (it’s actual for some languages).</p>
+
 <div class="highlight"><pre><code class="language-yaml" data-lang="yaml">log:
   signup: !!gender
     male: Он зарегистрировался
-    female: Она зарегистрировалась
-</code></pre></div>
+    female: Она зарегистрировалась</code></pre></div>
+
 <p>In Rails application you can define filter in reloaded <code>app/i18n/filters.rb</code>:</p>
+
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby">R18n::Filters.add(&#39;gender&#39;) do |translation, config, user|
   translation[user.gender]
 end
 
-t.log.signup(user)
-</code></pre></div>
+t.log.signup(user)</code></pre></div>
+
 <p>R18n already has filters for HTML escaping, Textile, Markdown and lambdas:</p>
+
 <div class="highlight"><pre><code class="language-yaml" data-lang="yaml">hi: !!markdown
   Hi, **people**!
 greater: !!escape
-  1 &lt; 2 is true
-</code></pre></div><div class="highlight"><pre><code class="language-ruby" data-lang="ruby">i18n.hi      #=&gt; &quot;&lt;p&gt;Hi, &lt;strong&gt;people!&lt;/strong&gt;&lt;/p&gt;&quot;
-i18n.greater #=&gt; &quot;1 &amp;lt; 2 is true&quot;
-</code></pre></div>
+  1 &lt; 2 is true</code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">i18n.hi      #=&gt; &quot;&lt;p&gt;Hi, &lt;strong&gt;people!&lt;/strong&gt;&lt;/p&gt;&quot;
+i18n.greater #=&gt; &quot;1 &amp;lt; 2 is true&quot;</code></pre></div>
+
 <p>You can also add filters for all returned translations or to issues, when translation can’t be founded.</p>
+
+<hr>
 
 <h3 id="model-translation">Model Translation</h3>
 
 <p>You can translate any class, including ORM models (ActiveRecord, Mongoid, MongoMapper, DataMapper or others):</p>
+
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby">class Product &lt; ActiveRecord::Base
   include R18n::Translated
   # Model has two normal properties: title_en and title_ru
@@ -216,51 +236,64 @@ R18n.set(&#39;en&#39;) # English
 product.title  #=&gt; &quot;Anthrax&quot;
 
 R18n.set(&#39;ru&#39;) # Russian
-product.title  #=&gt; &quot;Сибирская язва&quot;
-</code></pre></div>
+product.title  #=&gt; &quot;Сибирская язва&quot;</code></pre></div>
+
+<hr>
+
 <h3 id="autodetect-user-locales">Autodetect User Locales</h3>
 
 <p>R18n has an agnostic core package and plugins with standard support for Sinatra and desktop applications. So for common cases you can use out-of-box gems with user locale autodetect. For special cases you can use core gem and hack everything, that you want (see “Total flexibility” section).</p>
 
 <p>R18n automatically generate fallbacks for current user, based on user locales list from <code>HTTP_ACCEPT_LANGUAGE</code>, locale info (in some countries people know several languages), and default locale. For example, if user know Kazakh and German, R18n will try find translations in: Kazakh → German → Russian (second language in Kazakhstan) → English (default locale).</p>
 
+<hr>
+
 <h3 id="flexible-locales">Flexible Locales</h3>
 
 <p>R18n store separated business translations and locale information. So all locales (pluralization rules, time and number localization, some base translations) ship with core gem and can be used out-of-box:</p>
 
 <p>For example, Russian has built-in different pluralization without any lambdas in YAML:</p>
+
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby">t.user.count(1) #=&gt; &quot;1 пользователь&quot;
 t.user.count(2) #=&gt; &quot;2 пользователя&quot;
-t.user.count(5) #=&gt; &quot;5 пользователей&quot;
-</code></pre></div>
+t.user.count(5) #=&gt; &quot;5 пользователей&quot;</code></pre></div>
+
 <p>Locales are simple Ruby classes, so they are very flexible. For example, R18n ship with very perfection <code>full</code> time formatter:</p>
+
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby">R18n.set(&#39;en&#39;)            # English
 l Time.now, :full         #=&gt; &quot;1st of December, 2011 12:00&quot;
 l Time.now + 1.day, :full #=&gt; &quot;2nd of December, 2011 12:00&quot;
 
 R18n.set(&#39;fr&#39;)            # French
 l Time.now, :full         #=&gt; &quot;1er décembre 2011 12:00&quot;
-l Time.now + 1.day, :full #=&gt; &quot;2 décembre 2011 12:00&quot;
-</code></pre></div>
+l Time.now + 1.day, :full #=&gt; &quot;2 décembre 2011 12:00&quot;</code></pre></div>
+
 <p>Years in Thailand are counted in the Buddhist Era. It’s very easy for R18n:</p>
+
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby">R18n.set(&#39;th&#39;)
-R18n.l Time.now, :full #=&gt; &quot;1 พฤศจิกายน, 2554 12:00&quot;
-</code></pre></div>
+R18n.l Time.now, :full #=&gt; &quot;1 พฤศจิกายน, 2554 12:00&quot;</code></pre></div>
+
+<hr>
+
 <h3 id="total-flexibility">Total Flexibility</h3>
 
 <p>R18n is very flexible and agnostic. For example, Rails I18n compatibility level is just few filters and custom loader.</p>
 
 <p>Translation variables and pluralization (“1 comment”, “5 comments”) are filters too, so you can disable, replace or cascade them. For example, you can use the “named variables filter” from the <code>r18n-rails-api</code> gem:</p>
-<div class="highlight"><pre><code class="language-yaml" data-lang="yaml">greeting: &quot;Hi, %{name}&quot;
-</code></pre></div><div class="highlight"><pre><code class="language-ruby" data-lang="ruby">R18n::Filters.on(:named_variables)
-t.greeting(name: &#39;John&#39;) #=&gt; &quot;Hi, John&quot;
-</code></pre></div>
+
+<div class="highlight"><pre><code class="language-yaml" data-lang="yaml">greeting: &quot;Hi, %{name}&quot;</code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">R18n::Filters.on(:named_variables)
+t.greeting(name: &#39;John&#39;) #=&gt; &quot;Hi, John&quot;</code></pre></div>
+
 <p>Or you can add cascade filter on all untranslated messages to collect issues:</p>
+
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby">R18n::Filters.add(::R18n::Untranslated) do |v, c, transl, untransl, path|
   File.open(&#39;untranslated.list&#39;, &#39;w&#39;) { |io| io.puts(path) }
-end
-</code></pre></div>
+end</code></pre></div>
+
 <p>R18n can load translations from anywhere, not just from YAML files. You just need to create loader object with 2 methods: <code>available</code> and <code>load</code>:</p>
+
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby">class DBLoader
   def available
     Translation.all.map(&amp;:locale)
@@ -271,15 +304,19 @@ end
 end
 
 R18n.default_places = DBLoader.new
-R18n.set(&#39;en&#39;) # Load English messages from DB
-</code></pre></div>
+R18n.set(&#39;en&#39;) # Load English messages from DB</code></pre></div>
+
 <p>You can also set several loaders to merge translations from different sources:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">R18n.default_places = [DBLoader.new, &#39;path/to/yaml&#39;]
-</code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">R18n.default_places = [DBLoader.new, &#39;path/to/yaml&#39;]</code></pre></div>
+
 <p>Also you can use several I18n object in program. For example, to load different translations for plugin:</p>
+
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin_i18n = R18n::I18n.new(locales, plugin_i18n_places)
-plugin_i18n.t.message.hellow
-</code></pre></div>
+plugin_i18n.t.message.hellow</code></pre></div>
+
+<hr>
+
 <h2 id="services">Services</h2>
 
 <ul>
@@ -308,11 +345,18 @@ so Rails developers are free to write more code.</li>
     <script src="../../assets/js/bootstrap.min.js"></script>
     <script src="../../assets/js/highlight.pack.js"></script>
     <script src="../../assets/js/toc.js"></script>
+    <script src="../../assets/js/anchor.min.js"></script>
     <script type="text/javascript">
       hljs.initHighlightingOnLoad();
       $(document).ready(function() {
+        
+        // style the tables a bit better
         $('table').addClass('table table-bordered table-hover');
+        // create a TOC
         $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // add anchors & permalinks
+        anchors.add('h1, h2, h3, h4');
+        
         // $('.clickable-header').click(function({
         //
         // }));
