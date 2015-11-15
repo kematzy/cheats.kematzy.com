@@ -7,46 +7,46 @@
 
 // VARIABLES
 
-$docs_colors_html_background:         #6c7989 linear-gradient(#6c7989, #434b55) fixed !default;
-$docs_colors_body_background:         url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAeCAYAAABNChwpAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAAUdEVYdENyZWF0aW9uIFRpbWUAMy82LzEygrTcTAAAAFRJREFUSIljfPDggZRf5RIGGNjUHsNATz6jXmSL1Kb2GLiAX+USBnrymRgGGDCORgFmoNAXjEbBaBSMRsFoFIxGwWgUjEbBaBSMRsFoFIxGwWgUAABYNujumib3wAAAAABJRU5ErkJggg==') fixed !default;
-$docs_colors_body_background_color:   #efefef !default;
-$docs_colors_body_color:              #222 !default;
+$docs_colors_html_background:           #6c7989 linear-gradient(#6c7989, #434b55) fixed !default;
+$docs_colors_body_background:           url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAeCAYAAABNChwpAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABx0RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNXG14zYAAAAUdEVYdENyZWF0aW9uIFRpbWUAMy82LzEygrTcTAAAAFRJREFUSIljfPDggZRf5RIGGNjUHsNATz6jXmSL1Kb2GLiAX+USBnrymRgGGDCORgFmoNAXjEbBaBSMRsFoFIxGwWgUjEbBaBSMRsFoFIxGwWgUAABYNujumib3wAAAAABJRU5ErkJggg==') fixed !default;
+$docs_colors_body_background_color:     #efefef !default;
+$docs_colors_body_color:                #222 !default;
 
-$docs_colors_page_background:         #fdfdfd !default;
+$docs_colors_page_background:           #fdfdfd !default;
 
 // $docs_colors_a_color:                 #6c7989 !default;
-$docs_colors_a_color:                 #898f19 !default;
+$docs_colors_a_color:                   #898f19 !default;
 
-$docs_colors_strong_color:            $docs_colors_body_color !default;
+$docs_colors_strong_color:              $docs_colors_body_color !default;
 
 
 // $docs_colors_header_background:       linear-gradient(#ACACAC, #9299B8) !default;
-$docs_colors_header_background:       darken($docs_colors_page_background, 10) !default;
+$docs_colors_header_background:         darken($docs_colors_page_background, 10) !default;
 
-$docs_colors_header_border_bottom: 1px solid #698ea4 !default;
-$docs_colors_header_border_radius: 2px 2px 0 0 !default;
+$docs_colors_header_border_bottom:      1px solid #698ea4 !default;
+$docs_colors_header_border_radius:      2px 2px 0 0 !default;
 
 // $docs_colors_header_h1_color:            #fff !default;
-$docs_colors_header_h1_color:            #777 !default;
+$docs_colors_header_h1_color:           #777 !default;
 // $docs_colors_header_h1_hover_color:      #fff !default;
-$docs_colors_header_h1_hover_color:      $docs_colors_a_color !default;
+$docs_colors_header_h1_hover_color:     $docs_colors_a_color !default;
 // $docs_colors_header_h1_a_color:          $docs_colors_a_color !default;
-$docs_colors_header_h1_a_color:          $docs_colors_header_h1_color !default;
+$docs_colors_header_h1_a_color:         $docs_colors_header_h1_color !default;
 
 // $docs_colors_header_p_color:             $docs_colors_a_color !default;
-$docs_colors_header_p_color:             $docs_colors_header_h1_color !default;
+$docs_colors_header_p_color:            $docs_colors_header_h1_color !default;
 
 // $docs_colors_page_contents_background:    linear-gradient(#fafafa, #dedede 700px) !default;
-$docs_colors_page_contents_background:    darken($docs_colors_page_background, 5) !default;
+$docs_colors_page_contents_background:  darken($docs_colors_page_background, 5) !default;
 $docs_colors_page_contents_border_radius: 0 0 2px 2px !default;
 
 
-$docs_colors_headers_default_color:   $docs_colors_body_color !default;
-$docs_colors_headers_h2_color:        #393939 !default;
-$docs_colors_headers_h3_h6_color:     #494949 !default;
+$docs_colors_headers_default_color:     $docs_colors_body_color !default;
+$docs_colors_headers_h2_color:          #393939 !default;
+$docs_colors_headers_h3_h6_color:       #494949 !default;
 
-$docs_colors_blockquote_background:   rgba(0, 0, 0, 0.06) !default;
-$docs_colors_blockquote_color:        $docs_colors_body_color !default;
+$docs_colors_blockquote_background:     rgba(0, 0, 0, 0.06) !default;
+$docs_colors_blockquote_color:          $docs_colors_body_color !default;
 
 
 // ########################################################
