@@ -20,18 +20,18 @@ Mailman is a microframework for processing incoming email.
 
 Here is an example Mailman app that takes incoming messages to a support email account, and adds them to a database.
 
-```ruby
+{% highlight ruby %}
  # mailman_app.rb
-require 'mailman'
+ require 'mailman'
 
-Mailman.config.maildir = '~/Maildir'
-
-Mailman::Application.run do
-  to 'support@example.org' do
-    Ticket.new_from_message(message)
-  end
-end
-```
+ Mailman.config.maildir = '~/Maildir'
+ 
+ Mailman::Application.run do
+   to 'support@example.org' do
+     Ticket.new_from_message(message)
+   end
+ end
+{% endhighlight %}
 
 The Mailman app could then be started by running `ruby mailman_app.rb`.
 
@@ -39,8 +39,9 @@ The Mailman app could then be started by running `ruby mailman_app.rb`.
 
 Installation is as simple as:
 
-    gem install mailman
-
+{% highlight bash %}
+ $  gem install mailman
+{% endhighlight %}
 
 ## Routes & Conditions
 
@@ -64,70 +65,72 @@ The capture names may only contain letters and underscores. Behind the scenes th
 
 Regular expressions may be used as matchers. All captures will be available from the params helper (`params[:captures]`) as an Array, and as block arguments.
 
+---
 
 ### Routes
 
 Routes are defined within a Mailman application block:
 
-```ruby
+{% highlight ruby %}
 Mailman::Application.run do
   # routes here
 end
-```
+{% endhighlight %}
 
 Messages are passed through routes in the order they are defined in the application from top to bottom. The first matching route's block will be called.
+
 
 #### Condition Chaining
 
 Conditions can be chained so that the route will only be executed if all conditions pass:
 
-```ruby
+{% highlight ruby %}
 to('support@example.org').subject(/urgent/) do
   # process urgent message here
 end
-```
+{% endhighlight %}
 
 #### Special routes
 
 The `default` route is a catch-all that is run if no other routes match:
 
-```ruby
+{% highlight ruby %}
 default do
   # process non-matching messages
 end
-```
+{% endhighlight %}
 
 #### Block Arguments
 
 All captures from matchers are available as block arguments:
 
-```ruby
+{% highlight ruby %}
 from('%user%@example.org').subject(/Ticket (\d+)/) do |username, ticket_id|
   puts "Got message from #{username} about Ticket #{ticket_id}"
 end
-```
+{% endhighlight %}
 
 #### Class Routing
 
 Messages can also be routed to methods. For instance, to route to an Object with a `receive` instance method defined, this will work:
 
-```ruby
+{% highlight ruby %}
 from '%user%@example.org', Sample
-```
+{% endhighlight %}
 
 Messages can also be routed to arbitrary instance methods:
 
-```ruby
+{% highlight ruby %}
 from '%user%@example.org', 'ExampleClass#new_message'
-```
+{% endhighlight %}
 
 The method should accept two arguments, the message object, and the params:
 
-```ruby
+{% highlight ruby %}
 def receive(message, params)
   # process message here
 end
-```
+{% endhighlight %}
 
 #### Route Helpers
 
@@ -135,17 +138,19 @@ There are two helpers available inside of route blocks:
 
 The `params` hash holds all captures from matchers:
 
-```ruby
+{% highlight ruby %}
 from('%user%@example.org').subject(/RE: (.*)/) do
   params[:user] #=> 'chunkybacon'
   # it is an indifferent hash, so you can use strings and symbols
   # interchangeably as keys
   params['captures'][0] #=> 'A very important message about pigs'
 end
-```
+{% endhighlight %}
 
 The `message` helper is a `Mail::Message` object that contains the entire message. See the [mail](http://github.com/mikel/mail/) docs for information on the properties available.
 
+
+---
 
 ### Conditions
 
@@ -153,6 +158,8 @@ Currently there are five conditions available: `to`, `from`, `cc`, `subject`, `b
 
 More can be added easily (see `lib/mailman/route/conditions.rb`).
 
+
+---
 
 ## Receivers
 
@@ -178,7 +185,7 @@ You can pass a Hash to `ssl` with [SSL context options](http://www.ruby-doc.org/
 
 The IMAP receiver is enabled when the `Mailman.config.imap` hash is set. Polling can be set with `Mailman.config.poll_interval`. This will read all unread messages in the INBOX by default. Here are example settings for gmail.
 
-```ruby
+{% highlight ruby %}
 Mailman.config.imap = {
   server: 'imap.gmail.com',
   port: 993, # you usually don't need to set this, but it's there if you need to
@@ -188,14 +195,18 @@ Mailman.config.imap = {
   username: 'foo@somedomain.com',
   password: 'totallyunsecuredpassword'
 }
+{% endhighlight %}
 
-```
+
 * When using gmail, remember to [enable IMAP](https://support.google.com/mail/troubleshooter/1668960)
 * You can pass a Hash to `ssl`, just like with POP3.
 
 ### Maildir
 
 The Maildir receiver is enabled when `Mailman.config.maildir` is set to a directory. If the `cur`, `new`, and `tmp` folders do not already exist in the folder, they will be created. All messages in `new` folder will be processed when the application launches, then moved to the `cur` folder, and marked as seen. After processing these messages, Mailman will use the [fssm](http://github.com/ttilley/fssm) gem to monitor the `new` folder, and process messages as they are created.
+
+
+---
 
 ## Configuration
 
@@ -213,12 +224,12 @@ Configuration is stored in the `Mailman.config` object. All paths are relative t
 
 ### POP3 Receiver
 
-`Mailman.config.pop3` stores an optional POP3 configuration hash. If it is
-set, Mailman will use POP3 polling as the receiver.
+`Mailman.config.pop3` stores an optional `POP3` configuration hash. If it is set, Mailman will use 
+`POP3` polling as the receiver.
 
 **Example**:
 
-```ruby
+{% highlight ruby %}
 Mailman.config.pop3 = {
   :username => 'chunkybacon@gmail.com',
   :password => 'foobar',
@@ -226,7 +237,7 @@ Mailman.config.pop3 = {
   :port     => 995, # you can usually omit this, but it's there
   :ssl      => true # defaults to false
 }
-```
+{% endhighlight %}
 
 
 ### Polling
@@ -265,7 +276,7 @@ Mailman.config.pop3 = {
 
 Here's an example of some simple error logging middleware:
 
-```ruby
+{% highlight ruby %}
  # Define the middleware
 class ErrorLoggingMiddleware
   def call(mail)
@@ -280,4 +291,6 @@ end
 
  # Add it to the Mailman middleware stack
 Mailman.config.middleware.add ErrorLoggingMiddleware
-```
+{% endhighlight %}
+
+

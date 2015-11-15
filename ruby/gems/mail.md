@@ -16,7 +16,6 @@ asset_path: ../..
 
 ## Introduction
 
-
 Mail is an internet library for Ruby that is designed to handle emails generation, parsing and sending in a simple, rubyesque manner.
 
 The purpose of this library is to provide a single point of access to handle all email functions, including sending and receiving emails.  
