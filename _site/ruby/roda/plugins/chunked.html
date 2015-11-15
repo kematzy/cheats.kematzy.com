@@ -1,0 +1,313 @@
+  <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>:chunked - Plugins - Roda - Web Framework - Ruby | Cheats by Kematzy</title>
+
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- <link rel="stylesheet" href="../../../assets/css/-pygment_trac.css"> -->
+    <script src="/assets/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+
+  <body>
+    <div id="page" class="container">
+
+      <nav id="header" class="navbar navbar-default">
+  <div class="container-fluid row">
+
+    <div class="navbar-header col-md-6">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <h1><a href="/">Cheats by Kematzy</a></h1>
+        <p>A personal collection of Cheatsheets</p>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse col-md-6" id="header-nav">
+      <ul class="nav navbar-nav">
+      
+        
+          
+        <li class="">
+          <a href="/index.html" title="back to the homepage">Home</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/toc.html" title="full table of contents for this website">Table of Contents</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/about.html" title="find out more information about this website">About</a>
+        </li>
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+      
+
+
+<div id="breadcrumbs" class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      
+        
+        <li><a href="/ruby/">Ruby</a></li>
+      
+        
+        <li><a href="/ruby/roda/">Roda</a></li>
+      
+        
+        <li><a href="/ruby/roda/plugins/">Plugins</a></li>
+      
+        
+        <li><a href="/ruby/roda/plugins/chunked.html">Chunked</a></li>
+      
+    </ol>
+  </div>
+</div>
+
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          <h1 id="ruby-roda-web-framework-plugins-chunked">Ruby / Roda - Web Framework / Plugins / :chunked</h1>
+
+<hr>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The <strong>:chunked</strong> plugin allows you to stream responses to clients using <code>Transfer-Encoding: chunked</code>.  </p>
+
+<p>This can significantly improve performance of page rendering on the client, as it flushes the headers 
+and top part of the layout template (generally containing references to the stylesheet and javascript assets) 
+before rendering the content template.</p>
+
+<p>This allows the client to fetch the assets while the template is still being rendered.  </p>
+
+<p>Additionally, this plugin makes it easy to defer executing code required to render the content template 
+until after the top part of the layout has been flushed, so the client can fetch the assets while the 
+application is still doing the necessary processing in order to render the content template, such as 
+retrieving values from a database.</p>
+
+<p>There are a couple disadvantages of streaming using chunked encoding. </p>
+
+<p>First is that the layout must be rendered before the content, so any state changes made in your content 
+template will not affect the layout template.</p>
+
+<p>Second, error handling is reduced, since if an error occurs while rendering a template, a successful 
+response code has already been sent.</p>
+
+<p>To use chunked encoding for a response, just call the <code>#.chunked</code> method instead of view:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.root do
+  
+  chunked(:index)
+  
+end</code></pre></div>
+
+<p>If you want to execute code after flushing the top part of the layout template, but before rendering 
+the content template, pass a block to chunked:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.root do
+  
+  chunked(:index) do
+    # expensive calculation here
+  end
+  
+end</code></pre></div>
+
+<p>You can also call delay manually with a block, and the execution of the block will be delayed until 
+rendering the content template.  </p>
+
+<p>This is useful if you want to delay execution for all routes under a branch:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.on &#39;albums/:d&#39; do |album_id|
+  
+  delay do
+    @album = Album[album_id]
+  end
+  
+  r.get &#39;info&#39; do
+    chunked(:info)
+  end
+  
+  r.get &#39;tracks&#39; do
+    chunked(:tracks)
+  end
+  
+end</code></pre></div>
+
+<p>If you want to chunk all responses, pass the <code>:chunk_by_default</code> option when loading the plugin:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :chunked, chunk_by_default: true</code></pre></div>
+
+<p>then you can just use the normal view method:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.root do
+    view(:index)
+  end</code></pre></div>
+
+<p>and it will chunk the response.  </p>
+
+<p>Note that you still need to call <code>#.chunked</code> if you want to pass a block of code to be executed after 
+flushing the layout and before rendering the content template. </p>
+
+<p>Also, before you enable chunking by default, you need to make sure that none of your content templates 
+make state changes that affect the layout template. </p>
+
+<p>Additionally, make sure nowhere in your app are you doing any processing after the call to view.</p>
+
+<p>If you use <code>:chunk_by_default</code>, but want to turn off chunking for a view, call <code>#.no_chunk!</code>:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.root do
+
+  no_chunk!
+  view(:index)
+  
+end</code></pre></div>
+
+<p>Inside your layout or content templates, you can call the flush method to flush the current result 
+of the template to the user, useful for streaming large datasets.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">&lt;% (1..100).each do |i| %&gt;
+  &lt;%= i %&gt;
+  &lt;% sleep 0.1 %&gt;
+  &lt;% flush %&gt;
+&lt;% end %&gt;</code></pre></div>
+
+<p>Note that you should not call flush from inside sub-templates of the content or layout templates, 
+unless you are also calling flush directly before rendering the sub-template, and also directly 
+injecting the sub-template into the current template without modification.  </p>
+
+<p>So if you are using the above template code in a sub-template, in your content template you should do:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">&lt;% flush %&gt;&lt;%= render(:subtemplate) %&gt;</code></pre></div>
+
+<p>If you want to use chunked encoding when rendering a template, but don&#39;t want to use a layout, 
+pass the <code>layout: false</code> option to chunked.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.root do
+
+  chunked(:index, layout: false)
+  
+end</code></pre></div>
+
+<p>In order to handle errors in chunked responses, you can override the <code>#.handle_chunk_error</code> method:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">def handle_chunk_error(e)
+  env[&#39;rack.logger&#39;].error(e)
+end</code></pre></div>
+
+<p>It is possible to set <code>@_out_buf</code> to an error notification and call <code>#.flush</code> to output the message to the 
+client inside <code>handle_chunk_error</code>.</p>
+
+<p>In order for chunking to work, you must make sure that no proxies between the application and the 
+client buffer responses.  </p>
+
+<p>Also, this plugin only works for <code>HTTP/1.1</code> requests since <code>Transfer-Encoding: chunked</code> is not supported 
+in <code>HTTP/1.0</code>.  If an <code>HTTP/1.0</code> request is submitted, this plugin will automatically fallback to the 
+normal template rendering.</p>
+
+<p>Note that some proxies including <code>nginx</code> default to <code>HTTP/1.0</code> even if the client supports <code>HTTP/1.1</code>.<br>
+For <code>nginx</code>, set the <code>proxy_http_version</code> to <code>1.1</code>.</p>
+
+<p>If you are using <code>nginx</code> and have it set to buffer proxy responses by default, you can turn this off 
+on a per response basis using the <code>X-Accel-Buffering</code> header.  </p>
+
+<p>To set this header or similar headers for all chunked responses, pass a :headers option when loading the plugin:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :chunked, headers: { &#39;X-Accel-Buffering&#39; =&gt; &#39;no&#39; }</code></pre></div>
+
+<p>The <strong>:chunked</strong> plugin requires the render plugin, and only works for template engines that store 
+their template output variable in <code>@_out_buf</code>.  </p>
+
+<p>Also, it only works if the content template is directly injected into the layout template without modification.</p>
+
+<p>If using the chunked plugin with the <strong>:flash</strong> plugin, make sure you call the <code>#.flash</code> method early 
+in your route block.  If the <code>#.flash</code> method is not called until template rendering, the flash may not be
+rotated.</p>
+
+<h3 id="instancemethods">InstanceMethods</h3>
+
+<h4 id="no_chunk"><code>#.no_chunk!</code></h4>
+
+<p>Disable chunking for the current request.  Mostly useful when chunking is turned on by default.</p>
+
+<h4 id="view-a"><code>#.view(*a)</code></h4>
+
+<p>If chunking by default, call chunked if it hasn&#39;t yet been called and chunking is not specifically disabled.</p>
+
+<h4 id="chunked-template-opts-opts-amp-block"><code>#.chunked(template, opts=OPTS, &amp;block)</code></h4>
+
+<p>Render a response to the user in chunks.  See Chunked for an overview.  If a block is given, it is 
+passed to #delay.</p>
+
+<h4 id="delay-amp-block"><code>#.delay(&amp;block)</code></h4>
+
+<p>Delay the execution of the block until right before the content template is to be rendered.</p>
+
+<h4 id="each_chunk"><code>#.each_chunk</code></h4>
+
+<p>Yield each chunk of the template rendering separately.</p>
+
+<h4 id="handle_chunk_error-e"><code>#.handle_chunk_error(e)</code></h4>
+
+<p>By default, raise the exception.</p>
+
+<h4 id="flush"><code>#.flush</code></h4>
+
+<p>Call the flusher if one is defined.  If one is not defined, this is a no-op, so flush can be used 
+inside views without breaking things if chunking is not used.</p>
+
+        </div>
+
+      </div>
+
+      <div id="footer" class="row">
+  <div class="col-md-12">
+    <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+    <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+  </div>
+</div>
+
+
+    </div>
+
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="../../../assets/js/jquery-2.1.3.min.js"></script>
+    <script src="../../../assets/js/bootstrap.min.js"></script>
+    <script src="../../../assets/js/highlight.pack.js"></script>
+    <script src="../../../assets/js/toc.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        $('table').addClass('table table-bordered table-hover');
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,254 @@
+  <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>:caching - Plugins - Roda - Web Framework - Ruby | Cheats by Kematzy</title>
+
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- <link rel="stylesheet" href="../../../assets/css/-pygment_trac.css"> -->
+    <script src="/assets/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+
+  <body>
+    <div id="page" class="container">
+
+      <nav id="header" class="navbar navbar-default">
+  <div class="container-fluid row">
+
+    <div class="navbar-header col-md-6">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <h1><a href="/">Cheats by Kematzy</a></h1>
+        <p>A personal collection of Cheatsheets</p>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse col-md-6" id="header-nav">
+      <ul class="nav navbar-nav">
+      
+        
+          
+        <li class="">
+          <a href="/index.html" title="back to the homepage">Home</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/toc.html" title="full table of contents for this website">Table of Contents</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/about.html" title="find out more information about this website">About</a>
+        </li>
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+      
+
+
+<div id="breadcrumbs" class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      
+        
+        <li><a href="/ruby/">Ruby</a></li>
+      
+        
+        <li><a href="/ruby/roda/">Roda</a></li>
+      
+        
+        <li><a href="/ruby/roda/plugins/">Plugins</a></li>
+      
+        
+        <li><a href="/ruby/roda/plugins/caching.html">Caching</a></li>
+      
+    </ol>
+  </div>
+</div>
+
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          <h1 id="ruby-roda-web-framework-plugins-caching">Ruby / Roda - Web Framework / Plugins / :caching</h1>
+
+<hr>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The caching plugin adds methods related to HTTP caching.</p>
+
+<p>For proper caching, you should use either the <code>#.last_modified</code> or <code>#.etag</code> request methods.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.get &#39;/albums/:d&#39; do |album_id|
+  @album = Album[album_id]
+  r.last_modified @album.updated_at
+  view(&#39;album&#39;)
+end
+
+# or
+
+r.get &#39;/albums/:d&#39; do |album_id|
+  @album = Album[album_id]
+  r.etag @album.sha1
+  view(&#39;album&#39;)
+end</code></pre></div>
+
+<p>Both <code>last_modified</code> or <code>etag</code> will immediately halt processing if there have been no modifications 
+since the last time the client requested the resource, assuming the client uses the appropriate 
+<code>HTTP 1.1</code> request headers.</p>
+
+<p>This plugin also includes the <code>#.cache_control</code> and <code>#.expires</code> response methods.  </p>
+
+<p>The <code>#.cache_control</code> method sets the <code>Cache-Control</code> header using the given hash:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">response.cache_control(public: true, max_age: 60)
+    # Cache-Control: public, max-age=60</code></pre></div>
+
+<p>The <code>#.expires</code> method is similar, but in addition to setting the <code>HTTP 1.1 Cache-Control</code> header, 
+it also sets the <code>HTTP 1.0 Expires</code> header:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">response.expires(60, public: true)
+ # Cache-Control: public, max-age=60
+ # Expires: Mon, 29 Sep 2014 21:25:47 GMT</code></pre></div>
+
+<p>The implementation was originally taken from <a href="http://sinatrarb.com/">Sinatra</a>, which is also released under the MIT License:</p>
+
+<p>Copyright (c) 2007, 2008, 2009 Blake Mizerany 
+<br>
+Copyright (c) 2010, 2011, 2012, 2013, 2014 Konstantin Haase</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and 
+associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction, 
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
+subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial 
+portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+
+<h3 id="requestmethods">RequestMethods</h3>
+
+<h4 id="last_modified-time"><code>#.last_modified(time)</code></h4>
+
+<p>Set the last modified time of the resource using the <code>Last-Modified</code> header. The <code>time</code> argument 
+should be a <code>Time</code> instance.</p>
+
+<p>If the current request includes an <code>If-Modified-Since</code> header that is equal or later than the time 
+specified, immediately returns a response with a <code>304</code> status.</p>
+
+<p>If the current request includes an <code>If-Unmodified-Since</code> header that is before than the time specified, 
+immediately returns a response with a <code>412</code> status.</p>
+
+<h4 id="etag-value-opts-opts"><code>#.etag(value, opts=OPTS)</code></h4>
+
+<p>Set the response entity tag using the <code>ETag</code> header.</p>
+
+<p>The <code>value</code> argument is an identifier that uniquely identifies the current version of the resource.</p>
+
+<table><thead>
+<tr>
+<th><strong>Options:</strong></th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:weak</td>
+<td>Use a weak cache validator (a strong cache validator is the default)</td>
+</tr>
+<tr>
+<td>:new_resource</td>
+<td>Whether this etag should match an etag of * (true for POST, false otherwise)</td>
+</tr>
+</tbody></table>
+
+<p>When the current request includes an If-None-Match header with a matching <code>etag</code>, immediately returns 
+a response with a <code>304</code> or <code>412</code> status, depending on the request method.</p>
+
+<p>When the current request includes an If-Match header with an <code>etag</code> that doesn&#39;t match, immediately 
+returns a response with a <code>412</code> status.</p>
+
+<h3 id="responsemethods">ResponseMethods</h3>
+
+<h4 id="cache_control-opts"><code>#.cache_control(opts)</code></h4>
+
+<p>Specify response freshness policy for using the Cache-Control header.</p>
+
+<p>Options can can any non-value directives (<code>:public</code>, <code>:private</code>, <code>:no_cache</code>, <code>:no_store</code>, 
+<code>:must_revalidate</code>, <code>:proxy_revalidate</code>),  with true as the value. Options can also contain value 
+directives (<code>:max_age</code>, <code>:s_maxage</code>).</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">response.cache_control(public: true, max_age: 60)
+    # =&gt; Cache-Control: public, max-age=60</code></pre></div>
+
+<p>See <a href="http://tools.ietf.org/html/rfc2616#section-14.9.1">RFC 2616 / 14.9</a> for more on standard cache control directives.</p>
+
+<h4 id="expires-max_age-opts-opts"><code>#.expires(max_age, opts=OPTS)</code></h4>
+
+<p>Set <code>Cache-Control</code> header with the <code>max_age</code> given.  <code>max_age</code> should be an integer number of seconds 
+that the current request should be cached for.  </p>
+
+<p>Also sets the <code>Expires</code> header, useful if you have <code>HTTP 1.0</code> clients (<code>Cache-Control</code> is an <code>HTTP 1.1</code> header).</p>
+
+<h4 id="finish"><code>#.finish</code></h4>
+
+<p>Remove <code>Content-Type</code> and <code>Content-Length</code> for <code>304</code> responses.</p>
+
+        </div>
+
+      </div>
+
+      <div id="footer" class="row">
+  <div class="col-md-12">
+    <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+    <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+  </div>
+</div>
+
+
+    </div>
+
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="../../../assets/js/jquery-2.1.3.min.js"></script>
+    <script src="../../../assets/js/bootstrap.min.js"></script>
+    <script src="../../../assets/js/highlight.pack.js"></script>
+    <script src="../../../assets/js/toc.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        $('table').addClass('table table-bordered table-hover');
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,200 @@
+  <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>:class_level_routing - Plugins - Roda - Web Framework - Ruby | Cheats by Kematzy</title>
+
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- <link rel="stylesheet" href="../../../assets/css/-pygment_trac.css"> -->
+    <script src="/assets/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+
+  <body>
+    <div id="page" class="container">
+
+      <nav id="header" class="navbar navbar-default">
+  <div class="container-fluid row">
+
+    <div class="navbar-header col-md-6">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <h1><a href="/">Cheats by Kematzy</a></h1>
+        <p>A personal collection of Cheatsheets</p>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse col-md-6" id="header-nav">
+      <ul class="nav navbar-nav">
+      
+        
+          
+        <li class="">
+          <a href="/index.html" title="back to the homepage">Home</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/toc.html" title="full table of contents for this website">Table of Contents</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/about.html" title="find out more information about this website">About</a>
+        </li>
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+      
+
+
+<div id="breadcrumbs" class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      
+        
+        <li><a href="/ruby/">Ruby</a></li>
+      
+        
+        <li><a href="/ruby/roda/">Roda</a></li>
+      
+        
+        <li><a href="/ruby/roda/plugins/">Plugins</a></li>
+      
+        
+        <li><a href="/ruby/roda/plugins/class_level_routing.html">Class_level_routing</a></li>
+      
+    </ol>
+  </div>
+</div>
+
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          <h1 id="ruby-roda-web-framework-plugins-class_level_routing">Ruby / Roda - Web Framework / Plugins / :class_level_routing</h1>
+
+<hr>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The <strong>:class_level_routing</strong> plugin adds routing methods at the class level, which can be used instead 
+of or in addition to using the normal <code>#.route</code> method to start the routing tree.  </p>
+
+<p>If a request is not matched by the normal routing tree, the class level routes will be tried.  </p>
+
+<p>This offers a more Sinatra-like API, while still allowing you to use a routing tree inside individual actions.</p>
+
+<p>Here&#39;s an example using the <strong>:class_level_routing</strong> plugin:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">class App &lt; Roda
+  plugin :class_level_routing
+
+  # GET / request
+  root do
+    request.redirect &quot;/hello&quot;
+  end
+
+  # GET /hello/world request
+  get &quot;hello/world&quot; do
+    &quot;Hello world!&quot;
+  end
+
+  # /hello request
+  is &quot;hello&quot; do
+    # Set variable for both GET and POST requests
+    @greeting = &#39;Hello&#39;
+
+    # GET /hello request
+    request.get do
+      &quot;#{@greeting}!&quot;
+    end
+
+    # POST /hello request
+    request.post do
+      puts &quot;Someone said #{@greeting}!&quot;
+      request.redirect
+    end
+  end
+end</code></pre></div>
+
+<p>When using the the <strong>:class_level_routing</strong> plugin with nested routes, you may also want to use the
+delegate plugin to delegate certain instance methods to the request object, so you don&#39;t have
+to continually use <code>#.request</code> in your routing blocks.</p>
+
+<p>Note that class level routing is implemented via a simple array of routes, so routing performance
+will degrade linearly as the number of routes increases.  For best performance, you should use
+the normal <code>#.route</code> class method to define your routing tree.  </p>
+
+<p>This plugin does make it simpler to add additional routes after the routing tree has already been defined, though.</p>
+
+<h3 id="classmethods">ClassMethods</h3>
+
+<p>Routing methods that will store class level routes.</p>
+
+<ul>
+<li><code>:root</code></li>
+<li><code>:on</code></li>
+<li><code>:is</code></li>
+<li><code>:get</code></li>
+<li><code>:post</code></li>
+<li><code>:delete</code></li>
+<li><code>:head</code></li>
+<li><code>:options</code></li>
+<li><code>:link</code></li>
+<li><code>:patch</code></li>
+<li><code>:put</code></li>
+<li><code>:trace</code></li>
+<li><code>:unlink</code></li>
+</ul>
+
+        </div>
+
+      </div>
+
+      <div id="footer" class="row">
+  <div class="col-md-12">
+    <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+    <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+  </div>
+</div>
+
+
+    </div>
+
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="../../../assets/js/jquery-2.1.3.min.js"></script>
+    <script src="../../../assets/js/bootstrap.min.js"></script>
+    <script src="../../../assets/js/highlight.pack.js"></script>
+    <script src="../../../assets/js/toc.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        $('table').addClass('table table-bordered table-hover');
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
+  </body>
+</html>

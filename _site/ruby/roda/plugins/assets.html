@@ -1,0 +1,474 @@
+  <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>:assets - Plugins - Roda - Web Framework - Ruby | Cheats by Kematzy</title>
+
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- <link rel="stylesheet" href="../../../assets/css/-pygment_trac.css"> -->
+    <script src="/assets/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+
+  <body>
+    <div id="page" class="container">
+
+      <nav id="header" class="navbar navbar-default">
+  <div class="container-fluid row">
+
+    <div class="navbar-header col-md-6">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <h1><a href="/">Cheats by Kematzy</a></h1>
+        <p>A personal collection of Cheatsheets</p>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse col-md-6" id="header-nav">
+      <ul class="nav navbar-nav">
+      
+        
+          
+        <li class="">
+          <a href="/index.html" title="back to the homepage">Home</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/toc.html" title="full table of contents for this website">Table of Contents</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/about.html" title="find out more information about this website">About</a>
+        </li>
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+      
+
+
+<div id="breadcrumbs" class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      
+        
+        <li><a href="/ruby/">Ruby</a></li>
+      
+        
+        <li><a href="/ruby/roda/">Roda</a></li>
+      
+        
+        <li><a href="/ruby/roda/plugins/">Plugins</a></li>
+      
+        
+        <li><a href="/ruby/roda/plugins/assets.html">Assets</a></li>
+      
+    </ol>
+  </div>
+</div>
+
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          <h1 id="ruby-roda-web-framework-plugins-assets">Ruby / Roda - Web Framework / Plugins / :assets</h1>
+
+<hr>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The <strong>:assets</strong> plugin adds support for rendering your CSS and javascript asset files on the fly in 
+development, and compiling them to a single, compressed file in production.</p>
+
+<p>This uses the <strong>:render</strong> plugin for rendering the assets, and the <strong>:render</strong> plugin uses tilt internally, 
+so you can use any template engine supported by tilt for you assets.  </p>
+
+<p>Tilt ships with support for the following asset template engines, assuming the necessary libraries are installed:</p>
+
+<table><thead>
+<tr>
+<th><strong>Type:</strong></th>
+<th><strong>Supported Template Engines:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>css</td>
+<td>Less, Sass, Scss</td>
+</tr>
+<tr>
+<td>js</td>
+<td>CoffeeScript</td>
+</tr>
+</tbody></table>
+
+<h2 id="usage">Usage</h2>
+
+<p>When loading the plugin, use the <code>:css</code> and <code>:js</code> options to set the source file(s) to use for CSS 
+and Javascript assets:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :assets, css: &#39;some_file.scss&#39;, js: &#39;some_file.coffee&#39;</code></pre></div>
+
+<p>This will look for the following files:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">assets/css/some_file.scss
+assets/js/some_file.coffee
+</code></pre></div>
+<p>If you want to change the paths where asset files are stored, see the Options section below.</p>
+
+<h3 id="serving">Serving</h3>
+
+<p>In your routes, call the <code>r.assets</code> method to add a route to your assets, which will make your app serve 
+the rendered assets:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">route do |r|
+  r.assets
+end</code></pre></div>
+
+<p>You should generally call <code>r.assets</code> inside the route block itself, and not under any branches of the routing tree.</p>
+
+<h3 id="views">Views</h3>
+
+<p>In your layout view, use the assets method to add links to your CSS and Javascript assets:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">&lt;%= assets(:css) %&gt;
+&lt;%= assets(:js) %&gt;</code></pre></div>
+
+<p>You can add attributes to the tags by using an options hash:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">&lt;%= assets(:css, :media =&gt; &#39;print&#39;) %&gt;</code></pre></div>
+
+<p>The <code>#.assets</code> method will respect the application&#39;s <code>:add_script_name</code> option, if it set it will automatically 
+prefix the path with the <code>SCRIPT_NAME</code> for the request.</p>
+
+<h2 id="asset-groups">Asset Groups</h2>
+
+<p>The asset plugin supports groups for the cases where you have different css/js files for your front end 
+and back end.  </p>
+
+<p>To use asset groups, you pass a hash for the <code>:css</code> and/or <code>:js</code> options:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :assets, css: { frontend: &#39;some_frontend_file.scss&#39;,
+                         backend:  &#39;some_backend_file.scss&#39;  }</code></pre></div>
+
+<p>This expects the following directory structure for your assets:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">assets/css/frontend/some_frontend_file.scss
+assets/css/backend/some_backend_file.scss
+</code></pre></div>
+<p>If you want do not want to force that directory structure when using asset groups, you can use the 
+<code>group_subdirs: false</code> option.</p>
+
+<p>In your view code use an array argument in your call to assets:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">&lt;%= assets([:css, :frontend]) %&gt;</code></pre></div>
+
+<h3 id="nesting">Nesting</h3>
+
+<p>Asset groups also supporting nesting, though that should only be needed in fairly large applications.  </p>
+
+<p>You can use a nested hash when loading the plugin:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :assets, css: { frontend: { dashboard: &#39;some_frontend_file.scss&#39; } }</code></pre></div>
+
+<p>and an extra entry per nesting level when creating the tags.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">&lt;%= assets([:css, :frontend, :dashboard]) %&gt;</code></pre></div>
+
+<h2 id="caching">Caching</h2>
+
+<p>The <strong>:assets</strong> plugin uses the caching plugin internally, and will set the <code>Last-Modified</code> header to the 
+modified timestamp of the asset source file when rendering the asset.</p>
+
+<p>If you have assets that include other asset files, such as using <code>@import</code> in a <code>.sass</code> file, you need to 
+specify the dependencies for your assets so that the assets plugin will correctly pick up changes.  </p>
+
+<p>You can do this using the <code>:dependencies</code> option to the plugin, which takes a hash where
+the keys are paths to asset files, and values are arrays of paths to dependencies of those asset files:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">app.plugin :assets,
+           dependencies: { &#39;assets/css/bootstrap.scss&#39; =&gt; Dir[&#39;assets/css/bootstrap/&#39; &#39;**/*.scss&#39;] }</code></pre></div>
+
+<h2 id="asset-compilation">Asset Compilation</h2>
+
+<p>In production, you are generally going to want to compile your assets into a single file, which you 
+can do by calling <code>#.compile_assets</code> after loading the plugin:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :assets, css: &#39;some_file.scss&#39;, js: &#39;some_file.coffee&#39;
+
+compile_assets</code></pre></div>
+
+<p>After calling <code>#.compile_assets</code>, calls to assets in your views will default to a using a single link 
+each to your CSS and Javascript compiled asset files.  </p>
+
+<p>By default the compiled files are written to the public directory, so that they can be served by the webserver.</p>
+
+<h3 id="asset-compression">Asset Compression</h3>
+
+<p>If you have the <code>yuicompressor</code> gem installed and working, it will be used automatically to compress 
+your Javascript and CSS assets.  </p>
+
+<p>Otherwise, the assets will just be concatenated together and not compressed during compilation.</p>
+
+<h3 id="with-asset-groups">With Asset Groups</h3>
+
+<p>When using asset groups, a separate compiled file will be produced per asset group.</p>
+
+<h3 id="unique-asset-names">Unique Asset Names</h3>
+
+<p>When compiling assets, a unique name is given to each asset file, using the a <code>SHA1</code> hash of the 
+content of the file.  This is done so that clients do not attempt to use cached versions of the assets 
+if the asset has changed.</p>
+
+<h3 id="serving">Serving</h3>
+
+<p>If you call <code>r.assets</code> when compiling assets, then the app will serve the compiled asset files.  </p>
+
+<p>However, it is recommended to have the main webserver (e.g. nginx) serve the compiled files, instead 
+of relying on the application.</p>
+
+<p>Assuming you are using compiled assets in production mode that are served by the webserver, you can 
+remove the serving of them by the application:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">route do |r|
+  r.assets unless ENV[&#39;RACK_ENV&#39;] == &#39;production&#39;
+end</code></pre></div>
+
+<p>If you do have the application serve the compiled assets, it will use the <code>Last-Modified</code> header to 
+make sure that clients do not re-download compiled assets that haven&#39;t changed.</p>
+
+<h3 id="asset-pre-compilation">Asset Pre-Compilation</h3>
+
+<p>If you want to precompile your assets, so they do not need to be compiled every time you boot the 
+application, you can provide a <code>:precompiled</code> option when loading the plugin.  </p>
+
+<p>The value of this option should be the filename where the compiled asset metadata is stored.  </p>
+
+<p>If the compiled asset metadata file does not exist when the <strong>:assets</strong> plugin is loaded, the plugin will 
+run in non-compiled mode.  </p>
+
+<p>However, when you call <code>#.compile_assets</code>, it will write the compiled asset metadata file after compiling the assets.</p>
+
+<p>If the compiled asset metadata file already exists when the assets plugin is loaded, the plugin will 
+read the file to get the compiled asset metadata, and it will run in compiled mode, assuming that the 
+compiled asset files already exist.</p>
+
+<h3 id="on-heroku">On Heroku</h3>
+
+<p><a href="https://heroku.com/">Heroku</a> supports precompiling the assets when using Roda.  </p>
+
+<p>You just need to add an <code>assets:precompile</code> task, similar to this:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">namespace :assets do
+  
+  desc &quot;Precompile the assets&quot;
+  task :precompile do
+    require &#39;./app&#39;
+    App.compile_assets
+  end
+  
+end</code></pre></div>
+
+<h2 id="plugin-options">Plugin Options</h2>
+
+<table><thead>
+<tr>
+<th><strong>Option:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:add_suffix</td>
+<td>Whether to append a <code>.css</code> or <code>.js</code> extension to asset routes in non-compiled mode (default: <code>false</code>)</td>
+</tr>
+<tr>
+<td>:compiled_css_dir</td>
+<td>Directory name in which to store the compiled CSS file, inside <code>:compiled_path</code> (default: <code>nil</code>)</td>
+</tr>
+<tr>
+<td>:compiled_css_route</td>
+<td>Route under <code>:prefix</code> for compiled CSS assets (default: <code>:compiled_css_dir</code>)</td>
+</tr>
+<tr>
+<td>:compiled_js_dir</td>
+<td>Directory name in which to store the compiled Javascript file, inside :compiled_path (default: <code>nil</code>)</td>
+</tr>
+<tr>
+<td>:compiled_js_route</td>
+<td>Route under <code>:prefix</code> for compiled Javascript assets (default: <code>:compiled_js_dir</code>)</td>
+</tr>
+<tr>
+<td>:compiled_name</td>
+<td>Compiled file name prefix (default: <code>&#39;app&#39;</code>)</td>
+</tr>
+<tr>
+<td>:compiled_path</td>
+<td>Path inside public folder in which compiled files are stored (default: <code>:prefix</code>)</td>
+</tr>
+<tr>
+<td>:concat_only</td>
+<td>Whether to just concatenate instead of concatenating and compressing files (default: <code>false</code>)</td>
+</tr>
+<tr>
+<td>:css_dir</td>
+<td>Directory name containing your CSS source, inside <code>:path</code> (default: <code>&#39;css&#39;</code>)</td>
+</tr>
+<tr>
+<td>:css_headers</td>
+<td>A hash of additional headers for your rendered CSS files.</td>
+</tr>
+<tr>
+<td>:css_opts</td>
+<td>Template options to pass to the render plugin (via <code>:template_opts</code>) when rendering CSS assets</td>
+</tr>
+<tr>
+<td>:css_route</td>
+<td>Route under <code>:prefix</code> for CSS assets (default: <code>:css_dir</code>)</td>
+</tr>
+<tr>
+<td>:dependencies</td>
+<td>A hash of dependencies for your asset files.  Keys should be paths to asset files, values should be arrays of paths your asset files depends on.  This is used to detect changes in your asset files.</td>
+</tr>
+<tr>
+<td>:group_subdirs</td>
+<td>Whether a hash used in <code>:css</code> and <code>:js</code> options requires the assets for the related group are contained in a subdirectory with the same name (default: <code>true</code>)</td>
+</tr>
+<tr>
+<td>:headers</td>
+<td>A hash of additional headers for both JS and CSS rendered files</td>
+</tr>
+<tr>
+<td>:js_dir</td>
+<td>Directory name containing your Javascript source, inside :path (default: &#39;js&#39;)</td>
+</tr>
+<tr>
+<td>:js_headers</td>
+<td>A hash of additional headers for your rendered Javascript files</td>
+</tr>
+<tr>
+<td>:js_opts</td>
+<td>Template options to pass to the render plugin (via <code>:template_opts</code>) when rendering Javascript assets</td>
+</tr>
+<tr>
+<td>:js_route</td>
+<td>Route under <code>:prefix</code> for Javascript assets (default: :js_dir)</td>
+</tr>
+<tr>
+<td>:path</td>
+<td>Path to your asset source directory (default: <code>&#39;assets&#39;</code>).  Relative paths will be considered relative to the application&#39;s <code>:root</code> option.</td>
+</tr>
+<tr>
+<td>:prefix</td>
+<td>Prefix for assets path in your URL/routes (default: <code>&#39;assets&#39;</code>)</td>
+</tr>
+<tr>
+<td>:precompiled</td>
+<td>Path to the compiled asset metadata file.  If the file exists, will use compiled mode using the metadata in the file.  If the file does not exist, will use non-compiled mode, but will write the metadata to the file if <code>#.compile_assets</code> is called.</td>
+</tr>
+<tr>
+<td>:public</td>
+<td>Path to your public folder, in which compiled files are placed (default: <code>&#39;public&#39;</code>). Relative paths will be considered relative to the application&#39;s <code>:root</code> option.</td>
+</tr>
+</tbody></table>
+
+<h3 id="classmethods">ClassMethods</h3>
+
+<p>Return the assets options for this class.</p>
+
+<p><code>#.assets_opts</code></p>
+
+<p>Compile options for the given asset type. If no <code>asset_type</code> is given, compiles both the <code>:css</code> and <code>:js</code> asset types.  </p>
+
+<p>You can specify an array of types (e.g. <code>[:css, :frontend]</code>) to compile assets for the given asset group.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">compile_assets(type=nil)</code></pre></div>
+
+<h3 id="instancemethods">InstanceMethods</h3>
+
+<h4 id="assets-type-attrs-nil"><code>#.assets(type, attrs = nil)</code></h4>
+
+<p>Return a string containing html tags for the given asset type. This will use a script tag for the <code>:js</code> 
+type and a link tag for the <code>:css</code> type.</p>
+
+<p>To return the tags for a specific asset group, use an array for the type, such as <code>[:css, :frontend]</code>.</p>
+
+<p>When the assets are not compiled, this will result in a separate tag for each asset file.  When the 
+assets are compiled, this will result in a single tag to the compiled asset file.</p>
+
+<h4 id="render_asset-file-type"><code>#.render_asset(file, type)</code></h4>
+
+<p>Render the asset with the given filename.  When assets are compiled, or when the file is already of 
+the given type (no rendering necessary), this returns the contents of the compiled file.</p>
+
+<p>When assets are not compiled and the file is not already of the correct, this will render the asset 
+using the render plugin. </p>
+
+<p>In both cases, if the file has not been modified since the last request, this will return a <code>304</code> response.</p>
+
+<h4 id="read_asset_file-file-type"><code>#.read_asset_file(file, type)</code></h4>
+
+<p>Return the content of the file if it is already of the correct type.</p>
+
+<p>Otherwise, render the file using the render plugin. <code>file</code> should be the relative path to the file 
+from the current directory.</p>
+
+<h3 id="requestclassmethods">RequestClassMethods</h3>
+
+<p>An array of asset type strings and regexps for that type, for all asset types handled.</p>
+
+<p><code>#.assets_matchers</code></p>
+
+<h3 id="requestmethods">RequestMethods</h3>
+
+<p>Render the matching asset if this is a GET request for a supported asset.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.assets</code></pre></div>
+
+        </div>
+
+      </div>
+
+      <div id="footer" class="row">
+  <div class="col-md-12">
+    <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+    <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+  </div>
+</div>
+
+
+    </div>
+
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="../../../assets/js/jquery-2.1.3.min.js"></script>
+    <script src="../../../assets/js/bootstrap.min.js"></script>
+    <script src="../../../assets/js/highlight.pack.js"></script>
+    <script src="../../../assets/js/toc.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        $('table').addClass('table table-bordered table-hover');
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
+  </body>
+</html>

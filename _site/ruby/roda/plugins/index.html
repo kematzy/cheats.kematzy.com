@@ -1,0 +1,534 @@
+  <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Plugins - Roda - Web Framework - Ruby | Cheats by Kematzy</title>
+
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- <link rel="stylesheet" href="/assets/css/-pygment_trac.css"> -->
+    <script src="/assets/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+
+  <body>
+    <div id="page" class="container">
+
+      <nav id="header" class="navbar navbar-default">
+  <div class="container-fluid row">
+
+    <div class="navbar-header col-md-6">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <h1><a href="/">Cheats by Kematzy</a></h1>
+        <p>A personal collection of Cheatsheets</p>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse col-md-6" id="header-nav">
+      <ul class="nav navbar-nav">
+      
+        
+          
+          
+        
+        <li class="active">
+          <a href="/index.html" title="back to the homepage">Home</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/toc.html" title="full table of contents for this website">Table of Contents</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/about.html" title="find out more information about this website">About</a>
+        </li>
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+      
+
+
+<div id="breadcrumbs" class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      
+        
+        <li><a href="/ruby/">Ruby</a></li>
+      
+        
+        <li><a href="/ruby/roda/">Roda</a></li>
+      
+        
+        <li><a href="/ruby/roda/plugins/">Plugins</a></li>
+      
+        
+        <li><a href="/ruby/roda/plugins/index.html">Index</a></li>
+      
+    </ol>
+  </div>
+</div>
+
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          <h1 id="ruby-roda-web-framework-plugins">Ruby / Roda - Web Framework / Plugins</h1>
+
+<hr>
+
+<div id="toc"></div>
+
+<hr>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>This page should contain a quick overview of available Roda plugins.</p>
+
+<hr>
+
+<h2 id="plugins-built-in">Plugins - <span>(built-in)</span></h2>
+
+<h3 id="core-routing">Core Routing</h3>
+
+<table><thead>
+<tr>
+<th><strong>Plugin Name:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td><h4><a href="all_verbs.html">:all_verbs</a></h4></td>
+<td>Adds request routing methods for all http verbs.</td>
+</tr>
+<tr>
+<td><h4><a href="backtracking_array.html">:backtracking_array</a></h4></td>
+<td>Allows array matchers to backtrack if later matchers do not match.</td>
+</tr>
+<tr>
+<td><h4><a href="class_level_routing.html">:class_level_routing</a></h4></td>
+<td>Adds class level routing methods, for a DSL similar to <a href="https://github.com/sinatra/sinatra">Sinatra</a>.</td>
+</tr>
+<tr>
+<td><h4><a href="head.html">:head</a></h4></td>
+<td>Treat HEAD requests like GET requests with an empty response body.</td>
+</tr>
+<tr>
+<td><h4><a href="multi_route.html">:multi_route</a></h4></td>
+<td>Allows for multiple named route blocks that can be dispatched to inside main route block.</td>
+</tr>
+<tr>
+<td><h4><a href="multi_run.html">:multi_run</a></h4></td>
+<td>Adds the ability to dispatch to multiple rack applications based on the request path prefix.</td>
+</tr>
+<tr>
+<td><h4><a href="not_allowed.html">:not_allowed</a></h4></td>
+<td>Adds support for automatically returning 405 Method Not Allowed responses.</td>
+</tr>
+<tr>
+<td><h4><a href="run_handler.html">:run_handler</a></h4></td>
+<td>Allows for modifying rack response arrays when using r.run, and continuing routing for 404 responses.</td>
+</tr>
+</tbody></table>
+
+<h3 id="rendering">Rendering</h3>
+
+<table><thead>
+<tr>
+<th><strong>Plugin Name:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td><h4><a href="assets.html">:assets</a></h4></td>
+<td>Adds support for rendering CSS/JS javascript assets on the fly in development, or compiling them into a single compressed file in production.</td>
+</tr>
+<tr>
+<td><h4><a href="chunked.html">:chunked</a></h4></td>
+<td>Adds support for streaming template responses using Transfer-Encoding: chunked.</td>
+</tr>
+<tr>
+<td><h4><a href="json.html">:json</a></h4></td>
+<td>Allows match blocks to return arrays and hashes, using a json representation as the response body.</td>
+</tr>
+<tr>
+<td><h4><a href="named_templates.html">:named_templates</a></h4></td>
+<td>Adds the ability to create inline templates by name, instead of storing them in the file system.</td>
+</tr>
+<tr>
+<td><h4><a href="padrino_render.html">:padrino_render</a></h4></td>
+<td>Makes render method that work similarly to Padrino&#39;s rendering, using a layout by default.</td>
+</tr>
+<tr>
+<td><h4><a href="partials.html">:partials</a></h4></td>
+<td>Adds partial method for rendering partials (templates prefixed with an underscore).</td>
+</tr>
+<tr>
+<td><h4><a href="precompile_templates.html">:precompile_templates</a></h4></td>
+<td>Adds support for precompiling templates, saving memory when using a forking webserver.</td>
+</tr>
+<tr>
+<td><h4><a href="render.html">:render</a></h4></td>
+<td>Adds render method for rendering templates, using <a href="https://github.com/rtomayko/tilt">tilt</a>.</td>
+</tr>
+<tr>
+<td><h4><a href="static.html">:static</a></h4></td>
+<td>Adds support for serving static files using Rack::Static.</td>
+</tr>
+<tr>
+<td><h4><a href="streaming.html">:streaming</a></h4></td>
+<td>Adds ability to stream responses.</td>
+</tr>
+<tr>
+<td><h4><a href="symbol_views.html">:symbol_views</a></h4></td>
+<td>Allows match blocks to return template name symbols, uses the template view as the response body.</td>
+</tr>
+<tr>
+<td><h4><a href="view_options.html">:view_options</a></h4></td>
+<td>Allows for setting view options on a per-request basis.</td>
+</tr>
+<tr>
+<td><h4><a href="websockets.html">:websockets</a></h4></td>
+<td>Adds websocket support using <a href="https://github.com/faye/faye-websocket-ruby%22">faye-websocket</a>.</td>
+</tr>
+</tbody></table>
+
+<h3 id="view-helpers">View Helpers</h3>
+
+<table><thead>
+<tr>
+<th><strong>Plugin Name:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td><h4><a href="content_for.html">:content_for</a></h4></td>
+<td>Allows storage of content in one template and retrieval of that content in a different template.</td>
+</tr>
+<tr>
+<td><h4><a href="csrf.html">:csrf</a></h4></td>
+<td>Adds CSRF protection and helper methods using <a href="https://github.com/baldowl/rack_csrf">rack_csrf</a>.</td>
+</tr>
+<tr>
+<td><h4><a href="h.html">:h</a></h4></td>
+<td>Adds <code>h</code> method for html escaping.</td>
+</tr>
+<tr>
+<td><h4><a href="render_each.html">:render_each</a></h4></td>
+<td>Render a template for each value in an enumerable.</td>
+</tr>
+</tbody></table>
+
+<h3 id="request-response-helpers">Request/Response Helpers</h3>
+
+<table><thead>
+<tr>
+<th><strong>Plugin Name:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td><h4><a href="caching.html">:caching</a></h4></td>
+<td>Adds request and response methods related to http caching.</td>
+</tr>
+<tr>
+<td><h4><a href="cookies.html">:cookies</a></h4></td>
+<td>Adds response methods for handling cookies.</td>
+</tr>
+<tr>
+<td><h4><a href="default_headers.html">:default_headers</a></h4></td>
+<td>Allows modifying the default headers for responses.</td>
+</tr>
+<tr>
+<td><h4><a href="default_status.html">:default_status</a></h4></td>
+<td>Allows overriding the default status for responses.</td>
+</tr>
+<tr>
+<td><h4><a href="delegate.html">:delegate</a></h4></td>
+<td>Adds class methods for creating instance methods that delegate to the request, response, or class.</td>
+</tr>
+<tr>
+<td><h4><a href="delete_empty_headers.html">:delete_empty_headers</a></h4></td>
+<td>Automatically delete response headers with empty values.</td>
+</tr>
+<tr>
+<td><h4><a href="drop_body.html">:drop_body</a></h4></td>
+<td>Automatically drops response body and Content-Type/Content-Length headers for response statuses indicating no body.</td>
+</tr>
+<tr>
+<td><h4><a href="halt.html">:halt</a></h4></td>
+<td>Augments request halt method for support for setting response status and/or response body.</td>
+</tr>
+<tr>
+<td><h4><a href="module_include.html">:module_include</a></h4></td>
+<td>Adds request_module and response_module class methods for adding modules/methods to request/response classes.</td>
+</tr>
+<tr>
+<td><h4><a href="response_request.html">:response_request</a></h4></td>
+<td>Gives response object access to request object.</td>
+</tr>
+<tr>
+<td><h4><a href="sinatra_helpers.html">:sinatra_helpers</a></h4></td>
+<td>Port of Sinatra::Helpers methods not covered by other plugins.</td>
+</tr>
+</tbody></table>
+
+<h3 id="routing-helpers">Routing Helpers</h3>
+
+<table><thead>
+<tr>
+<th><strong>Plugin Name:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td><h4><a href="error_handler.html">:error_handler</a></h4></td>
+<td>Adds ability to automatically handle errors raised by the application.</td>
+</tr>
+<tr>
+<td><h4><a href="hooks.html">:hooks</a></h4></td>
+<td>Adds before/after hook methods.</td>
+</tr>
+<tr>
+<td><h4><a href="not_found.html">:not_found</a></h4></td>
+<td>Adds not_found method for handling responses not otherwise handled by a route.</td>
+</tr>
+<tr>
+<td><h4><a href="pass.html">:pass</a></h4></td>
+<td>Adds pass method for skipping the current matching route block as if it didn&#39;t match.</td>
+</tr>
+<tr>
+<td><h4><a href="path_rewriter.html">:path_rewriter</a></h4></td>
+<td>Adds support for rewriting paths before routing.</td>
+</tr>
+<tr>
+<td><h4><a href="status_handler.html">:status_handler</a></h4></td>
+<td>Adds status_handler method for handling responses without bodies for a given status code.</td>
+</tr>
+</tbody></table>
+
+<h3 id="matchers">Matchers</h3>
+
+<table><thead>
+<tr>
+<th><strong>Plugin Name:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td><h4><a href="empty_root.html">:empty_root</a></h4></td>
+<td>Makes root matcher match empty string in addition to single slash.</td>
+</tr>
+<tr>
+<td><h4><a href="hash_matcher.html">:hash_matcher</a></h4></td>
+<td>Adds hash_matcher class method for easily defining hash matchers.</td>
+</tr>
+<tr>
+<td><h4><a href="header_matchers.html">:header_matchers</a></h4></td>
+<td>Adds matchers using information from the request headers.</td>
+</tr>
+<tr>
+<td><h4><a href="match_affix.html">:match_affix</a></h4></td>
+<td>Adds support for overriding default prefix/suffix used in match patterns.</td>
+</tr>
+<tr>
+<td><h4><a href="param_matchers.html">:param_matchers</a></h4></td>
+<td>Adds matchers using information from the request params.</td>
+</tr>
+<tr>
+<td><h4><a href="path_matchers.html">:path_matchers</a></h4></td>
+<td>Adds matchers using information from the request path.</td>
+</tr>
+<tr>
+<td><h4><a href="slash_path_empty.html">:slash_path_empty</a></h4></td>
+<td>Considers a path of &quot;/&quot; as an empty path when doing a terminal match.</td>
+</tr>
+<tr>
+<td><h4><a href="symbol_matchers.html">:symbol_matchers</a></h4></td>
+<td>Adds support for symbol-specific matching regexps.</td>
+</tr>
+</tbody></table>
+
+<h3 id="other">Other</h3>
+
+<table><thead>
+<tr>
+<th><strong>Plugin Name:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td><h4><a href="delay_build.html">:delay_build</a></h4></td>
+<td>Delay building the rack app until Roda.app is called.</td>
+</tr>
+<tr>
+<td><h4><a href="environments.html">:environments</a></h4></td>
+<td>Adds support for handling different execution environments (development/test/production).</td>
+</tr>
+<tr>
+<td><h4><a href="error_email.html">:error_email</a></h4></td>
+<td>Adds ability to easily email a notification when an error is raised by the application.</td>
+</tr>
+<tr>
+<td><h4><a href="flash.html">:flash</a></h4></td>
+<td>Adds flash handling.</td>
+</tr>
+<tr>
+<td><h4><a href="heartbeat.html">:heartbeat</a></h4></td>
+<td>Adds support for heartbeats.</td>
+</tr>
+<tr>
+<td><h4><a href="indifferent_params.html">:indifferent_params</a></h4></td>
+<td>Adds params method for indifferent parameters.</td>
+</tr>
+<tr>
+<td><h4><a href="json_parser.html">:json_parser</a></h4></td>
+<td>Parses request bodies in JSON format.</td>
+</tr>
+<tr>
+<td><h4><a href="mailer.html">:mailer</a></h4></td>
+<td>Adds support for sending emails using the routing tree.</td>
+</tr>
+<tr>
+<td><h4><a href="middleware.html">:middleware</a></h4></td>
+<td>Allows the Roda app to be used as middleware by another app.</td>
+</tr>
+<tr>
+<td><h4><a href="path.html">:path</a></h4></td>
+<td>Adds support for named paths.</td>
+</tr>
+<tr>
+<td><h4><a href="per_thread_caching.html">:per_thread_caching</a></h4></td>
+<td>Switches the thread-safe cache from a shared cache to a per-thread cache.</td>
+</tr>
+<tr>
+<td><h4><a href="shared_vars.html">:shared_vars</a></h4></td>
+<td>Stores and retrieves variables shared between multiple Roda apps.</td>
+</tr>
+</tbody></table>
+
+<p><br></p>
+
+<hr>
+
+<h2 id="plugins-external">Plugins - <span>(external)</span></h2>
+
+<table><thead>
+<tr>
+<th><strong>Plugin Name:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td><h4><a href="https://github.com/jeremyevans/autoforme">:autoforme</a></h4></td>
+<td>Adds autoforme method for automatic creation of administrative front-end for Sequel models.</td>
+</tr>
+<tr>
+<td><h4><a href="https://github.com/jeremyevans/forme">:forme</a></h4></td>
+<td>Adds form method for simple creation of html forms inside erb templates.</td>
+</tr>
+<tr>
+<td><h4><a href="https://github.com/jeremyevans/rodauth">:rodauth</a></h4></td>
+<td>Authentication Framework for Roda/Sequel/PostgreSQL.</td>
+</tr>
+<tr>
+<td><h4><a href="https://github.com/AMHOL/roda-action">:roda-action</a></h4></td>
+<td>Resolves actions stored in roda-container.</td>
+</tr>
+<tr>
+<td><h4><a href="https://github.com/beno/roda-auth">:roda-auth</a></h4></td>
+<td>Adds authentication support for Roda.</td>
+</tr>
+<tr>
+<td><h4><a href="https://github.com/cj/roda-component">:roda-component</a></h4></td>
+<td>Adds realtime components using faye and opal.</td>
+</tr>
+<tr>
+<td><h4><a href="https://github.com/AMHOL/roda-container">:roda-container</a></h4></td>
+<td>Turns application into an inversion of control (IoC) container.</td>
+</tr>
+<tr>
+<td><h4><a href="https://github.com/AMHOL/roda-flow">:roda-flow</a></h4></td>
+<td>Changes routing methods to delegate to containers.</td>
+</tr>
+<tr>
+<td><h4><a href="https://github.com/kematzy/roda-i18n">:roda-i18n</a></h4></td>
+<td>Adds easy internationalization and localization support.</td>
+</tr>
+<tr>
+<td><h4><a href="https://github.com/3scale/roda-parse-request">:roda-parse-request</a></h4></td>
+<td>Automatically parse JSON and URL-encoded requests.</td>
+</tr>
+<tr>
+<td><h4><a href="https://github.com/jeremyevans/roda-route_list">:roda-route_list</a></h4></td>
+<td>Parses route metadata from comments in an app file, allowing introspection of routes.</td>
+</tr>
+<tr>
+<td><h4><a href="https://github.com/beno/roda-rest_api">:roda-rest_api</a></h4></td>
+<td>Adds support for easily creating RESTful APIs.</td>
+</tr>
+<tr>
+<td><h4><a href="https://github.com/janko-m/roda-symbolized_params">:roda-symbolized_params</a></h4></td>
+<td>Adds params method for symbolized params.</td>
+</tr>
+<tr>
+<td><h4><a href="https://github.com/manuca/roda-will_paginate">:roda-will_paginate</a></h4></td>
+<td><code>:will_paginate</code> integration for Roda.</td>
+</tr>
+<tr>
+<td><h4><a href="https://github.com/rom-rb/rom-roda">:rom-roda</a></h4></td>
+<td>Adds integration with Ruby Object Mapper.</td>
+</tr>
+</tbody></table>
+
+        </div>
+
+      </div>
+
+      <div id="footer" class="row">
+  <div class="col-md-12">
+    <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+    <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+  </div>
+</div>
+
+
+    </div>
+
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="/assets/js/jquery-2.1.3.min.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+    <script src="/assets/js/highlight.pack.js"></script>
+    <script src="/assets/js/toc.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        $('table').addClass('table table-bordered table-hover');
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
+  </body>
+</html>

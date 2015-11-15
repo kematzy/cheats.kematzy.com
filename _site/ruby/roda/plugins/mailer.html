@@ -1,0 +1,301 @@
+  <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>:mailer - Plugins - Roda - Web Framework - Ruby | Cheats by Kematzy</title>
+
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <!-- <link rel="stylesheet" href="../../../assets/css/-pygment_trac.css"> -->
+    <script src="/assets/js/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+
+
+  <body>
+    <div id="page" class="container">
+
+      <nav id="header" class="navbar navbar-default">
+  <div class="container-fluid row">
+
+    <div class="navbar-header col-md-6">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">
+        <h1><a href="/">Cheats by Kematzy</a></h1>
+        <p>A personal collection of Cheatsheets</p>
+      </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse col-md-6" id="header-nav">
+      <ul class="nav navbar-nav">
+      
+        
+          
+        <li class="">
+          <a href="/index.html" title="back to the homepage">Home</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/toc.html" title="full table of contents for this website">Table of Contents</a>
+        </li>
+        
+        
+          
+        <li class="">
+          <a href="/about.html" title="find out more information about this website">About</a>
+        </li>
+        
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+      
+
+
+<div id="breadcrumbs" class="row">
+  <div class="col-md-12">
+    <ol class="breadcrumb">
+      <li><a href="/">Home</a></li>
+      
+        
+        <li><a href="/ruby/">Ruby</a></li>
+      
+        
+        <li><a href="/ruby/roda/">Roda</a></li>
+      
+        
+        <li><a href="/ruby/roda/plugins/">Plugins</a></li>
+      
+        
+        <li><a href="/ruby/roda/plugins/mailer.html">Mailer</a></li>
+      
+    </ol>
+  </div>
+</div>
+
+
+      <div id="page-contents" class="row">
+
+        <div class="col-md-12">
+          <h1 id="ruby-roda-web-framework-plugins-mailer">Ruby / Roda - Web Framework / Plugins / :mailer</h1>
+
+<hr>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The <strong>:mailer</strong> plugin allows your <code>Roda</code> application to send emails easily.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">class App &lt; Roda
+  
+  plugin :render
+  plugin :mailer
+  
+  route do |r|
+    
+    r.on &quot;albums&quot; do
+      
+      r.mail &quot;added&quot; do |album|
+        @album = album
+        from &#39;from@example.com&#39;
+        to &#39;to@example.com&#39;
+        cc &#39;cc@example.com&#39;
+        bcc &#39;bcc@example.com&#39;
+        subject &#39;Album Added&#39;
+        add_file &quot;path/to/album_added_img.jpg&quot;
+        render(:albums_added_email) # body
+      end
+      
+    end
+    
+  end
+  
+end</code></pre></div>
+
+<p>The default method for sending a mail is <code>sendmail</code>:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">App.sendmail(&#39;/albums/added&#39;, Album[1])</code></pre></div>
+
+<p>If you want to return the <code>Mail::Message</code> instance for further modification, you can just use the 
+<code>#.mail</code> method:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">mail = App.mail(&#39;/albums/added&#39;, Album[1])
+mail.from &#39;from2@example.com&#39;
+mail.deliver</code></pre></div>
+
+<p>The <strong>:mailer</strong> plugin uses the mail gem, so if you want to configure how email is sent, you can use 
+<code>Mail.defaults</code> (see the mail gem documentation for more details):</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">Mail.defaults do
+  delivery_method :smtp, address: &#39;smtp.example.com&#39;, port: 587
+end</code></pre></div>
+
+<p>You can support multipart emails using <code>#.text_part</code> and <code>#.html_part</code>:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.mail &quot;added&quot; do |album_added|
+  
+  from &#39;from@example.com&#39;
+  to &#39;to@example.com&#39;
+  subject &#39;Album Added&#39;
+  text_part render(&#39;album_added.txt&#39;)  # views/album_added.txt.erb
+  html_part render(&#39;album_added.html&#39;) # views/album_added.html.erb
+  
+end</code></pre></div>
+
+<p>In addition to allowing you to use Roda&#39;s render plugin for rendering email bodies, you can use all 
+of Roda&#39;s usual routing tree features to DRY up your code:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.on &quot;albums/:d&quot; do |album_id|
+    @album = Album[album_id.to_i]
+    from &#39;from@example.com&#39;
+    to &#39;to@example.com&#39;
+
+    r.mail &quot;added&quot; do
+      subject &#39;Album Added&#39;
+      render(:albums_added_email)
+    end
+
+    r.mail &quot;deleted&quot; do
+      subject &#39;Album Deleted&#39;
+      render(:albums_deleted_email)
+    end
+  end</code></pre></div>
+
+<p>When sending a mail via <code>#.mail</code> or <code>#.sendmail</code>, a <code>RodaError</code> will be raised if the mail object does 
+not have a body. </p>
+
+<p>This is similar to the <code>404</code> status that <code>Roda</code> uses by default for web requests that don&#39;t have a body. </p>
+
+<p>If you want to specifically send an email with an empty body, you can use the explicit empty string:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.mail do
+  from    &#39;from@example.com&#39;
+  to      &#39;to@example.com&#39;
+  subject &#39;No Body Here&#39;
+  &quot;&quot;
+end</code></pre></div>
+
+<p>By default, the mailer uses <code>text/plain</code> as the <code>Content-Type</code> for emails. </p>
+
+<p>You can override the default by specifying a <code>:content_type</code> option when loading the plugin:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :mailer, content_type: &#39;text/html&#39;</code></pre></div>
+
+<p>The <strong>:mailer</strong> plugin does support being used inside a <code>Roda</code> application that is handling web requests, 
+where the routing block for mails and web requests is shared.  </p>
+
+<p>However, it&#39;s recommended that you create a separate Roda application for emails. This can be a subclass 
+of your main <code>Roda</code> application if you want your helper methods to automatically be available in your email views.</p>
+
+<p>Error raised when the using the mail class method, but the routing tree doesn&#39;t return the mail object. </p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">class Error &lt; ::Roda::RodaError; end</code></pre></div>
+
+<hr>
+
+<h3 id="classmethods">ClassMethods</h3>
+
+<h4 id="mail-path-args"><code>#.mail(path, *args)</code></h4>
+
+<p>Return a <code>Mail::Message</code> instance for the email for the given request path and arguments.  </p>
+
+<p>You can further manipulate the returned mail object before calling <code>#.deliver</code> to send the mail.</p>
+
+<h4 id="sendmail-args"><code>#.sendmail(*args)</code></h4>
+
+<p>Calls <code>#.mail</code> and immediately sends the resulting mail.</p>
+
+<hr>
+
+<h3 id="requestmethods">RequestMethods</h3>
+
+<h4 id="mail-args"><code>#.mail(*args)</code></h4>
+
+<p>Similar to routing tree methods such as <code>#.get</code> and <code>#.post</code>, this matches only if the request method 
+is <code>MAIL</code> (only set when using the Roda class <code>#.mail</code> or <code>#.sendmail</code> methods) and the rest of the 
+arguments match the request.  </p>
+
+<p>This yields any of the captures to the block, as well as any arguments passed to the <code>#.mail</code> or 
+<code>#.sendmail</code> <code>Roda</code> class methods.</p>
+
+<hr>
+
+<h3 id="responsemethods">ResponseMethods</h3>
+
+<h4 id="mail"><code>#.mail</code></h4>
+
+<p>The mail object related to the current request. <code>attr_accessor :mail</code></p>
+
+<h4 id="finish"><code>#.finish</code></h4>
+
+<p>If the related request was an email request, add any response headers to the email, as well as adding 
+the response body to the email.</p>
+
+<p>Return the email unless no body was set for it, which would indicate that the routing tree did not 
+handle the request.</p>
+
+<h4 id="mail_attachments"><code>#.mail_attachments</code></h4>
+
+<p>The attachments related to the current mail.</p>
+
+<hr>
+
+<h3 id="instancemethods">InstanceMethods</h3>
+
+<p>Add delegates for common email methods.</p>
+
+<p>[:from, :to, :cc, :bcc, :subject]</p>
+
+<p>[:text_part, :html_part]</p>
+
+<h4 id="add_file-a-amp-block"><code>#.add_file(*a, &amp;block)</code></h4>
+
+<p>Delay adding a file to the message until after the message body has been set.</p>
+
+<p>If a block is given, the block is called after the file has been added, and you can access the 
+attachment via <code>response.mail.attachments.last</code>.</p>
+
+        </div>
+
+      </div>
+
+      <div id="footer" class="row">
+  <div class="col-md-12">
+    <p>Project maintained by <a href="https://github.com/kematzy">kematzy</a></p>
+    <p>Hosted on GitHub Pages &mdash; Design based upon a theme created by <a href="https://github.com/orderedlist">orderedlist</a></p>
+  </div>
+</div>
+
+
+    </div>
+
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="../../../assets/js/jquery-2.1.3.min.js"></script>
+    <script src="../../../assets/js/bootstrap.min.js"></script>
+    <script src="../../../assets/js/highlight.pack.js"></script>
+    <script src="../../../assets/js/toc.js"></script>
+    <script type="text/javascript">
+      hljs.initHighlightingOnLoad();
+      $(document).ready(function() {
+        $('table').addClass('table table-bordered table-hover');
+        $('#toc').toc({ listType: 'ul',  headers: 'h2, h3', showEffect: 'slideDown' });
+        // $('.clickable-header').click(function({
+        //
+        // }));
+      });
+    </script>
+  </body>
+</html>
