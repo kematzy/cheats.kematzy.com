@@ -97,6 +97,46 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:not_found</strong> plugin adds a +not_found+ class method which sets a block that is called whenever 
+a <code>404</code> response with an empty body would be returned.</p>
+
+<p>The usual use case for this is the desire for nice error pages if the page is not found.</p>
+
+<p>You can provide the block with the plugin call:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :not_found do
+  &#39;Where did it go?&#39;
+end</code></pre></div>
+
+<p>Or later via a separate call to <code>#.not_found</code>:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :not_found
+
+not_found do
+  &#39;Where did it go?&#39;
+end</code></pre></div>
+
+<p>Before <code>#.not_found</code> is called, any existing headers on the response will be cleared.  </p>
+
+<p>So if you want to be sure the headers are set even in a <code>#.not_found</code> block, you need to reset them in the
+<code>#.not_found</code> block.</p>
+
+<hr>
+
+<h3 id="classmethods">ClassMethods</h3>
+
+<h4 id="not_found-amp-block"><code>#.not_found(&amp;block)</code></h4>
+
+<p>Install the given block as the not_found handler.</p>
+
+<hr>
+
+<h3 id="instancemethods">InstanceMethods</h3>
+
+<h4 id="call"><code>#.call</code></h4>
+
+<p>If routing returns a <code>404</code> response with an empty body, call the <code>#.not_found</code> handler.</p>
+
         </div>
 
       </div>

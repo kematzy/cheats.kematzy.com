@@ -97,6 +97,31 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:symbol_views</strong> plugin allows match blocks to return symbols, and consider those symbols as 
+views to use for the response body.  </p>
+
+<p>So you can take code like:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.root do
+  view :index
+end
+
+r.is &quot;foo&quot; do
+  view :foo
+end</code></pre></div>
+
+<p>and DRY it up:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.root do
+    :index
+  end
+
+  r.is &quot;foo&quot; do
+    :foo
+  end</code></pre></div>
+
+<h3 id="todo-add-more-information-and-examples-here">TODO:  add more information and examples here.</h3>
+
         </div>
 
       </div>

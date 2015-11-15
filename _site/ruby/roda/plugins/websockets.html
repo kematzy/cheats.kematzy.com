@@ -97,6 +97,113 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:websocket</strong> plugin adds integration support for <code>websockets</code>.</p>
+
+<p>Currently, only <strong>&#39;faye-websocket&#39;</strong> is supported, so <code>eventmachine</code> is required for <code>websockets</code>.  See the
+<a href="https://github.com/faye/faye-websocket-ruby">faye-websocket documentation</a> for details on the 
+faye-websocket API. </p>
+
+<p><strong>Note!</strong> <code>faye-websocket</code> is only supported on Ruby 1.9.3+, so the <strong>:websockets</strong> plugin only works
+on Ruby 1.9.3+.</p>
+
+<p>Here&#39;s a simplified example for a basic multi-user, multi-room chat server, where a message from any 
+user in a room is sent to all other users in the same room, using a <code>websocket</code> per room:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :websockets, adapter: :thin, ping: 45
+
+MUTEX = Mutex.new
+ROOMS = {}
+
+def sync
+  MUTEX.synchronize{yield}
+end
+
+route do |r|
+  
+  r.get &quot;room/:d&quot; do |room_id|
+    
+    room = sync{ROOMS[room_id] ||= []}
+    
+    r.websocket do |ws|
+      
+      # Routing block taken if request is a websocket request,
+      # yields a Faye::WebSocket instance
+      
+      ws.on(:message) do |event|
+        sync{room.dup}.each{|user| user.send(event.data)}
+      end
+      
+      ws.on(:close) do |event|
+        sync{room.delete(ws)}
+        sync{room.dup}.each{|user| user.send(&quot;Someone left&quot;)}
+      end
+      
+      sync{room.dup}.each{|user| user.send(&quot;Someone joined&quot;)}
+      sync{room.push(ws)}
+    end
+
+    # If the request is not a websocket request, execution
+    # continues, similar to how routing in general works.
+    view &#39;room&#39;
+    
+  end
+  
+end</code></pre></div>
+
+<h3 id="plugin-configuration">Plugin Configuration</h3>
+
+<p>Add default options used for websockets.  These options are passed to <code>Faye:WebSocket.new</code>, except 
+that the following options are handled separately.</p>
+
+<table><thead>
+<tr>
+<th><strong>Option Name:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:adapter</td>
+<td>Calls <code>Faye::WebSocket.load</code> adapter with the given value, used to set the adapter to load, if <code>Faye</code> requires an adapter to work with the webserver. Possible options: <code>:thin</code>, <code>:rainbows</code>, <code>:goliath</code></td>
+</tr>
+</tbody></table>
+
+<p>See <code>RequestMethods#websocket</code> for additional supported options.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">def self.configure(app, opts=OPTS)
+  opts = app.opts[:websockets_opts] = (app.opts[:websockets_opts] || {}).merge(opts || {})
+  if adapter = opts.delete(:adapter)
+    WebSocket.load_adapter(adapter.to_s)
+  end
+  opts.freeze
+end</code></pre></div>
+
+<hr>
+
+<h3 id="requestmethods">RequestMethods</h3>
+
+<h4 id="websocket"><code>#.websocket?</code></h4>
+
+<p>True if this <code>request</code> is a <code>websocket</code> request, <code>false</code> otherwise.</p>
+
+<h4 id="websocket-opts-opts"><code>#. websocket(opts=OPTS)</code></h4>
+
+<p>If the request is a <code>websocket</code> request, yield a <code>websocket</code> to the block, and return the appropriate 
+Rack response after the block returns.  </p>
+
+<p><code>opts</code> is an options hash used when creating the <code>websocket</code>, except the following options are handled specially:</p>
+
+<table><thead>
+<tr>
+<th><strong>Option Name:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:protocols</td>
+<td>Set the protocols to accept, should be an array of strings.</td>
+</tr>
+</tbody></table>
+
         </div>
 
       </div>

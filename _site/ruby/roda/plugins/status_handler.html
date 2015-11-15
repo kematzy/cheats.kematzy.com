@@ -97,6 +97,44 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:status_handler</strong> plugin adds a <code>#.status_handler</code> method which sets a block that is called 
+whenever a response with the relevant response code with an empty body would be returned.</p>
+
+<p>This plugin does not support providing the blocks with the plugin call; you must provide them to 
+<code>status_handler</code> calls afterwards:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :status_handler
+
+  status_handler(403) do
+    &quot;You are forbidden from seeing that!&quot;
+  end
+  
+  status_handler(404) do
+    &quot;Where did it go?&quot;
+  end</code></pre></div>
+
+<p>Before a block is called, any existing headers on the response will be cleared.  So if you want to 
+be sure the headers are set even in your block, you need to reset them in the block.</p>
+
+<hr>
+
+<h3 id="classmethods">ClassMethods</h3>
+
+<p>Install the given block as a status handler for the given HTTP response code.</p>
+
+<h4 id="status_handler-code-amp-block"><code>#.status_handler(code, &amp;block)</code></h4>
+
+<p>Freeze the hash of status handlers so that there can be no thread safety issues at runtime.</p>
+
+<h4 id="freeze"><code>#.freeze</code></h4>
+
+<hr>
+
+<h3 id="instancemethods">InstanceMethods</h3>
+
+<p>If routing returns a response we have a handler for, call that handler.
+def call</p>
+
         </div>
 
       </div>

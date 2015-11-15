@@ -97,6 +97,130 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:path</strong> plugin adds support for named paths.  </p>
+
+<p>Using the <code>#.path</code> class method, you can easily create <code>*_path</code> instance methods for each named path.<br>
+Those instance methods can then be called if you need to get the path for a <code>form</code> action, <code>link</code>, 
+<code>redirect</code>, or anything else.</p>
+
+<p>Additionally, you can call the <code>#.path</code> class method with a class and a block, and it will register
+the class.  </p>
+
+<p>You can then call the <code>#.path</code> instance method with an instance of that class, and it will <code>instance_exec</code> 
+the block with the arguments provided to path.</p>
+
+<p><strong>Example:</strong></p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :path
+
+path :foo, &#39;/foo&#39;
+
+path :bar do |bar|
+  &quot;/bar/#{bar.id}&quot;
+end
+
+path Baz do |baz, *paths|
+  &quot;/baz/#{baz.id}/#{paths.join(&#39;/&#39;)}&quot;
+end
+
+path Quux |quux, path|
+  &quot;/quux/#{quux.id}/#{path}&quot;
+end
+
+
+route do |r|
+  
+  r.post &#39;foo&#39; do
+    
+    r.redirect foo_path # /foo
+    
+  end
+  
+  r.post &#39;bar&#39; do
+    
+    bar = Bar.create(r.params[&#39;bar&#39;])
+    r.redirect bar_path(bar) # /bar/1
+    
+  end
+  
+  r.post &#39;baz&#39; do
+    
+    bar = Baz[1]
+    r.redirect path(baz, &#39;c&#39;, &#39;d&#39;) # /baz/1/c/d
+    
+  end
+  
+  r.post &#39;quux&#39; do
+    
+    bar = Quux[1]
+    r.redirect path(quux, &#39;/bar&#39;) # /quux/1/bar
+    
+  end
+  
+end</code></pre></div>
+
+<p>The <code>path</code> method accepts the following options when not called with a class:</p>
+
+<table><thead>
+<tr>
+<th><strong>Option Name:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:add_script_name</td>
+<td>Prefix the path generated with <code>SCRIPT_NAME</code>. This defaults to the app&#39;s <code>:add_script_name</code> option.</td>
+</tr>
+<tr>
+<td>:name</td>
+<td>Provide a different name for the method, instead of using <code>*_path</code>.</td>
+</tr>
+<tr>
+<td>:url</td>
+<td>Create a url method in addition to the path method, which will prefix the string generated with the appropriate scheme, host, and port.  If true, creates a <code>*_url</code> method.  If a <code>Symbol</code> or <code>String</code>, uses the value as the url method name.</td>
+</tr>
+<tr>
+<td>:url_only</td>
+<td>Do not create a path method, just a url method.</td>
+</tr>
+</tbody></table>
+
+<p><strong>Note!</strong> If <code>:add_script_name</code>, <code>:url</code>, or <code>:url_only</code> is used, will also create a <code>_*_path</code> method.  </p>
+
+<p>This is necessary in order to support path methods that accept blocks, as you can&#39;t pass a block to 
+a block that is <code>instance_execed</code>.</p>
+
+<hr>
+
+<h3 id="classmethods">ClassMethods</h3>
+
+<h4 id="path_classes"><code>#.path_classes</code></h4>
+
+<p>Hash of recognises classes for path instance method.  Keys are classes, values are <code>procs</code>.</p>
+
+<h4 id="freeze"><code>#.freeze</code></h4>
+
+<p>Freeze the path classes when freezing the app.</p>
+
+<h4 id="path-name-path-nil-opts-opts-amp-block"><code>#.path(name, path=nil, opts=OPTS, &amp;block)</code></h4>
+
+<p>Create a new instance method for the named path.  See plugin module documentation for options.</p>
+
+<h4 id="path_block-klass"><code>#.path_block(klass)</code></h4>
+
+<p>Return the block related to the given class, or nil if there is no block.</p>
+
+<hr>
+
+<h3 id="instancemethods">InstanceMethods</h3>
+
+<h4 id="path-obj-args"><code>#.path(obj, *args)</code></h4>
+
+<p>Return a path based on the class of the object.  </p>
+
+<p>The object passed must have had its class previously registered with the application.  If the app&#39;s 
+<code>:add_script_name</code> option is true, this prepends the <code>SCRIPT_NAME</code> to the path.</p>
+
         </div>
 
       </div>

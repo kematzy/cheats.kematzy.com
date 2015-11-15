@@ -97,6 +97,41 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:run_handler</strong> plugin allows <code>r.run</code> to take a block, which is yielded the Rack response array, 
+before it returns it as a response.</p>
+
+<p>Additionally, <code>r.run</code> also takes a options hash, and you can provide a <code>not_found: :pass</code> option to 
+keep routing normally if the Rack app returns a <code>404</code> response.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :run_handler
+
+  route do |r|
+    
+    r.on &#39;a&#39; do
+      # Keep running code if RackAppFoo doesn&#39;t return a result
+      r.run RackAppFoo, not_found: :pass
+
+      # Change response status codes before returning.
+      r.run(RackAppBar) do |response|
+        response[0] = 200 if response[0] == 201
+      end
+      
+    end
+    
+  end</code></pre></div>
+
+<hr>
+
+<h3 id="requestmethods">RequestMethods</h3>
+
+<h3 id="run-app-opts-opts"><code>#.run(app, opts=OPTS)</code></h3>
+
+<p>If a block is given, yield the Rack <code>response</code> array to it.  The <code>response</code> can be modified before it is 
+returned by the current app.</p>
+
+<p>If the <code>{ not_found: :pass }</code> option is given, and the Rack <code>response</code> returned by the app is a <code>404</code> 
+<code>response</code>, do not return the response, continue routing normally.</p>
+
         </div>
 
       </div>

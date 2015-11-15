@@ -97,6 +97,34 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:param_matchers</strong> plugin adds hash matchers that operate on the request&#39;s params.</p>
+
+<p>It adds a <code>:param</code> matcher for matching on any param with the same name, yielding the value of the param.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.on(param: &#39;foo&#39;) do |value|
+  # Matches &#39;?foo=bar&#39;, &#39;?foo=&#39;
+  # Doesn&#39;t match &#39;?bar=foo&#39;
+end</code></pre></div>
+
+<p>It adds a <code>:param!</code> matcher for matching on any non-empty param with the same name, yielding the value of the param.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.on(param!: &#39;foo&#39;) do |value|
+  # Matches &#39;?foo=bar&#39;
+  # Doesn&#39;t match &#39;?foo=&#39;, &#39;?bar=foo&#39;
+end</code></pre></div>
+
+<hr>
+
+<h3 id="requestmethods">RequestMethods</h3>
+
+<h4 id="match_param-key"><code>#.match_param(key)</code></h4>
+
+<p>Match the given parameter if present, even if the parameter is empty. Adds any match to the captures.</p>
+
+<h4 id="match_param-key"><code>#.match_param!(key)</code></h4>
+
+<p>Match the given parameter if present and not empty. Adds any match to the captures.</p>
+
         </div>
 
       </div>

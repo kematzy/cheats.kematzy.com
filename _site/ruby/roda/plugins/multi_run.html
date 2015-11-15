@@ -97,6 +97,81 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:multi_run</strong> plugin provides the ability to easily dispatch to other Rack applications based on 
+the request path prefix.</p>
+
+<p>First, load the plugin:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">class App &lt; Roda
+  
+  plugin :multi_run
+  
+end</code></pre></div>
+
+<p>Then, other Rack applications can register with the <strong>:multi_run</strong> plugin:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">App.run &quot;ra&quot;, PlainRackApp
+
+App.run &quot;ro&quot;, OtherRodaApp
+
+App.run &quot;si&quot;, SinatraApp</code></pre></div>
+
+<p>Inside your route block, you can call <code>r.multi_run</code> to dispatch to all three Rack applications based 
+on the prefix:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">App.route do |r|
+  
+  r.multi_run
+  
+end</code></pre></div>
+
+<p>This will dispatch routes starting with <code>/ra</code> to <code>PlainRackApp</code>, routes starting with <code>/ro</code> to <code>OtherRodaApp</code>, 
+and routes starting with <code>/si</code> to <code>SinatraApp</code>.</p>
+
+<p>The <strong>:multi_run</strong> plugin is similar to the <strong>:multi_route</strong> plugin, with the difference being the 
+<strong>:multi_route</strong> plugin keeps all routing subtrees in the same <code>Roda</code> app/class, while <strong>:multi_run</strong> 
+dispatches to other Rack apps.  </p>
+
+<p>If you want to isolate your routing subtrees, <strong>:multi_run</strong> is a better approach, but it does not 
+let you set instance variables in the main <code>Roda</code> app and have those instance variables usable in
+the routing subtrees.</p>
+
+<hr>
+
+<h3 id="classmethods">ClassMethods</h3>
+
+<h4 id="freeze"><code>#.freeze</code></h4>
+
+<p>Freeze the multi_run apps so that there can be no thread safety issues at runtime.</p>
+
+<h4 id="multi_run_apps"><code>#.multi_run_apps</code></h4>
+
+<p>Hash storing rack applications to dispatch to, keyed by the prefix for the application.</p>
+
+<h4 id="run-prefix-app"><code>#.run(prefix, app)</code></h4>
+
+<p>Add a rack application to dispatch to for the given prefix when <code>r.multi_run</code> is called.</p>
+
+<hr>
+
+<h3 id="requestclassmethods">RequestClassMethods</h3>
+
+<h4 id="refresh_multi_run_regexp"><code>#.refresh_multi_run_regexp!</code></h4>
+
+<p>Refresh the <code>#.multi_run_regexp</code>, using the stored route prefixes, preferring longer routes before shorter routes.</p>
+
+<h4 id="multi_run_regexp"><code>#.multi_run_regexp</code></h4>
+
+<p>Refresh the <code>#.multi_run_regexp</code> if it hasn&#39;t been loaded yet.</p>
+
+<hr>
+
+<h3 id="requestmethods">RequestMethods</h3>
+
+<h4 id="multi_run"><code>#.multi_run</code></h4>
+
+<p>If one of the stored route prefixes match the current request, dispatch the request to the stored Rack application.</p>
+
         </div>
 
       </div>

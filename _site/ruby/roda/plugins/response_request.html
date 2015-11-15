@@ -97,6 +97,31 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:response_request</strong> plugin gives the response access to the related request instance via the <code>#request</code> method.</p>
+
+<h3 id="example">Example:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :response_request</code></pre></div>
+
+<hr>
+
+<h3 id="instancemethods">InstanceMethods</h3>
+
+<p>Set the response&#39;s request to the current request.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">def initialize(env)
+    super
+    @_response.request = @_request
+  end</code></pre></div>
+
+<hr>
+
+<h3 id="responsemethods">ResponseMethods</h3>
+
+<h4 id="request"><code>#.request</code></h4>
+
+<p>The request related to this response.  <code>attr_accessor :request</code></p>
+
         </div>
 
       </div>

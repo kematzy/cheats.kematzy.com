@@ -97,6 +97,16 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:slash_path_empty</strong> plugin considers <code>&quot;/&quot;</code> as an empty path, in addition to the default 
+of <code>&quot;&quot;</code> being considered an empty path.  </p>
+
+<p>This makes it so <code>r.is</code> without an argument will match a path of <code>&quot;/&quot;</code>, and <code>r.is</code> and verb methods 
+such as <code>r.get</code> and <code>r.post</code> will match if the path is <code>&quot;/&quot;</code> after the arguments are processed.  </p>
+
+<p>This can make it easier to handle applications where a trailing <code>&quot;/&quot;</code> in the path should be ignored.</p>
+
+<h3 id="todo-add-more-examples">TODO: add more examples</h3>
+
         </div>
 
       </div>

@@ -97,6 +97,72 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:not_allowed</strong> plugin makes <code>Roda</code> attempt to automatically support the <code>405 Method Not Allowed</code> 
+response status. </p>
+
+<p>The plugin changes the <code>r.get</code> and <code>r.post</code> verb methods to automatically return a 405 status if they 
+are called with any arguments, and the arguments match but the request method does not match. </p>
+
+<p>So this code:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.get &#39;&#39; do
+  &#39;a&#39;
+end</code></pre></div>
+
+<p>will return a <code>200</code> response for <code>GET /</code> and a <code>405</code> response for <code>POST /</code>.</p>
+
+<p>This plugin also changes the <code>r.is</code> method so that if you use a verb method inside <code>r.is</code>, it returns 
+a <code>405</code> status if none of the verb methods match. </p>
+
+<p>So this code:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.is &#39;&#39; do
+    r.get do
+      &quot;a&quot;
+    end
+
+    r.post do
+      &quot;b&quot;
+    end
+  end</code></pre></div>
+
+<p>will return a <code>200</code> response for <code>GET /</code> and <code>POST /</code>, but a <code>405</code> response for <code>PUT /</code>.</p>
+
+<p><strong>Note!</strong> This plugin will probably not do what you want for code such as:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.get &#39;&#39; do
+  &#39;a&#39;
+end
+
+r.post &#39;&#39; do
+  &#39;b&#39;
+end</code></pre></div>
+
+<p>Since for a <code>POST /</code> request, when +r.get+ method matches the path but not the request method, it 
+will return an immediate <code>405</code> response.  </p>
+
+<p>You must DRY up this code for it work correctly, like this:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.is &#39;&#39; do
+
+  r.get do
+    &#39;a&#39;
+  end
+
+  r.post do
+    &#39;b&#39;
+  end
+  
+end</code></pre></div>
+
+<p>In all cases where it uses a <code>405</code> response, it also sets the <code>Allow</code> header in the response to contain 
+the request methods supported.</p>
+
+<p>This plugin depends on the <strong>:all_verbs</strong> plugin.  It works by overriding the verb methods, so it 
+wouldn&#39;t work if loaded after the <strong>:all_verbs</strong> plugin.</p>
+
+<hr>
+
         </div>
 
       </div>

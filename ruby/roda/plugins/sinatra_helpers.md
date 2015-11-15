@@ -101,7 +101,7 @@ It takes an optional body:
   request.script_name # => '/foo'
 
   uri '/bar'          # => 'http://example.org/foo/bar'
-{% emdhighlight %}
+{% endhighlight %}
 
 
 
@@ -128,16 +128,15 @@ This will serve the file with the given path from the file system:
 {% endhighlight %}
 
 
-Options:
+### Options:
 
-:disposition :: Set the Content-Disposition to the given disposition.
-:filename :: Set the Content-Disposition to attachment (unless :disposition is set),
-             and set the filename parameter to the value.
-:last_modified :: Explicitly set the Last-Modified header to the given value, and
-                  return a not modified response if there has not been modified since
-                  the previous request.  This option requires the caching plugin.
-:status :: Override the status for the response.
-:type :: Set the Content-Type to use for this response.
+| **Option Name:** | **Description:** |
+| --- | --- |
+| :disposition      | Set the `Content-Disposition` to the given disposition. |
+| :filename         | Set the `Content-Disposition` to attachment (unless `:disposition` is set), and set the filename parameter to the value. |
+| :last_modified    | Explicitly set the `Last-Modified` header to the given value, and return a not modified response if there has not been modified since the previous request.  This option requires the **:caching** plugin. |
+| :status           | Override the `status` for the response. |
+| :type             | Set the `Content-Type` to use for this response. |
 
 
 ## Response Methods Added
@@ -214,12 +213,12 @@ otherwise it returns the `Content-Type`.
 {% endhighlight %}
 
 
-Options:
+### Options:
 
-:charset :: Set the charset for the mime type to the given charset, if the charset is
-            not already set in the mime type.
-:default :: Uses the given type if the mime type is not known.  If this option is not
-            used and the mime type is not known, an exception will be raised.
+| **Option Name:** | **Description:** |
+| --- | --- |
+| :charset  | Set the `charset` for the mime type to the given `charset`, if the `charset` is not already set in the MIME type. |
+| :default  | Uses the given type if the mime type is not known.  If this option is not used and the MIME type is not known, an exception will be raised. |
 
 ### attachment
 
@@ -257,7 +256,7 @@ This adds the following predicate methods for checking the status:
 If the status has not yet been set for the response, these will return `nil`.
 
 
-== License
+### License
 
 The implementation was originally taken from [Sinatra](http://sinatrarb.com/), which is also released under the MIT License:
 

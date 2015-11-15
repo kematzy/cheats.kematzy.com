@@ -97,6 +97,35 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:static</strong> plugin loads the <code>Rack::Static</code> middleware into the application.</p>
+
+<p>It mainly exists to make serving static files simpler, by supplying defaults to <code>Rack::Static</code> that 
+are appropriate for <code>Roda</code>.</p>
+
+<p>The <strong>:static</strong> plugin recognises the application&#39;s <code>:root</code> option, and by default sets the 
+<code>Rack::Static</code> <code>:root</code> option to the <code>/public</code> subfolder of the application&#39;s <code>:root</code> option.  </p>
+
+<p>Additionally, if a relative path is provided as the <code>:root</code> option to the plugin, it will be 
+considered relative to the application&#39;s <code>:root</code> option.</p>
+
+<p>Since the <code>:urls</code> option for <code>Rack::Static</code> is always required, the <strong>:static</strong> plugin uses a 
+separate option for it.</p>
+
+<h3 id="examples">Examples:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">opts[:root] = &#39;/path/to/app&#39;
+  
+  plugin :static, [&#39;/js&#39;, &#39;/css&#39;] # path: /path/to/app/public
+  
+  plugin :static, [&#39;/images&#39;], :root=&gt;&#39;pub&#39;  # path: /path/to/app/pub
+  
+  plugin :static, [&#39;/media&#39;], :root=&gt;&#39;/path/to/public&#39; # path: /path/to/public</code></pre></div>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :static, [&#39;/css&#39;, &#39;/js&#39;, &#39;/fonts&#39;, &#39;/images&#39;]
+  
+  # 
+  plugin :static, [&#39;/css&#39;, &#39;/js&#39;, &#39;/fonts&#39;, &#39;/images&#39;], root: File.expand_path(&#39;../public&#39;, __FILE__)</code></pre></div>
+
         </div>
 
       </div>

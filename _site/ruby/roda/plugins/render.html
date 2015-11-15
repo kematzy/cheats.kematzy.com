@@ -97,6 +97,194 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:render</strong> plugin adds support for template rendering using the Tilt library.  </p>
+
+<p>Two methods are provided for template rendering, <code>#.view</code> (which uses the layout) and <code>#.render</code> (which does not).</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :render
+
+route do |r|
+  
+  r.is &#39;foo&#39; do
+    view(&#39;foo&#39;) # renders views/foo.erb inside views/layout.erb
+  end
+
+  r.is &#39;bar&#39; do
+    render(&#39;bar&#39;) # renders views/bar.erb
+  end
+  
+end</code></pre></div>
+
+<p>You can provide options to the plugin method:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :render, engine: &#39;haml&#39;, views: &#39;admin_views&#39;</code></pre></div>
+
+<h3 id="plugin-options">Plugin Options</h3>
+
+<p>The following plugin options are supported:</p>
+
+<table><thead>
+<tr>
+<th><strong>Option Name:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:cache</td>
+<td><code>nil</code>/<code>false</code> to not cache templates (useful for development), defaults to true unless <code>RACK_ENV</code> is development to automatically use the default template cache.</td>
+</tr>
+<tr>
+<td>:engine</td>
+<td>The Tilt engine to use for rendering, also the default file extension for templates, defaults to <code>&#39;erb&#39;</code>.</td>
+</tr>
+<tr>
+<td>:escape</td>
+<td>Use Roda&#39;s Erubis escaping support, which makes <code>&lt;%= %&gt;</code> escape output, <code>&lt;%== %&gt;</code> not escape output, and handles postfix conditions inside <code>&lt;%= %&gt;</code> tags.</td>
+</tr>
+<tr>
+<td>:escape_safe_classes</td>
+<td>String subclasses that should not be HTML escaped when used in <code>&lt;%= %&gt;</code> tags, when :escape is used. Can be an array for multiple classes.</td>
+</tr>
+<tr>
+<td>:escaper</td>
+<td>Object used for escaping output of <code>&lt;%= %&gt;</code>, when :escape is used, overriding the default.  If given, object should respond to <code>escape_xml</code> with a single argument and return an output string.</td>
+</tr>
+<tr>
+<td>:layout</td>
+<td>The base name of the layout file, defaults to <code>&#39;layout&#39;</code>.</td>
+</tr>
+<tr>
+<td>:layout_opts</td>
+<td>The options to use when rendering the layout, if different from the default options.</td>
+</tr>
+<tr>
+<td>:template_opts</td>
+<td>The Tilt options used when rendering all templates. defaults to: <code>{ outvar: &#39;@_out_buf&#39;, default_encoding: Encoding.default_external }</code>.</td>
+</tr>
+<tr>
+<td>:engine_opts</td>
+<td>The Tilt options to use per template engine.  Keys are engine strings, values are hashes of template options.</td>
+</tr>
+<tr>
+<td>:views</td>
+<td>The directory holding the view files, defaults to the &#39;views&#39; subdirectory of the application&#39;s <code>:root</code> option (the process&#39;s working directory by default).</td>
+</tr>
+</tbody></table>
+
+<h3 id="render-view-method-options">Render/View Method Options</h3>
+
+<p>Most of these options can be overridden at runtime by passing options to the <code>view</code> or <code>render</code> methods:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">view(&#39;foo&#39;, engine: &#39;html.erb&#39;)
+  
+  render(&#39;foo&#39;, views: &#39;admin_views&#39;)</code></pre></div>
+
+<p>There are additional options to <code>#.view</code> and <code>#.render</code> that are available at runtime:</p>
+
+<table><thead>
+<tr>
+<th><strong>Option Name:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:cache</td>
+<td>Set to false to not cache this template, even when caching is on by default.  Set to true to force caching for this template, even when the default is to not cache (e.g. when using the :template_block option).</td>
+</tr>
+<tr>
+<td>:cache_key</td>
+<td>Explicitly set the hash key to use when caching.</td>
+</tr>
+<tr>
+<td>:content</td>
+<td>Only respected by +view+, provides the content to render inside the layout, instead of rendering a template to get the content.</td>
+</tr>
+<tr>
+<td>:inline</td>
+<td>Use the value given as the template code, instead of looking for template code in a file.</td>
+</tr>
+<tr>
+<td>:locals</td>
+<td>Hash of local variables to make available inside the template.</td>
+</tr>
+<tr>
+<td>:path</td>
+<td>Use the value given as the full pathname for the file, instead of using the :views and :engine option in combination with the template name.</td>
+</tr>
+<tr>
+<td>:template</td>
+<td>Provides the name of the template to use.  This allows you pass a single options hash to the render/view method, while still allowing you to specify the template name.</td>
+</tr>
+<tr>
+<td>:template_block</td>
+<td>Pass this block when creating the underlying template, ignored when using :inline.  Disables caching of the template by default.</td>
+</tr>
+<tr>
+<td>:template_class</td>
+<td>Provides the template class to use, inside of using Tilt or <code>Tilt[:engine]</code>.</td>
+</tr>
+</tbody></table>
+
+<p>Here&#39;s how those options are used:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">view(inline: &#39;&lt;%= @foo %&gt;&#39;)
+  
+  render(path: &#39;/path/to/template.erb&#39;)</code></pre></div>
+
+<p>If you pass a hash as the first argument to <code>#.view</code> or <code>#.render</code>, it should have either <code>:template</code>, 
+<code>:inline</code>, <code>:path</code>, or <code>#.:content</code> (for <code>#.view</code>) as one of the keys.</p>
+
+<h3 id="speeding-up-template-rendering">Speeding Up Template Rendering</h3>
+
+<p>By default, determining the cache key to use for the template can be a lot of work.  </p>
+
+<p>If you specify the <code>:cache_key</code> option, you can save <code>Roda</code> from having to do that work, which will 
+make your application faster.  However, if you do this, you need to make sure you choose a correct key.</p>
+
+<p>If your application uses a unique template per path, in that the same path never uses more than one 
+template, you can use the <strong>:view_options</strong> plugin and do:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">set_view_options cache_key: r.path_info</code></pre></div>
+
+<p>at the top of your route block.  </p>
+
+<p>You can even do this if you do have paths that use more than one template, as long as you specify 
+<code>:cache_key</code> specifically when rendering in those paths.</p>
+
+<p>If you use a single layout in your application, you can also make layout rendering faster by specifying 
+<code>:cache_key</code> inside the <code>:layout_opts</code> plugin option.</p>
+
+<hr>
+
+<h3 id="classmethods">ClassMethods</h3>
+
+<h4 id="inherited-subclass"><code>#.inherited(subclass)</code></h4>
+
+<p>Copy the rendering options into the subclass, duping them as necessary to prevent changes in the 
+subclass affecting the parent class.</p>
+
+<h4 id="render_opts"><code>#.render_opts</code></h4>
+
+<p>Return the render options for this class.</p>
+
+<hr>
+
+<h3 id="instancemethods">InstanceMethods</h3>
+
+<h4 id="render-template-opts-opts-amp-block"><code>#.render(template, opts = OPTS, &amp;block)</code></h4>
+
+<p>Render the given template. See Render for details.</p>
+
+<h4 id="render_opts"><code>#.render_opts</code></h4>
+
+<p>Return the render options for the instance&#39;s class. While this is not currently frozen, it may be 
+frozen in a future version, so you should not attempt to modify it.</p>
+
+<h4 id="view-template-opts-opts"><code>#.view(template, opts=OPTS)</code></h4>
+
+<p>Render the given template.  If there is a default layout for the class, take the result of the template 
+rendering and render it inside the layout.  See Render for details.</p>
+
         </div>
 
       </div>

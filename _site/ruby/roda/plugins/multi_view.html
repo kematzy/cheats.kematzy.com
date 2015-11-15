@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>:precompile_templates - Plugins - Roda - Web Framework - Ruby | Cheats by Kematzy</title>
+    <title>:multi_view - Plugins - Roda - Web Framework - Ruby | Cheats by Kematzy</title>
 
     <link rel="stylesheet" href="/assets/css/styles.css">
     <!-- <link rel="stylesheet" href="../../../assets/css/-pygment_trac.css"> -->
@@ -81,7 +81,7 @@
         <li><a href="/ruby/roda/plugins/">Plugins</a></li>
       
         
-        <li><a href="/ruby/roda/plugins/precompile_templates.html">Precompile_templates</a></li>
+        <li><a href="/ruby/roda/plugins/multi_view.html">Multi_view</a></li>
       
     </ol>
   </div>
@@ -91,65 +91,83 @@
       <div id="page-contents" class="row">
 
         <div class="col-md-12">
-          <h1 id="ruby-roda-web-framework-plugins-precompile_templates">Ruby / Roda - Web Framework / Plugins / :precompile_templates</h1>
+          <h1 id="ruby-roda-web-framework-plugins-multi_view">Ruby / Roda - Web Framework / Plugins / :multi_view</h1>
 
 <hr>
 
 <h2 id="introduction">Introduction</h2>
 
-<p>The <strong>:precompile_templates</strong> plugin adds support for precompiling template code. </p>
+<p>The <strong>:multi_view</strong> plugin makes it easy to render multiple views, where the view template is the 
+same as the matched element.  </p>
 
-<p>This can result in a large memory savings for applications that have large templates or a large number 
-of small templates if the application uses a forking webserver.  </p>
+<p>It adds an <code>r.multi_view</code> method, which takes an argument that is passed to <code>r.get</code>, and should
+capture a single argument, which is treated as the template name to pass to <code>#.view</code>.  </p>
 
-<p>By default, template compilation is lazy, so all the child processes in a forking webserver will have 
-their own copy of the compiled template.  </p>
+<p>This makes it possible to pass in an array of strings, or a regexp with a single capture.</p>
 
-<p>By using the <strong>:precompile_templates</strong> plugin, you can precompile the templates in the parent process 
-before forking, and then all of the child processes can use the same precompiled templates, which
-saves memory.</p>
+<p>The advantage of using a regexp over an array of strings is that the regexp is generally faster and 
+uses less memory.  </p>
 
-<p>After loading the plugin, you can call <code>#.precompile_templates</code> with the pattern of templates you would 
-like to precompile:</p>
+<p>However, constructing the regexps is more cumbersome.  To make it easier, the <strong>:multi_view</strong> plugin 
+also offers a <code>#.multi_view_compile</code> class method that will take an array of view template
+names and construct a regexp that can be passed to <code>r.multi_view</code>.</p>
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :precompile_templates
+<h3 id="example">Example:</h3>
 
-precompile_templates &quot;views/\*\*/*.erb&quot;</code></pre></div>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :multi_view
 
-<p>That will precompile all <code>ERB</code> template files in the views directory or any subdirectory.</p>
+route do |r|
+  r.multi_view([&#39;foo&#39;, &#39;bar&#39;, &#39;baz&#39;])
+end
 
-<p>If the templates use local variables, you need to specify which local variables to precompile, 
-which should be an array of symbols:</p>
+ # or:
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">precompile_templates &#39;views/users/_*.erb&#39;, locals: [:user]</code></pre></div>
+route do |r|
+  r.multi_view(/(foo|bar|baz)/)
+end
 
-<p><strong>Note!</strong> If you have multiple local variables and are not using a <a href="https://github.com/tilt/tilt/">Tilt</a> 
-version greater than 2.0.1, you should specify the <code>:locals</code> option in the same order as the keys in the 
-<code>:locals</code> hash you pass to render/view.  </p>
+ # or:
 
-<p>Since hashes are not ordered in ruby 1.8, you should not attempt to precompile templates that use 
-<code>:locals</code> on ruby 1.8 unless you are using a Tilt version greater than 2.0.1.  </p>
+regexp = multi_view_compile([&#39;foo&#39;, &#39;bar&#39;, &#39;baz&#39;])
+route do |r|
+  r.multi_view(regexp)
+end
 
-<p>If you are running the Tilt master branch, you can force sorting of locals using the <code>:sort_locals</code> option 
-when loading the plugin.</p>
+ # all are equivalent to:
 
-<p>You can specify other <code>render</code> options when calling <code>precompile_templates</code>, including <code>:cache_key</code>, 
-<code>:template_class</code>, and <code>:template_opts</code>.  </p>
+route do |r|
 
-<p>If you are passing any of those options to render/view for the template, you should pass the same 
-options when precompiling the template.</p>
+  r.get &#39;foo&#39; do
+    view(&#39;foo&#39;)
+  end
 
-<p>To compile inline templates, just pass a single hash containing an <code>:inline</code> to <code>precompile_templates</code>:</p>
+  r.get &#39;bar&#39; do
+    view(&#39;bar&#39;)
+  end
 
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">precompile_templates inline: some_template_string</code></pre></div>
+  r.get &#39;baz&#39; do
+    view(&#39;baz&#39;)
+  end
+  
+end</code></pre></div>
 
 <hr>
 
 <h3 id="classmethods">ClassMethods</h3>
 
-<h4 id="precompile_templates-pattern-opts-opts"><code>#.precompile_templates(pattern, opts=OPTS)</code></h4>
+<h4 id="multi_view_compile-array"><code>#.multi_view_compile(array)</code></h4>
 
-<p>Precompile the templates using the given options.  See <code>PrecompileTemplates</code> for details.</p>
+<p>Given the array of view template names, return a regexp that will match on any of the names and 
+capture the matched name.</p>
+
+<hr>
+
+<h3 id="requestmethods">RequestMethods</h3>
+
+<p>Pass the argument to <code>#.get</code>, and assume if the matchers match that there is one capture, and call 
+<code>view</code> with that capture.</p>
+
+<p>def multi_view(arg)</p>
 
         </div>
 

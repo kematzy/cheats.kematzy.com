@@ -97,6 +97,53 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:render_each</strong> plugin allows you to render a template for each value in an enumerable, returning 
+the concatenation of all of the template renderings.  </p>
+
+<p>For example:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">render_each([1,2,3], :foo)</code></pre></div>
+
+<p>will render the <code>foo</code> template 3 times.  Each time the template is rendered, the local variable <code>foo</code> 
+will contain the given value (e.g. on the first rendering <code>foo</code> is 1).</p>
+
+<p>You can pass additional render options via an options hash:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">render_each([1,2,3], :foo, :views=&gt;&#39;partials&#39;)</code></pre></div>
+
+<p>One additional option supported by is <code>:local</code>, which sets the local variable containing the current value to use.  </p>
+
+<p>So:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">render_each([1,2,3], :foo, local: :bar)</code></pre></div>
+
+<p>Will render the <code>foo</code> template, but the local variable used inside the template will be <code>bar</code>.<br>
+You can use <code>local: nil</code> to not set a local variable inside the template.</p>
+
+<hr>
+
+<h3 id="instancemethods">InstanceMethods</h3>
+
+<h4 id="render_each-enum-template-opts-opts"><code>#.render_each(enum, template, opts=OPTS)</code></h4>
+
+<p>For each value in enum, render the given template using the given opts.  </p>
+
+<p>The template and options hash are passed to <code>render</code>.</p>
+
+<p>Additional options supported:</p>
+
+<table><thead>
+<tr>
+<th><strong>Option:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:local</td>
+<td>The local variable to use for the current <code>enum</code> value inside the template.  An explicit <code>nil</code> value does not set a local variable.  If not set, uses the template name.</td>
+</tr>
+</tbody></table>
+
         </div>
 
       </div>

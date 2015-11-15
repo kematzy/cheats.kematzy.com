@@ -97,6 +97,31 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The pass plugin adds a request +pass+ method to skip the current match block as if it did not match.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :pass
+
+route do |r|
+  
+  r.on &#39;foo/:bar&#39; do |bar|
+    pass if bar == &#39;baz&#39;
+    &quot;/foo/#{bar} (not baz)&quot;
+  end
+
+  r.on &#39;foo/baz&#39; do
+    &#39;/foo/baz&#39;
+  end
+  
+end</code></pre></div>
+
+<hr>
+
+<h3 id="requestmethods">RequestMethods</h3>
+
+<h4 id="pass"><code>#.pass</code></h4>
+
+<p>Skip the current match block as if it did not match.</p>
+
         </div>
 
       </div>

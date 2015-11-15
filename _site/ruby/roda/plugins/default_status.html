@@ -97,6 +97,28 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:default_status</strong> plugin accepts a block which should return a response status integer. </p>
+
+<p>This <code>integer</code> will be used as the default response status (usually <code>200</code>) if the body has been
+written to, and you have not explicitly set a response status.</p>
+
+<p>The block given to the block is <code>instance_exec</code>-ed in the context of the response.</p>
+
+<h3 id="example">Example:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"># Use 201 default response status for all requests
+  plugin :default_status do
+    201
+  end</code></pre></div>
+
+<hr>
+
+<h3 id="responsemethods">ResponseMethods</h3>
+
+<h4 id="default_status"><code>#.default_status</code></h4>
+
+<p><code>instance_exec</code> the <strong>:default_status</strong> plugin block to get the response status.</p>
+
         </div>
 
       </div>

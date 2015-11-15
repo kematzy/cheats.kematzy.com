@@ -97,6 +97,52 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:path_matchers</strong> plugin adds hash matchers that operate on the request&#39;s path.</p>
+
+<p>It adds a <code>:prefix</code> matcher for matching on the path&#39;s prefix, yielding the rest of the matched segment:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.on(prefix: &#39;foo&#39;) do |suffix|
+  
+  # Matches &#39;/foo-bar&#39;, yielding &#39;-bar&#39;
+  # Does not match bar-foo
+  
+end</code></pre></div>
+
+<p>It adds a <code>:suffix</code> matcher for matching on the path&#39;s suffix, yielding the part of the segment before the suffix:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.on(suffix: &#39;bar&#39;) do |prefix|
+
+  # Matches &#39;/foo-bar&#39;, yielding &#39;foo-&#39;
+  # Does not match bar-foo
+  
+end</code></pre></div>
+
+<p>It adds an <code>:extension</code> matcher for matching on the given file extension, yielding the part of the 
+segment before the extension:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.on(extension: &#39;bar&#39;) do |reset|
+  
+  # Matches &#39;/foo.bar&#39;, yielding &#39;foo&#39;
+  # Does not match bar.foo
+  
+end</code></pre></div>
+
+<hr>
+
+<h3 id="requestmethods">RequestMethods</h3>
+
+<h4 id="match_extension-ext"><code>#.match_extension(ext)</code></h4>
+
+<p>Match when the current segment ends with the given extension. request path end with the extension.</p>
+
+<h4 id="match_prefix-prefix"><code>#.match_prefix(prefix)</code></h4>
+
+<p>Match when the current path segment starts with the given prefix.</p>
+
+<h4 id="match_suffix-suffix"><code>#.match_suffix(suffix)</code></h4>
+
+<p>Match when the current path segment ends with the given suffix.</p>
+
         </div>
 
       </div>

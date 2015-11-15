@@ -97,6 +97,74 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:path_rewriter</strong> plugin allows you to rewrite the remaining path or the path info for requests.  </p>
+
+<p>This is useful if you want to transparently treat some paths the same as other paths.</p>
+
+<p>By default, <code>#.rewrite_path</code> will rewrite just the remaining path.  So only routing in the current <code>Roda</code> 
+app will be affected.  </p>
+
+<p>This is useful if you have other code in your app that uses <code>PATH_INFO</code> and needs to see the original 
+<code>PATH_INFO</code> (for example, when using relative links).</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">rewrite_path &#39;/a&#39;, &#39;/b&#39;
+ 
+ # PATH_INFO &#39;/a&#39; =&gt; remaining_path &#39;/b&#39;
+ # PATH_INFO &#39;/a/c&#39; =&gt; remaining_path &#39;/b/c&#39;</code></pre></div>
+
+<p>In some cases, you may want to override <code>PATH_INFO</code> for the rewritten paths, such as when you are 
+passing the request to another Rack app.</p>
+
+<p>For those cases, you can use the <code>path_info: true</code> option to <code>rewrite_path</code>.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">rewrite_path &#39;/a&#39;, &#39;/b&#39;, :path_info =&gt; true
+  # PATH_INFO &#39;/a&#39; =&gt; PATH_INFO &#39;/b&#39;
+  # PATH_INFO &#39;/a/c&#39; =&gt; PATH_INFO &#39;/b/c&#39;</code></pre></div>
+
+<p>If you pass a string to <code>#.rewrite_path</code>, it will rewrite all paths starting with that string.  </p>
+
+<p>You can provide a regexp if you want more complete control, such as only matching exact paths.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">rewrite_path /\A\/a\z/, &#39;/b&#39;
+  
+  # PATH_INFO &#39;/a&#39; =&gt; remaining_path &#39;/b&#39;
+  # PATH_INFO &#39;/a/c&#39; =&gt; remaining_path &#39;/a/c&#39;, no change</code></pre></div>
+
+<p>All path rewrites are applied in order, so if a path is rewritten by one rewrite, it can be rewritten 
+again by a later rewrite.  Note that <code>PATH_INFO</code> rewrites are processed before <code>remaining_path</code> rewrites.</p>
+
+<hr>
+
+<h3 id="classmethods">ClassMethods</h3>
+
+<p>Freeze the path rewrite metadata.</p>
+
+<h4 id="freeze"><code>#.freeze</code></h4>
+
+<h4 id="rewrite_path-was-is-opts-opts"><code>#.rewrite_path(was, is, opts=OPTS)</code></h4>
+
+<p>Record a path rewrite from path <code>was</code> to path <code>is</code>.  </p>
+
+<table><thead>
+<tr>
+<th>Options:</th>
+<th></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:path_info</td>
+<td>Modify <code>PATH_INFO</code>, not just remaining path.</td>
+</tr>
+</tbody></table>
+
+<hr>
+
+<h3 id="requestmethods">RequestMethods</h3>
+
+<p>Rewrite <code>remaining_path</code> and/or <code>PATH_INFO</code> based on the path rewrites.</p>
+
+<h4 id="initialize-scope-env"><code>#.initialize(scope, env)</code></h4>
+
         </div>
 
       </div>

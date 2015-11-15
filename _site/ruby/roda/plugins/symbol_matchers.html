@@ -97,6 +97,86 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:symbol_matchers</strong> plugin allows you do define custom regexps to use for specific symbols.  </p>
+
+<p>For example, if you have a route such as:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.on :username do
+    # ...
+  end</code></pre></div>
+
+<p>By default this will match all nonempty segments.  However, if your usernames must be 6-20 characters, 
+and can only contain <code>a-z</code> and <code>0-9</code>, you can do:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :symbol_matchers
+  symbol_matcher :username, /([a-z0-9]{6,20})/</code></pre></div>
+
+<p>Then the route will only if the path is <code>/foobar123</code>, but not if it is <code>/foo</code>, <code>/FooBar123</code>, or <code>/foobar_123</code>.</p>
+
+<p>Note that this feature does not apply to just symbols, but also to embedded colons in strings, so the following:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.on &quot;users/:username&quot; do
+    # ...
+  end</code></pre></div>
+
+<p>Would match <code>/users/foobar123</code>, but not <code>/users/foo</code>, <code>/users/FooBar123</code>, or <code>/users/foobar_123</code>.</p>
+
+<p>By default, this plugin sets up the following symbol matchers:</p>
+
+<table><thead>
+<tr>
+<th><strong>Matchers:</strong></th>
+<th><strong>RegExp:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>:d</td>
+<td><code>/(\d+)/</code></td>
+<td>a decimal segment</td>
+</tr>
+<tr>
+<td>:format</td>
+<td><code>/(?:\.(\w+))?/</code></td>
+<td>an optional format/extension</td>
+</tr>
+<tr>
+<td>:opt</td>
+<td><code>/(?:\/([^\/]+))?</code></td>
+<td>an optional segment</td>
+</tr>
+<tr>
+<td>:optd</td>
+<td><code>/(?:\/(\d+))?</code></td>
+<td>an optional decimal segment</td>
+</tr>
+<tr>
+<td>:rest</td>
+<td><code>/(.*)/</code></td>
+<td>all remaining characters, if any</td>
+</tr>
+<tr>
+<td>:w</td>
+<td><code>/(\w+)/</code></td>
+<td>a alphanumeric segment</td>
+</tr>
+</tbody></table>
+
+<p><strong>Note!</strong> Because of how segment matching works, <code>:format</code>, <code>:opt</code>, and <code>:optd</code> are only going to 
+work inside of a string, like this:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">r.is &quot;album:opt&quot; do |id| end
+  # matches /album (yielding nil) and /album/foo (yielding &quot;foo&quot;)
+  # does not match /album/ or /album/foo/bar</code></pre></div>
+
+<hr>
+
+<h3 id="classmethods">ClassMethods</h3>
+
+<h4 id="symbol_matcher-s-re"><code>#.symbol_matcher(s, re)</code></h4>
+
+<p>Set the regexp to use for the given symbol, instead of the default.</p>
+
         </div>
 
       </div>

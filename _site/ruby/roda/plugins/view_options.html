@@ -97,6 +97,125 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:view_options</strong> plugin allows you to override view and layout options and locals for specific 
+branches and routes.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :render
+  plugin :view_options
+
+  route do |r|
+    r.on &quot;users&quot; do
+      set_layout_options :template=&gt;&#39;users_layout&#39;
+      set_layout_locals :title=&gt;&#39;Users&#39;
+      set_view_options :engine=&gt;&#39;haml&#39;
+      set_view_locals :footer=&gt;&#39;(c) Roda&#39;
+
+      # ...
+    end
+  end</code></pre></div>
+
+<p>The <code>options</code> and <code>locals</code> you specify have higher precedence than the <strong>:render</strong> plugin options, 
+but lower precedence than options you directly pass to the view/render methods.</p>
+
+<h2 id="view-subdirectories">View Subdirectories</h2>
+
+<p>The <strong>:view_options</strong> plugin also has special support for sites that have outgrown a flat view 
+directory and use subdirectories for views.  </p>
+
+<p>It allows you to set the view directory to use, and <strong>template names that do NOT contain a slash will
+automatically use that view subdirectory</strong>.  </p>
+
+<h3 id="example">Example:</h3>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :render, :layout=&gt;&#39;./layout&#39;
+  plugin :view_options
+
+  route do |r|
+    r.on &quot;users&quot; do
+      set_view_subdir &#39;users&#39;
+      
+      r.get :id do
+        append_view_subdir &#39;profile&#39;
+        view &#39;index&#39; # uses ./views/users/profile/index.erb
+      end
+
+      r.get &#39;list&#39; do
+        view &#39;lists/users&#39; # uses ./views/lists/users.erb
+      end
+    end
+  end</code></pre></div>
+
+<p><strong>Note!</strong>  When a view subdirectory is set, <strong>the layout will also be looked up in the subdirectory 
+<u>unless it contains a slash</u></strong>.</p>
+
+<p>So if you want to use a view subdirectory for templates but have a shared layout, you should make sure your
+layout contains a slash, similar to the example above.</p>
+
+<h2 id="per-branch-html-escaping">Per-branch HTML escaping</h2>
+
+<p>If you have an existing <code>Roda</code> application that doesn&#39;t use automatic HTML escaping for <code>&lt;%= %&gt;</code> tags 
+via the <strong>:render</strong> plugin&#39;s <code>:escape</code> option, but you want to switch to using the <code>:escape</code> option, 
+you can now do so without making all changes at once.  </p>
+
+<p>With <code>#.set_view_options</code>, you can now specify escaping or not on a per branch basis in the routing tree:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :render, escape: true
+  plugin :view_options
+  
+  route do |r|
+  
+    # Don&#39;t escape &lt;%= %&gt; by default
+    set_view_options :template_opts=&gt;{:engine_class=&gt;nil}
+
+    r.on &quot;users&quot; do
+      
+      # Escape &lt;%= %&gt; in this branch
+      set_view_options :template_opts=&gt;{:engine_class=&gt;render_opts[:template_opts][:engine_class]}
+      
+    end
+    
+  end</code></pre></div>
+
+<hr>
+
+<h3 id="instancemethods">InstanceMethods</h3>
+
+<p>The following methods are created via metaprogramming:</p>
+
+<table><thead>
+<tr>
+<th><strong>Method Name:</strong></th>
+<th><strong>Description:</strong></th>
+</tr>
+</thead><tbody>
+<tr>
+<td>set_layout_locals</td>
+<td>Set locals to use in the layout</td>
+</tr>
+<tr>
+<td>set_layout_options</td>
+<td>Set options to use when rendering the layout</td>
+</tr>
+<tr>
+<td>set_view_locals</td>
+<td>Set locals to use in the view</td>
+</tr>
+<tr>
+<td>set_view_options</td>
+<td>Set options to use when rendering the view</td>
+</tr>
+</tbody></table>
+
+<h4 id="append_view_subdir-v"><code>#.append_view_subdir(v)</code></h4>
+
+<p>Append a view subdirectory to use.  If there hasn&#39;t already been a view subdirectory set, this just 
+sets it to the argument. If there has already been a view subdirectory set, this sets the view 
+subdirectory to a subdirectory of the existing view subdirectory.</p>
+
+<h4 id="set_view_subdir-v"><code>#.set_view_subdir(v)</code></h4>
+
+<p>Set the view subdirectory to use.  This can be set to <code>nil</code> to not use a view subdirectory.</p>
+
         </div>
 
       </div>

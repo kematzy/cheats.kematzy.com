@@ -97,6 +97,32 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:partials</strong> plugin adds a +partial+ method, which renders templates without the layout.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :partials, views: &#39;path/2/views&#39;</code></pre></div>
+
+<p>Template files are prefixed with an underscore:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">partial(&#39;test&#39;)     # uses _test.erb
+
+partial(&#39;dir/test&#39;) # uses dir/_test.erb</code></pre></div>
+
+<p>This is basically equivalent to:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">render(&#39;_test&#39;)
+
+render(&#39;dir/_test&#39;)</code></pre></div>
+
+<p>Note that this plugin automatically loads the :render plugin.</p>
+
+<hr>
+
+<h3 id="instancemethods">InstanceMethods</h3>
+
+<h4 id="partial-template-opts-opts"><code>#.partial(template, opts=OPTS)</code></h4>
+
+<p>Renders the given template without a layout, but prefixes the template filename to use with an underscore.</p>
+
         </div>
 
       </div>

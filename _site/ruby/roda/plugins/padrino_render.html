@@ -97,6 +97,32 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:padrino_render</strong> plugin adds rendering support that is similar to Padrino&#39;s.  While not 
+everything Padrino&#39;s rendering supports is supported by this plugin (yet), it currently handles enough 
+to be a drop in replacement for some applications.</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :padrino_render, views: &#39;path/2/views&#39;</code></pre></div>
+
+<p>Most notably, this makes the <code>#.render</code> method default to using the layout, similar to how the <code>#.view</code> 
+method works in the render plugin.  </p>
+
+<p>If you want to call render and not use a layout, you can use the <code>layout: false</code> option:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">render(&#39;test&#39;)                 # layout
+
+
+render(&#39;test&#39;, layout: false) # no layout</code></pre></div>
+
+<p>Note that this plugin loads the <strong>:partials</strong> plugin.</p>
+
+<hr>
+
+<h3 id="instancemethods">InstanceMethods</h3>
+
+<h4 id="render-template-opts-opts"><code>#.render(template, opts=OPTS)</code></h4>
+
+<p>Call view with the given arguments, so that render uses a layout by default.</p>
+
         </div>
 
       </div>

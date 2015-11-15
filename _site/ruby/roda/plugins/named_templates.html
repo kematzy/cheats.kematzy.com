@@ -97,6 +97,65 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:named_templates</strong> plugin allows you to specify templates by name, providing the template code 
+to use for a given name:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">plugin :named_templates
+
+template :layout do
+  &quot;&lt;html&gt;&lt;body&gt;&lt;%= yield %&gt;&lt;/body&gt;&lt;/html&gt;&quot;
+end
+template :index do
+  &quot;&lt;p&gt;Hello &lt;%= @user %&gt;!&lt;/p&gt;&quot;
+end
+
+route do |r|
+  @user = &#39;You&#39;
+  render(:index)
+end
+  # =&gt; &quot;&lt;html&gt;&lt;body&gt;&lt;p&gt;Hello You!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;&quot;</code></pre></div>
+
+<p>You can provide options for the template, for example to change the engine that the template uses:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">template :index, engine: :str do
+  &quot;&lt;p&gt;Hello #{@user}!&lt;/p&gt;&quot;
+end</code></pre></div>
+
+<p>The block you use is reevaluated on every call, allowing you to easily include additional setup logic:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">template :index do
+  greeting = [&#39;hello&#39;, &#39;hi&#39;, &#39;howdy&#39;].sample
+  @user.downcase!
+  &quot;&lt;p&gt;#{greating} &lt;%= @user %&gt;!&lt;/p&gt;&quot;
+end</code></pre></div>
+
+<p>This plugin also works with the <strong>:view_subdirs</strong> plugin, as long as you prefix the template name 
+with the view subdirectory:</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby">template &#39;main/index&#39; do
+  &quot;&lt;html&gt;&lt;body&gt;&lt;%= yield %&gt;&lt;/body&gt;&lt;/html&gt;&quot;
+end
+
+route do |r|
+  
+  set_view_subdir(&#39;main&#39;)
+  @user = &#39;You&#39;
+  render(:index)
+  
+end</code></pre></div>
+
+<hr>
+
+<h3 id="classmethods">ClassMethods</h3>
+
+<h4 id="freeze"><code>#.freeze</code></h4>
+
+<p>Freeze the named templates so that there can be no thread safety issues at runtime.</p>
+
+<h4 id="template-name-options-nil-amp-block"><code>#.template(name, options=nil, &amp;block)</code></h4>
+
+<p>Store a new template block and options for the given template name.</p>
+
         </div>
 
       </div>

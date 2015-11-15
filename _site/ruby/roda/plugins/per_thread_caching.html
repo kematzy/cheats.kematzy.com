@@ -97,6 +97,31 @@
 
 <h2 id="introduction">Introduction</h2>
 
+<p>The <strong>:per_thread_caching</strong> plugin changes the default <code>cache</code> from being a shared thread safe <code>cache</code> 
+to a separate cache per thread.  </p>
+
+<p>This means getting or setting values no longer needs a mutex on non-MRI ruby implementations, which 
+may be faster when using a thread pool.  However, since the caches are no longer shared, this will take up more memory.</p>
+
+<p><strong>Note!</strong> It does not make sense to use this plugin on <code>MRI</code>, since the default cache on <code>MRI</code> doesn&#39;t 
+use a mutex as it is already thread safe due to the GVL.</p>
+
+<p>Using this plugin changes the matcher regexp cache to use per-thread caches, and changes the default 
+for future thread-safe caches to use per-thread caches.</p>
+
+<p><strong>NOTE!</strong></p>
+
+<p>If you want the <strong>:render</strong> plugin&#39;s template cache to use per-thread caches, you should load this 
+plugin before the <strong>:render</strong> plugin.</p>
+
+<hr>
+
+<h3 id="classmethods">ClassMethods</h3>
+
+<p>Use the per-thread cache instead of the default cache.</p>
+
+<h4 id="thread_safe_cache"><code>#.thread_safe_cache</code></h4>
+
         </div>
 
       </div>
