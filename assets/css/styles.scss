@@ -48,6 +48,8 @@ $docs_colors_headers_h3_h6_color:       #494949 !default;
 $docs_colors_blockquote_background:     rgba(0, 0, 0, 0.06) !default;
 $docs_colors_blockquote_color:          $docs_colors_body_color !default;
 
+$docs_colors_ol_breadcrumbs_background: #d8d8d8 !default;
+
 
 // ########################################################
 
@@ -351,6 +353,9 @@ img {
   margin-right: -5px;
 }
 
+code {
+  color: #253EC7;
+}
 
 pre {
   background: #232323;
@@ -592,7 +597,8 @@ hr.divider {
 
 // twbs overrides
 .breadcrumb {
-  background-color: darken(#dedede, 10);
+  // background-color: darken(#dedede, 10);
+  background-color: $docs_colors_ol_breadcrumbs_background;
   border-radius: 0 !important;
   margin-bottom: 0px;
 
