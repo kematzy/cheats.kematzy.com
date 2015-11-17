@@ -16,16 +16,24 @@ asset_path: ../..
 
 ## Introduction
 
-Mail is an internet library for Ruby that is designed to handle emails generation, parsing and sending in a simple, rubyesque manner.
+Mail is an internet library for Ruby that is designed to handle emails generation, parsing and sending 
+in a simple, rubyesque manner.
 
-The purpose of this library is to provide a single point of access to handle all email functions, including sending and receiving emails.  
-All network type actions are done through proxy methods to Net::SMTP, Net::POP3 etc.
+The purpose of this library is to provide a single point of access to handle all email functions, 
+including sending and receiving emails.  All network type actions are done through proxy methods to 
+`Net::SMTP`, `Net::POP3` etc.
 
-Built from my experience with TMail, it is designed to be a pure ruby implementation that makes generating, sending and parsing emails a no brainer.
+Built from my experience with `TMail`, it is designed to be a pure ruby implementation that makes 
+generating, sending and parsing emails a no brainer.
 
-It is also designed from the ground up to work with the more modern versions of Ruby.  This is because Ruby > 1.9 handles text encodings much more wonderfully than Ruby 1.8.x and so these features have been taken full advantage of in this library allowing Mail to handle a lot more messages more cleanly than TMail. Mail does run on Ruby 1.8.x... it's just not as fun to code.
+It is also designed from the ground up to work with the more modern versions of Ruby.  This is because 
+Ruby > 1.9 handles text encodings much more wonderfully than Ruby 1.8.x and so these features have 
+been taken full advantage of in this library allowing Mail to handle a lot more messages more cleanly 
+than TMail. Mail does run on Ruby 1.8.x... it's just not as fun to code.
 
-Finally, Mail has been designed with a very simple object oriented system that really opens up the email messages you are parsing, if you know what you are doing, you can fiddle with every last bit of your email directly.
+Finally, Mail has been designed with a very simple object oriented system that really opens up the 
+email messages you are parsing, if you know what you are doing, you can fiddle with every last bit 
+of your email directly.
 
 
 ## Compatibility
@@ -44,9 +52,10 @@ Every Mail commit is tested by Travis on the [following platforms](https://githu
 
 Testing a specific mime type (needed for 1.8.7 for example) can be done manually with:
 
-```sh
+{% highlight sh %}
 BUNDLE_GEMFILE=gemfiles/mime_types_1.16.gemfile (bundle check || bundle) && rake
-```
+{% endhighlight %}
+
 
 
 ### Current Capabilities of Mail
@@ -60,11 +69,20 @@ BUNDLE_GEMFILE=gemfiles/mime_types_1.16.gemfile (bundle check || bundle) && rake
 * Auto encoding of non US-ASCII header fields
 * Auto encoding of non US-ASCII bodies
 
-Mail is RFC2822 compliant now, that is, it can parse and generate valid US-ASCII emails.  There are a few obsoleted syntax emails that it will have problems with, but it also is quite robust, meaning, if it finds something it doesn't understand it will not crash, instead, it will skip the problem and keep parsing.  In the case of a header it doesn't understand, it will initialise the header as an optional unstructured field and continue parsing.
+Mail is RFC2822 compliant now, that is, it can parse and generate valid US-ASCII emails.  There are 
+a few obsoleted syntax emails that it will have problems with, but it also is quite robust, meaning, 
+if it finds something it doesn't understand it will not crash, instead, it will skip the problem and 
+keep parsing.  
+
+
+In the case of a header it doesn't understand, it will initialise the header as an optional unstructured 
+field and continue parsing.
 
 This means Mail won't (ever) crunch your data (I think).
 
-You can also create MIME emails.  There are helper methods for making a multipart/alternate email for text/plain and text/html (the most common pair) and you can manually create any other type of MIME email.
+You can also create MIME emails.  There are helper methods for making a `multipart/alternate` email 
+for `text/plain` and `text/html` (the most common pair) and you can manually create any other type of MIME email.
+
 
 ### Roadmap
 
@@ -73,23 +91,32 @@ Next TODO:
 * Improve MIME support for character sets in headers, currently works, mostly, needs
   refinement.
 
+
 ## Testing Policy
 
-Basically... we do BDD on Mail.  No method gets written in Mail without a corresponding or covering spec.  We expect as a minimum 100% coverage measured by RCov.  While this is not perfect by any measure, it is pretty good.  Additionally, all functional tests from TMail are to be passing before the gem gets released.
+Basically... we do BDD on Mail.  No method gets written in Mail without a corresponding or covering 
+spec.  We expect as a minimum 100% coverage measured by RCov.  While this is not perfect by any measure, 
+it is pretty good.  Additionally, all functional tests from TMail are to be passing before the gem gets released.
 
 It also means you can be sure Mail will behave correctly.
 
+
 ## API Policy
 
-No API removals within a single point release.  All removals to be deprecated with warnings for at least one MINOR point release before removal.
+No API removals within a single point release.  All removals to be deprecated with warnings for at 
+least one MINOR point release before removal.
 
 Also, all private or protected methods to be declared as such - though this is still I/P.
+
 
 ## Installation
 
 Installation is fairly simple, I host mail on rubygems, so you can just do:
 
-    # gem install mail
+{% highlight bash %}
+   $ gem install mail
+{% endhighlight %}
+
 
 ### Encodings
 
@@ -125,11 +152,14 @@ I have tried to simplify it some:
 
 ## Usage
 
-All major mail functions should be able to happen from the Mail module. So, you should be able to just <code>require 'mail'</code> to get started.
+All major mail functions should be able to happen from the Mail module. So, you should be able to 
+just `require 'mail'` to get started.
+
 
 ### Making an email
 
-```ruby
+{% highlight ruby %}
+
 mail = Mail.new do
   from    'mikel@test.lindsaar.net'
   to      'you@test.lindsaar.net'
@@ -138,11 +168,11 @@ mail = Mail.new do
 end
 
 mail.to_s #=> "From: mikel@test.lindsaar.net\r\nTo: you@...
-```
+{% endhighlight %}
 
 ### Making an email, have it your way:
 
-```ruby
+{% highlight ruby %}
 mail = Mail.new do
   body File.read('body.txt')
 end
@@ -154,27 +184,30 @@ mail.subject = 'This is a test email'
 mail.header['X-Custom-Header'] = 'custom value'
 
 mail.to_s #=> "From: mikel@test.lindsaar.net\r\nTo: you@...
-```
+{% endhighlight %}
 
 ### Don't Worry About Message IDs:
 
-```ruby
+{% highlight ruby %}
 mail = Mail.new do
   to   'you@test.lindsaar.net'
   body 'Some simple body'
 end
 
 mail.to_s =~ /Message\-ID: <[\d\w_]+@.+.mail/ #=> 27
-```
+{% endhighlight %}
 
-Mail will automatically add a Message-ID field if it is missing and
-give it a unique, random Message-ID along the lines of:
+Mail will automatically add a Message-ID field if it is missing andgive it a unique, random `Message-ID` 
+along the lines of:
 
-    <4a7ff76d7016_13a81ab802e1@local.host.mail>
+{% highlight ruby %}
+  <4a7ff76d7016_13a81ab802e1@local.host.mail>
+{% endhighlight %}
+
 
 ### Or do worry about Message-IDs:
 
-```ruby
+{% highlight ruby %}
 mail = Mail.new do
   to         'you@test.lindsaar.net'
   message_id '<ThisIsMyMessageId@some.domain.com>'
@@ -182,7 +215,7 @@ mail = Mail.new do
 end
 
 mail.to_s =~ /Message\-ID: <ThisIsMyMessageId@some.domain.com>/ #=> 27
-```
+{% endhighlight %}
 
 Mail will take the message_id you assign to it trusting that you know what you are doing.
 
@@ -190,7 +223,7 @@ Mail will take the message_id you assign to it trusting that you know what you a
 
 Mail defaults to sending via SMTP to local host port 25.  If you have a sendmail or postfix daemon running on on this port, sending email is as easy as:
 
-```ruby
+{% highlight ruby %}
 Mail.deliver do
   from     'me@test.lindsaar.net'
   to       'you@test.lindsaar.net'
@@ -198,11 +231,11 @@ Mail.deliver do
   body     File.read('body.txt')
   add_file '/full/path/to/somefile.png'
 end
-```
+{% endhighlight %}
 
 or
 
-```ruby
+{% highlight ruby %}
 mail = Mail.new do
   from     'me@test.lindsaar.net'
   to       'you@test.lindsaar.net'
@@ -212,11 +245,11 @@ mail = Mail.new do
 end
 
 mail.deliver!
-```
+{% endhighlight %}
 
 Sending via sendmail can be done like so:
 
-```ruby
+{% highlight ruby %}
 mail = Mail.new do
   from     'me@test.lindsaar.net'
   to       'you@test.lindsaar.net'
@@ -228,31 +261,32 @@ end
 mail.delivery_method :sendmail
 
 mail.deliver
-```
+{% endhighlight %}
 
 Sending via smtp (for example to [mailcatcher](https://github.com/sj26/mailcatcher))
-```ruby
 
+
+{% highlight ruby %}
 Mail.defaults do
   delivery_method :smtp, address: "localhost", port: 1025
 end
-```
+{% endhighlight %}
 
 
 Exim requires its own delivery manager, and can be used like so:
 
-```ruby
+{% highlight ruby %}
 mail.delivery_method :exim, :location => "/usr/bin/exim"
 
 mail.deliver
-```
+{% endhighlight %}
 
 ### Getting emails from a pop server:
 
 You can configure Mail to receive email using <code>retriever_method</code>
 within <code>Mail.defaults</code>:
 
-```ruby
+{% highlight ruby %}
 Mail.defaults do
   retriever_method :pop3, :address    => "pop.gmail.com",
                           :port       => 995,
@@ -260,36 +294,36 @@ Mail.defaults do
                           :password   => '<password>',
                           :enable_ssl => true
 end
-```
+{% endhighlight %}
 
 You can access incoming email in a number of ways.
 
 The most recent email:
 
-```ruby
+{% highlight ruby %}
 Mail.all    #=> Returns an array of all emails
 Mail.first  #=> Returns the first unread email
 Mail.last   #=> Returns the last unread email
-```
+{% endhighlight %}
 
 The first 10 emails sorted by date in ascending order:
 
-```ruby
+{% highlight ruby %}
 emails = Mail.find(:what => :first, :count => 10, :order => :asc)
 emails.length #=> 10
-```
+{% endhighlight %}
 
 Or even all emails:
 
-```ruby
+{% highlight ruby %}
 emails = Mail.all
 emails.length #=> LOTS!
-```
+{% endhighlight %}
 
 
 ### Reading an Email
 
-```ruby
+{% highlight ruby %}
 mail = Mail.read('/path/to/message.eml')
 
 mail.envelope_from   #=> 'mikel@test.lindsaar.net'
@@ -301,13 +335,13 @@ mail.subject         #=> "This is the subject"
 mail.date.to_s       #=> '21 Nov 1997 09:55:06 -0600'
 mail.message_id      #=> '<4D6AA7EB.6490534@xxx.xxx>'
 mail.body.decoded    #=> 'This is the body of the email...
-```
+{% endhighlight %}
 
 Many more methods available.
 
 ### Reading a Multipart Email
 
-```ruby
+{% highlight ruby %}
 mail = Mail.read('multipart_email')
 
 mail.multipart?          #=> true
@@ -318,15 +352,18 @@ mail.parts.map { |p| p.content_type }  #=> ['text/plain', 'application/pdf']
 mail.parts.map { |p| p.class }         #=> [Mail::Message, Mail::Message]
 mail.parts[0].content_type_parameters  #=> {'charset' => 'ISO-8859-1'}
 mail.parts[1].content_type_parameters  #=> {'name' => 'my.pdf'}
-```
+{% endhighlight %}
 
-Mail generates a tree of parts.  Each message has many or no parts.  Each part is another message which can have many or no parts.
+Mail generates a tree of parts.  Each message has many or no parts.  Each part is another message 
+which can have many or no parts.
 
-A message will only have parts if it is a multipart/mixed or multipart/related content type and has a boundary defined.
+A message will only have parts if it is a multipart/mixed or multipart/related content type and has 
+a boundary defined.
+
 
 ### Testing and extracting attachments
 
-```ruby
+{% highlight ruby %}
 mail.attachments.each do | attachment |
   # Attachments is an AttachmentsList object containing a
   # number of Part objects
@@ -340,13 +377,13 @@ mail.attachments.each do | attachment |
     end
   end
 end
-```
+{% endhighlight %}
 
 ### Writing and sending a multipart/alternative (html and text) email
 
 Mail makes some basic assumptions and makes doing the common thing as simple as possible.... (asking a lot from a mail library)
 
-```ruby
+{% highlight ruby %}
 mail = Mail.deliver do
   to      'nicolas@test.lindsaar.net.au'
   from    'Mikel Lindsaar <mikel@test.lindsaar.net.au>'
@@ -361,11 +398,11 @@ mail = Mail.deliver do
     body '<h1>This is HTML</h1>'
   end
 end
-```
+{% endhighlight %}
 
 Mail then delivers the email at the end of the block and returns the resulting Mail::Message object, which you can then inspect if you so desire...
 
-```
+{% highlight ruby %}
 puts mail.to_s #=>
 
 To: nicolas@test.lindsaar.net.au
@@ -396,17 +433,21 @@ Content-Transfer-Encoding: 7bit
 
 <h1>This is HTML</h1>
 ----==_mimepart_4a914f0c911be_6f0f1ab8026659--
-```
+{% endhighlight %}
 
-Mail inserts the content transfer encoding, the mime version, the content-id's and handles the content-type and boundary.
+Mail inserts the content transfer encoding, the mime version, the content-id's and handles the 
+`content-type` and `boundary`.
 
-Mail assumes that if your text in the body is only us-ascii, that your transfer encoding is 7bit and it is text/plain.  You can override this by explicitly declaring it.
+Mail assumes that if your text in the body is only us-ascii, that your transfer encoding is 7bit and 
+it is `text/plain`.  You can override this by explicitly declaring it.
 
 ### Making Multipart/Alternate, without a block
 
-You don't have to use a block with the text and html part included, you can just do it declaratively.  However, you need to add Mail::Parts to an email, not Mail::Messages.
+You don't have to use a block with the text and html part included, you can just do it declaratively.  
 
-```ruby
+However, you need to add Mail::Parts to an email, not Mail::Messages.
+
+{% highlight ruby %}
 mail = Mail.new do
   to      'nicolas@test.lindsaar.net.au'
   from    'Mikel Lindsaar <mikel@test.lindsaar.net.au>'
@@ -424,13 +465,14 @@ end
 
 mail.text_part = text_part
 mail.html_part = html_part
-```
+{% endhighlight %}
 
 Results in the same email as done using the block form
 
+
 ### Getting error reports from an email:
 
-```ruby
+{% highlight ruby %}
 @mail = Mail.read('/path/to/bounce_message.eml')
 
 @mail.bounced?         #=> true
@@ -439,13 +481,13 @@ Results in the same email as done using the block form
 @mail.error_status     #=> 5.5.0
 @mail.diagnostic_code  #=> smtp;550 Requested action not taken: mailbox unavailable
 @mail.retryable?       #=> false
-```
+{% endhighlight %}
 
 ### Attaching and Detaching Files
 
 You can just read the file off an absolute path, Mail will try to guess the mime_type and will encode the file in Base64 for you.
 
-```ruby
+{% highlight ruby %}
 @mail = Mail.new
 @mail.add_file("/path/to/file.jpg")
 @mail.parts.first.attachment? #=> true
@@ -453,31 +495,31 @@ You can just read the file off an absolute path, Mail will try to guess the mime
 @mail.attachments.first.mime_type #=> 'image/jpg'
 @mail.attachments.first.filename #=> 'file.jpg'
 @mail.attachments.first.decoded == File.read('/path/to/file.jpg') #=> true
-```
+{% endhighlight %}
 
 Or You can pass in `file_data` and give it a filename, again, `mail` will try and guess the `mime_type` for you.
 
-```ruby
+{% highlight ruby %}
 @mail = Mail.new
 @mail.attachments['myfile.pdf'] = File.read('path/to/myfile.pdf')
 @mail.parts.first.attachment? #=> true
 @mail.attachments.first.mime_type #=> 'application/pdf'
 @mail.attachments.first.decoded == File.read('path/to/myfile.pdf') #=> true
-```
+{% endhighlight %}
 
 You can also override the guessed MIME media type if you really know better than mail (this should be rarely needed)
 
-```ruby
+{% highlight ruby %}
 @mail = Mail.new
 file_data = File.read('path/to/myfile.pdf')
 @mail.attachments['myfile.pdf'] = { :mime_type => 'application/x-pdf',
                                     :content => File.read('path/to/myfile.pdf') }
 @mail.parts.first.mime_type #=> 'application/x-pdf'
-```
+{% endhighlight %}
 
 Of course... Mail will round trip an attachment as well
 
-```ruby
+{% highlight ruby %}
 @mail = Mail.new do
   to      'nicolas@test.lindsaar.net.au'
   from    'Mikel Lindsaar <mikel@test.lindsaar.net.au>'
@@ -499,14 +541,14 @@ end
 
 @round_tripped_mail.attachments.length #=> 1
 @round_tripped_mail.attachments.first.filename #=> 'myfile.pdf'
-```
+{% endhighlight %}
 See "Testing and extracting attachments" above for more details.
 
 ### Using Mail with Testing or Spec'ing Libraries
 
 If mail is part of your system, you'll need a way to test it without actually sending emails, the TestMailer can do this for you.
 
-```ruby
+{% highlight ruby %}
 require 'mail'
  # => true
 
@@ -529,11 +571,11 @@ Mail::TestMailer.deliveries.first
  # => #<Mail::Message:0x19284ec ...
 Mail::TestMailer.deliveries.clear
  # => []
-```
+{% endhighlight %}
 
 There is also a set of RSpec matchers stolen from inspired by Shoulda's ActionMailer matchers (you'll want to set <code>delivery_method</code> as above too):
 
-```ruby
+{% highlight ruby %}
 Mail.defaults do
   delivery_method :test # in practice you'd do this in spec_helper.rb
 end
@@ -578,8 +620,9 @@ describe "sending an email" do
 
   it { should have_sent_email.from('you@you.com').to('mike1@me.com').matching_body(/hell/)
 end
-```
+{% endhighlight %}
 
 ### License
 
 (The MIT License) Copyright (c) 2009-2013 Mikel Lindsaar
+
